@@ -1,0 +1,32 @@
+{
+  "name": "time-tracker",
+  "version": "0.0.0",
+  "description": "A productivity app for tracking and managing time.",
+  "main": "build/server/index.js",
+  "scripts": {
+    "dev-server": "npm run build-server && npm run dev-server-run",
+    "dev-server-watch": "tsc -p src/server -w & nodemon build/server --watch build/server && fg",
+    "prod-server-start": "$(npm bin)/forever start build/server",
+    "prod-server-stop": "$(npm bin)/forever stop build/server",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-server": "$(npm bin)/tsc -p src/server",
+    "dev-server-run": "node build/server"
+  },
+  "author": "M. Baxter",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "1.11.0"
+  },
+  "dependencies": {
+    "@types/body-parser": "0.0.33",
+    "@types/express": "4.0.33",
+    "@types/lodash": "4.14.37",
+    "@types/node": "6.0.45",
+    "body-parser": "1.15.2",
+    "express": "4.14.0",
+    "forever": "0.15.2",
+    "lodash": "4.16.4",
+    "node-env-file": "0.1.8",
+    "typescript": "2.0.3"
+  }
+}
