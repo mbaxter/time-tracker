@@ -1,3 +1,5 @@
+/// <reference path="../../node_modules/@types/node/index.d.ts"/>
+/// <reference types="node" />
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import env from "../env/index.js";
