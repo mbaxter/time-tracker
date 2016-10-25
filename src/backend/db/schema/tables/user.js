@@ -1,5 +1,6 @@
 "use strict";
 const Sequelize = require("sequelize");
+const UserRole = require('../../../../shared/constants/user-role');
 
 const userDefinition = {
     id: {
@@ -18,6 +19,12 @@ const userDefinition = {
         type: Sequelize.STRING,
         field: 'password',
         allowNull: false
+    },
+    role: {
+        type: Sequelize.INTEGER,
+        field: 'role',
+        allowNull: false,
+        default: UserRole.STANDARD
     },
     first_name: {
         type: Sequelize.STRING,
