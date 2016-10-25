@@ -1,13 +1,5 @@
-import * as Sequelize from "sequelize";
-
-interface IUserInstance {
-    id: number,
-    email_address:string,
-    password: string,
-    first_name: string,
-    last_name: string,
-    time_zone: string
-}
+"use strict";
+const Sequelize = require("sequelize");
 
 const userDefinition = {
     id: {
@@ -43,6 +35,5 @@ const userDefinition = {
     },
 };
 
-export const name = "user";
-export {userDefinition as definition, IUserInstance as IInstance};
+module.exports = userDefinition;
 

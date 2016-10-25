@@ -1,10 +1,5 @@
-import * as Sequelize from "sequelize";
-
-interface ITimeBlockInstance {
-    id: number,
-    start: Date,
-    end: Date
-}
+"use strict";
+const Sequelize = require("sequelize");
 
 const timeBlockDefinition = {
     id: {
@@ -25,6 +20,4 @@ const timeBlockDefinition = {
     }
 };
 
-export const name = "time_block";
-export {timeBlockDefinition as definition};
-export {ITimeBlockInstance as IInstance};
+module.exports = timeBlockDefinition;
