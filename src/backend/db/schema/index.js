@@ -1,6 +1,6 @@
 "use strict";
 const Connection = require("../connection");
-const tables = require("./tables");
+const tables = require("./table-definitions");
 const keys = require("lodash/keys");
 
 const connection = Connection.getInstance();
