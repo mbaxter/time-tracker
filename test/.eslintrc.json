@@ -1,23 +1,6 @@
 {
   "env" :{
-    "commonjs": true,
     "node": true,
     "mocha": true
-  },
-  "extends": "eslint:recommended",
-  "globals": {
-  },
-  "parserOptions": {
-    "ecmaVersion": 6,
-    "sourceType": "script",
-    "ecmaFeatures": {
-      "jsx": true
-    }
-  },
-  "rules": {
-    "curly": 2,
-    "no-console": 0,
-    "no-var": 2,
-    "strict": [2, "global"]
   }
 }

@@ -14,8 +14,8 @@
   },
   "rules": {
     "curly": 2,
-    "no-console": 0,
     "no-var": 2,
+    "semi": [1, "always"],
     "strict": [2, "global"]
   }
 }
