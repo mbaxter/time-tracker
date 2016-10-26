@@ -31,6 +31,8 @@
     "http-status-codes": "1.0.6",
     "jsonwebtoken": "7.1.9",
     "lodash": "4.16.4",
+    "moment": "2.15.2",
+    "moment-timezone": "0.5.7",
     "mysql": "2.11.1",
     "node-env-file": "0.1.8",
     "sequelize": "3.24.4"
