@@ -20,12 +20,6 @@ const userDefinition = {
         field: 'password',
         allowNull: false
     },
-    role: {
-        type: Sequelize.INTEGER,
-        field: 'role',
-        allowNull: false,
-        default: UserRole.STANDARD
-    },
     first_name: {
         type: Sequelize.STRING,
         field: 'first_name'
@@ -34,11 +28,18 @@ const userDefinition = {
         type: Sequelize.STRING,
         field: 'last_name'
     },
-    time_zone: {
+    role: {
+        type: Sequelize.INTEGER,
+        field: 'role',
+        allowNull: false,
+        default: UserRole.STANDARD
+    },
+    timezone: {
         type: Sequelize.STRING,
         field: 'time_zone',
         allowNull: false,
-        default: "+00:00"
+        // See require('moment-timezone').tz.names() for timezone options
+        default: "UTC"
     },
 };
 

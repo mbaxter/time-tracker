@@ -10,20 +10,20 @@ const values = require('lodash/values');
 const expectedTables = ["user", "time_block"];
 const invalidTables = ["bla", "timeBlock"];
 
-describe("Schema", function() {
+describe("Schema", () => {
     let schema;
-    beforeEach(function() {
+    beforeEach(() => {
         schema = Schema.getInstance();
     });
 
-    after(function() {
+    after(() => {
         schema.drop();
     });
 
-    describe("getTable", function() {
+    describe("getTable()", () => {
         expectedTables.forEach(function(table) {
-            describe(`called with valid table identifier '${table}'`, function() {
-                it("should return a valid model", function() {
+            describe(`called with valid table identifier '${table}'`, () => {
+                it("should return a valid model", () => {
                     let model = schema.getTable(table);
                     assert.ok(model);
                 });
@@ -31,24 +31,24 @@ describe("Schema", function() {
         });
 
         invalidTables.forEach(function(table) {
-            describe(`called with invalid table identifier '${table}'`, function() {
-                it("should throw an exception", function() {
+            describe(`called with invalid table identifier '${table}'`, () => {
+                it("should throw an exception", () => {
                     assert.throws(() => schema.getTable(table));
                 });
             });
         });
     });
 
-    describe("forceSync", function() {
+    describe("forceSync()", () => {
         let connection;
-        before(function() {
+        before(() => {
             return mysql.createConnection(process.env.API_DB_URL)
                 .then((conn) => {
                     connection = conn;
                 }).then(() => {
                     return Promise.all(expectedTables.map((table) => {
                         return connection.query(`Drop table if exists ${table}`);
-                    }))
+                    }));
                 }).then(() => {
                     return connection.query(`Show tables`);
                 }).then((response) => {
@@ -62,24 +62,24 @@ describe("Schema", function() {
                 });
         });
 
-        describe("after executing", function() {
-            describe("when retrieving list of tables", function() {
-                it("should return a list of our expected tables", function() {
+        describe("after executing", () => {
+            describe("when retrieving list of tables", () => {
+                it("should return a list of our expected tables", () => {
                     return connection.query(`Show tables`)
                         .then((response) => {
                             // formatResponse
                             const actualTables = response.reduce((accum, val) => {return accum.concat(values(val));}, []);
                             assert.equal(response.length, expectedTables.length, `We should return ${expectedTables.length} tables`);
                             assert.deepEqual(actualTables.sort(), expectedTables.sort());
-                        })
-                })
+                        });
+                });
             });
         });
     });
 
-    describe("drop", function() {
+    describe("drop()", () => {
         let connection;
-        before(function() {
+        before(() => {
             return mysql.createConnection(process.env.API_DB_URL)
                 .then((conn) => {
                     connection = conn;
@@ -98,14 +98,14 @@ describe("Schema", function() {
                 });
         });
 
-        describe("after executing", function() {
-            describe("when retrieving list of tables", function() {
-                it("should get an empty list", function() {
+        describe("after executing", () => {
+            describe("when retrieving list of tables", () => {
+                it("should get an empty list", () => {
                     return connection.query(`Show tables`)
                         .then((response) => {
                             assert.equal(response.length, 0, `We should get 0 tables`);
-                        })
-                })
+                        });
+                });
             });
         });
     });

@@ -8,6 +8,7 @@ const createConnection = function() {
             min: 0,
             idle: 10000
         },
+        timezone: "+00:00",
         logging: false
     });
 };
