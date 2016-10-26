@@ -28,6 +28,8 @@
     "body-parser": "1.15.2",
     "express": "4.14.0",
     "forever": "0.15.2",
+    "http-status-codes": "1.0.6",
+    "jsonwebtoken": "7.1.9",
     "lodash": "4.16.4",
     "mysql": "2.11.1",
     "node-env-file": "0.1.8",
