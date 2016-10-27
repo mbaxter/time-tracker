@@ -9,7 +9,7 @@
     "prod-server-start": "$(npm bin)/forever start src/server",
     "prod-server-stop": "$(npm bin)/forever stop src/server",
     "lint": "$(npm bin)/eslint {src,test}/*",
-    "test": "$(npm bin)/mocha -R spec --compilers js:babel-core/register --recursive test"
+    "test": "$(npm bin)/mocha -R spec --compilers js:babel-core/register --require babel-polyfill --recursive test"
   },
   "author": "M. Baxter",
   "license": "ISC",
@@ -24,6 +24,7 @@
     "promise-mysql": "2.0.0"
   },
   "dependencies": {
+    "babel-polyfill": "6.16.0",
     "bluebird": "3.4.6",
     "body-parser": "1.15.2",
     "express": "4.14.0",

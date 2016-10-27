@@ -21,19 +21,23 @@ describe("Schema", () => {
     });
 
     describe("getTable()", () => {
-        expectedTables.forEach(function(table) {
-            describe(`called with valid table identifier '${table}'`, () => {
-                it("should return a valid model", () => {
-                    let model = schema.getTable(table);
-                    assert.ok(model);
+        describe("with a valid table identifier", () => {
+            expectedTables.forEach(function(table) {
+                describe(`of '${table}'`, () => {
+                    it("should return a valid model", () => {
+                        let model = schema.getTable(table);
+                        assert.ok(model);
+                    });
                 });
             });
         });
 
-        invalidTables.forEach(function(table) {
-            describe(`called with invalid table identifier '${table}'`, () => {
-                it("should throw an exception", () => {
-                    assert.throws(() => schema.getTable(table));
+        describe("with an invalid table identifier", () => {
+            invalidTables.forEach(function(table) {
+                describe(`of '${table}'`, () => {
+                    it("should throw an exception", () => {
+                        assert.throws(() => schema.getTable(table));
+                    });
                 });
             });
         });
