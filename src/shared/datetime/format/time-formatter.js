@@ -8,6 +8,7 @@ TimeFormatter.displayFormat = "h:mm a";
 TimeFormatter.internalFormat = "HH:mm:ss";
 // Accept a wide variety of input
 TimeFormatter.inputFormats = [
+    'H:mm',
     'HH:mm',
     'hh:mm a',
     'hh:mm A',
@@ -22,6 +23,11 @@ TimeFormatter.inputFormats = [
     'h:mm:ss A',
 ];
 
+/**
+ *
+ * @param {string} input
+ * @returns {string}
+ */
 TimeFormatter.normalize = function(input) {
     return moment(input, TimeFormatter.inputFormats, true).format(TimeFormatter.internalFormat);
 };

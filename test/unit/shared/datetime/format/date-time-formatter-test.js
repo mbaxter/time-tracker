@@ -1,6 +1,6 @@
 "use strict";
 const assert = require('assert');
-const DateTimeFormatter = require('../../../../src/shared/datetime/date-time-formatter');
+const DateTimeFormatter = require('../../../../../src/shared/datetime/format/date-time-formatter');
 
 describe("DateTimeFormatter", () => {
     describe("normalize", () => {
