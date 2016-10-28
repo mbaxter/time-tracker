@@ -1,7 +1,7 @@
 "use strict";
 const Connection = require("../connection");
 const tables = require("./table-definitions");
-const foreignKeys = require('./table-definitions/foreign-keys');
+const foreignKeys = require('./foreign-keys');
 const keys = require("lodash/keys");
 
 const connection = Connection.getInstance();
@@ -57,6 +57,19 @@ class Schema {
      */
     forceSync() {
        return this.sync(true);
+    }
+
+    /**
+     * Creates a transaction.
+     * @param {function|object} callbackOrOptions If a function is provided, a managed transaction is initiated. The
+     * callback passed the transaction and is expected to return a promise.  If the promise resolves, the transaction
+     * is committed. Otherwise, the transaction is rolled back.
+     * If no value is passed or an options object is given, an unmanaged transaction is
+     * started.  The method returns a promise that resolves to the transaction object.
+     * @returns {Promise.<Sequelize.Transaction>}
+     */
+    createTransaction(callbackOrOptions) {
+        return connection.transaction(callbackOrOptions);
     }
 
     /**
