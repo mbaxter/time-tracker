@@ -3,6 +3,13 @@ const moment = require('moment');
 const random = require('lodash/random');
 const DateTimeFormatter = require('../../../../shared/datetime/date-time-formatter');
 
+/**
+ * @param {*} options
+ * @param {number} options.days
+ * @param {number} options.userId
+ * @param {string} timezone
+ * @returns {Array} Returns an array of timeBlock fixtures
+ */
 const timeBlockGenerator = function({
     days = 100,
     userId = null,
@@ -30,10 +37,12 @@ const timeBlockGenerator = function({
         }
         date = incrementDate(date);
     }
+
+    return fixtures;
 };
 
 const today = function(dateFormat = 'YYYY-MM-DD') {
-    return moment().formate(dateFormat);
+    return moment().format(dateFormat);
 };
 
 /**
@@ -75,7 +84,7 @@ const incrementTime = function(time, minutesToIncrement, timeFormat='hh:mm a') {
 };
 
 const incrementDate = function(date, dayIncrement = 1, dateFormat='YYYY-MM-DD') {
-    return moment(date, dateFormat).add(dayIncrement, 'days').formate(dateFormat);
+    return moment(date, dateFormat).add(dayIncrement, 'days').format(dateFormat);
 };
 
 module.exports = timeBlockGenerator;

@@ -12,4 +12,4 @@ class TimeBlockCollection extends AbstractCollection {
     }
 }
 
-module.exports = TimeBlockCollection;
+module.exports = TimeBlockCollection.create();

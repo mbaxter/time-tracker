@@ -17,7 +17,7 @@ module.exports = function() {
                 return timeBlockGenerator({userId: index, timezone: user.timezone, days:100});
             });
 
-            return Array.concat.apply([], timeBlockChunks);
+            return Array.prototype.concat.apply([], timeBlockChunks);
         })
         .then((timeBlocks) => {
             return {
@@ -26,6 +26,6 @@ module.exports = function() {
             };
         })
         .then((fixtures) => {
-            return FixtureLoader.load(fixtures)
+            return FixtureLoader.load(fixtures);
         });
 };

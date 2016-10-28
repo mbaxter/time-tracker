@@ -26,7 +26,7 @@ class UserCollection extends AbstractCollection {
         options = QueryOptionsBuilder.toBuilder(options);
         options = options.whereIn('email_address', emails);
 
-        this._retrieve(options);
+        return this._retrieve(options);
     }
 
     /**
@@ -54,5 +54,4 @@ class UserCollection extends AbstractCollection {
     }
 }
 
-const instance = UserCollection.create();
-module.exports = instance;
+module.exports = UserCollection.create();

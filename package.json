@@ -8,6 +8,8 @@
     "dev-server-watch": "nodemon src/server --watch src/server",
     "prod-server-start": "$(npm bin)/forever start src/server",
     "prod-server-stop": "$(npm bin)/forever stop src/server",
+    "build": "babel src --out-dir build",
+    "fixtures": "npm run build > /dev/null && node build/backend/scripts/load-default-db-fixtures.js",
     "lint": "$(npm bin)/eslint {src,test}/*",
     "test": "$(npm bin)/mocha -R spec --compilers js:babel-core/register --require babel-polyfill --recursive test"
   },

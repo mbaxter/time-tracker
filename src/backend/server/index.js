@@ -1,10 +1,7 @@
 "use strict";
+require('../bootstrap');
 const express = require('express');
 const bodyParser = require('body-parser');
-const env = require("../env/index.js");
-
-// Setup environmental variables for local development
-env();
 
 const app = express();
 app.set("port", process.env.port || 5000);

@@ -84,7 +84,7 @@ class QueryOptionsBuilder {
     excludeFields(fields) {
         fields = Array.isArray(fields) ? fields : [fields];
         const options = this._cloneOptions();
-        this._updateAttributes();
+        this._prepAttributesUpdate(options);
         if (!options.attributes.exclude) {
             options.attributes.exclude = [];
         }
@@ -104,7 +104,7 @@ class QueryOptionsBuilder {
      */
     defaultIncludeFields(fields) {
         const options = this._cloneOptions();
-        this._updateAttributes();
+        this._prepAttributesUpdate(options);
         if (!options.attributes.include) {
             options.attributes.include = fields;
             return QueryOptionsBuilder.create(options);
@@ -121,7 +121,7 @@ class QueryOptionsBuilder {
     includeFields(fields) {
         fields = Array.isArray(fields) ? fields : [fields];
         const options = this._cloneOptions();
-        this._updateAttributes();
+        this._prepAttributesUpdate(options);
         if (!options.attributes.include) {
             options.attributes.include = [];
         }

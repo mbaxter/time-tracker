@@ -18,7 +18,7 @@ class AbstractCollection {
     }
 
     static create() {
-        return new this.constructor();
+        return new this();
     }
 
     getAllFields() {

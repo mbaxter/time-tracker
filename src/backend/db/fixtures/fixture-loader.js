@@ -20,7 +20,7 @@ const FixtureLoader = {};
  *  @return {Promise.<*>} Returns a promise that resolves if all fixtures are loaded successfully.
  */
 FixtureLoader.load = function(fixtures) {
-    schema.createTransaction(() => {
+    return schema.createTransaction(() => {
         return FixtureLoader._loadFixtures(fixtures);
     });
 };
@@ -32,36 +32,42 @@ FixtureLoader.load = function(fixtures) {
  * @private
  */
 FixtureLoader._loadFixtures = function(fixtures) {
-    return (new Promise(() => {
-        // Upsert users if they're present
-        if(fixtures.user) {
-            return collection.User.upsert(fixtures.user);
-        }
+    return Promise.resolve(fixtures)
+        .then((fixtures) => {
+            // Upsert users if they're present
+            if(fixtures.user) {
+                return collection.User.upsert(fixtures.user)
+                    .then(() => {
+                        // Return original list of users
+                        return fixtures.user;
+                    });
+            }
 
-        return [];
-    }))
+            return [];
+        })
         .then((users) => {
-            // Re-query for upserted users by email
+            // Re-query for upserted users by email_address
             // We need to requery so we can get the user ids and fulfill foreign key dependencies of other collections
-            const emails = compact(map(users, 'email'));
+            const emails = compact(map(users, 'email_address'));
             return collection.User.mapByEmailAddress(emails);
         })
         .then((emailToUserMap) => {
             // Augment time_block records with appropriate user.id
             if (fixtures.time_block) {
-                    return fixtures.time_block.map((row) => {
-                        if (!has(row, 'user_id')) {
-                            return row;
-                        }
-                        const userEmail = get(fixtures, `user[${row.user_id}].email_address`,'');
-                        const userId = get(emailToUserMap, `${userEmail}.id`, null);
-                        if (userId != null) {
-                            // We found a valid userId mapping - return updated row
-                            row.user_id = userId;
-                            return row;
-                        }
+                return fixtures.time_block.map((row) => {
+                    if (!has(row, 'user_id')) {
                         return row;
-                    });
+                    }
+                    const userEmail = get(fixtures, `user[${row.user_id}].email_address`,'');
+                    const user = get(emailToUserMap, userEmail, null);
+                    const userId = user ? user.id : null;
+                    if (userId != null) {
+                        // We found a valid userId mapping - return updated row
+                        row.user_id = userId;
+                        return row;
+                    }
+                    return row;
+                });
             } else {
                 return [];
             }
