@@ -24,7 +24,7 @@ const timeBlockGenerator = function({
 
     let date = DateFactory.today();
     for (let i = 0; i < days; i++) {
-        let numBlocks = getNumBlocks(0,5);
+        let numBlocks = getNumBlocks(0,7);
         let time = TimeFactory.fromHourRange(9,11);
         for (let j = 0; j < numBlocks; j++) {
             let blockStart = time;
@@ -38,7 +38,7 @@ const timeBlockGenerator = function({
             // Add some time between blocks
             time = TimeFactory.increment(time, random(10,30));
         }
-        date = DateFactory.increment(date);
+        date = DateFactory.increment(date, -1);
     }
 
     return fixtures;

@@ -9,5 +9,13 @@ module.exports = [
         password: process.env.ADMIN_PASSWORD,
         role: UserRole.ADMIN,
         timezone: "US/Eastern"
+    },
+    {
+        first_name: "Fred",
+        last_name: "Astaire",
+        email_address: "user@test.com",
+        password: "12345",
+        role: UserRole.STANDARD,
+        timezone: "US/Eastern"
     }
 ];

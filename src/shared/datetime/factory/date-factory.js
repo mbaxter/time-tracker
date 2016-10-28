@@ -11,7 +11,7 @@ DateFactory.today = function() {
     return moment().format(format);
 };
 
-DateFactory.increment = function(date, days) {
+DateFactory.increment = function(date, days = 1) {
     const newDate = moment(date, format).add(days, 'days').format(format);
     return DateFactory.validate(newDate) ? newDate : undefined;
 };

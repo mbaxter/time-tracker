@@ -39,7 +39,7 @@ TimeFactory.fromHourRange = function(hourMin, hourMax) {
  * @param time
  * @param minutesToIncrement
  */
-TimeFactory.increment = function(time, minutesToIncrement) {
+TimeFactory.increment = function(time, minutesToIncrement = 1) {
     const newTime = moment(time, format).add(minutesToIncrement, 'minutes').format(format);
     return TimeFactory.validate(newTime) ? newTime : undefined;
 };

@@ -8,6 +8,16 @@ const timeBlockDefinition = {
         primaryKey: true,
         autoIncrement: true
     },
+    user_id: {
+        type: Sequelize.BIGINT.UNSIGNED,
+        field: 'user_id',
+        allowNull: false,
+        references: {
+            model: 'user',
+            key: 'id'
+        },
+        onDelete: 'CASCADE'
+    },
     start: {
         type: Sequelize.DATE,
         field: 'start',

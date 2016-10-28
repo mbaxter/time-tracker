@@ -1,7 +1,6 @@
 "use strict";
 const Connection = require("../connection");
 const tables = require("./table-definitions");
-const foreignKeys = require('./foreign-keys');
 const keys = require("lodash/keys");
 
 const connection = Connection.getInstance();
@@ -26,7 +25,6 @@ class Schema {
                 underscored: true
             });
         }
-        foreignKeys(this.getTables());
     }
 
     /**
