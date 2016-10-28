@@ -50,9 +50,7 @@ describe("Schema", () => {
                 .then((conn) => {
                     connection = conn;
                 }).then(() => {
-                    return Promise.all(expectedTables.map((table) => {
-                        return connection.query(`Drop table if exists ${table}`);
-                    }));
+                    return schema.drop();
                 }).then(() => {
                     return connection.query(`Show tables`);
                 }).then((response) => {
