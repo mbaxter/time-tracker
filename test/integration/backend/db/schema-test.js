@@ -4,7 +4,6 @@ require('../../../../src/backend/bootstrap');
 const assert = require('assert');
 const Schema = require('../../../../src/backend/db/schema');
 const mysql = require('promise-mysql');
-const Promise = require('bluebird');
 const values = require('lodash/values');
 
 const expectedTables = ["user", "time_block"];

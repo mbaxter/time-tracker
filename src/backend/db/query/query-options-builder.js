@@ -2,6 +2,9 @@
 const clone = require('lodash/cloneDeepWith');
 const Sequelize = require('sequelize');
 
+/**
+ * Builds options to pass to collections for querying
+ */
 class QueryOptionsBuilder {
     /**
      * @param {{}} options
@@ -44,22 +47,27 @@ class QueryOptionsBuilder {
         return this.getOptions();
     }
 
-    /**
-     * @param {Sequelize.Transaction} transaction
-     * @returns {QueryOptionsBuilder}
-     */
-    setTransaction(transaction) {
+    limit(limit = 1000, offset = 0) {
         const options = this._cloneOptions();
-        options.transaction = transaction;
-        return QueryOptionsBuilder.clone(options);
+        options.limit = limit;
+        options.offset = offset;
+        return QueryOptionsBuilder.create(options);
     }
 
-    /**
-     * Return the associated transaction or undefined
-     * @returns {Sequelize.Transaction}
-     */
-    getTransaction() {
-        return this._options.transaction;
+    enforceLimit(limit = 1000) {
+        const options = this._cloneOptions();
+        if (!options.limit || options.limit > limit) {
+            options.limit = limit;
+        }
+
+        return QueryOptionsBuilder.create(options);
+    }
+
+    orderBy(fieldName, sortOrder = 'ASC') {
+        const options = this._cloneOptions();
+        options.order = [fieldName, sortOrder];
+
+        return QueryOptionsBuilder.create(options);
     }
 
     /**

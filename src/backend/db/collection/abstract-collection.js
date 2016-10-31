@@ -40,6 +40,19 @@ class AbstractCollection {
         options = QueryOptionsBuilder.toObject(options);
         return this.model.bulkCreate(records, options);
     }
+
+    /**
+     * Private function for calling findAll sequelize method.
+     * This is a good place to enforce required options like limits.
+     * @param {object|QueryOptionsBuilder} options
+     * @returns {Promise<*[]>}
+     * @private
+     */
+    _findAll(options) {
+        options = QueryOptionsBuilder.toBuilder(options);
+        options.enforceLimit();
+        return this.model.findAll(options.getOptions());
+    }
 }
 
 module.exports = AbstractCollection;

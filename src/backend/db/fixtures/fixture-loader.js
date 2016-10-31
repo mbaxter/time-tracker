@@ -32,6 +32,7 @@ FixtureLoader.load = function(fixtures) {
  * @private
  */
 FixtureLoader._loadFixtures = function(fixtures) {
+    const finalFixtures = {};
     return Promise.resolve(fixtures)
         .then((fixtures) => {
             // Upsert users if they're present
@@ -46,6 +47,7 @@ FixtureLoader._loadFixtures = function(fixtures) {
             return [];
         })
         .then((users) => {
+            finalFixtures.users = users;
             // Re-query for upserted users by email_address
             // We need to requery so we can get the user ids and fulfill foreign key dependencies of other collections
             const emails = compact(map(users, 'email_address'));
@@ -73,8 +75,12 @@ FixtureLoader._loadFixtures = function(fixtures) {
             }
         })
         .then((timeBlocks) => {
+            finalFixtures.time_block = timeBlocks;
             // Upsert timeBlocks
-            return collection.TimeBlock.upsert(timeBlocks);
+            collection.TimeBlock.upsert(timeBlocks);
+        })
+        .then(() => {
+            return finalFixtures;
         });
 };
 

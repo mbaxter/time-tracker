@@ -26,7 +26,7 @@ class UserCollection extends AbstractCollection {
         options = QueryOptionsBuilder.toBuilder(options);
         options = options.whereIn('email_address', emails);
 
-        return this._retrieve(options);
+        return this._findAll(options);
     }
 
     /**
@@ -47,10 +47,10 @@ class UserCollection extends AbstractCollection {
             });
     }
 
-    _retrieve(options) {
+    _findAll(options) {
         options = QueryOptionsBuilder.toBuilder(options);
         options = options.excludeFields(options, ['password']);
-        return this.model.findAll(options.getOptions());
+        return super._findAll(options);
     }
 }
 
