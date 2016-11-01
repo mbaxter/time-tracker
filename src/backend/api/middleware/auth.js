@@ -1,30 +1,23 @@
 "use strict";
 
-const httpCodes = require('http-status-codes');
 const jwt = require('../../security/jwt');
+const AuthResponseFactory = require('../response/auth-response-factory');
+
 module.exports = function(req, res, next) {
     // Retrieve the token from the header
     const token = req.headers['x-access-token'];
 
-    // Define function that handles unauthorized requests
-    const unauthorized = (msg = "Invalid token.") => {
-        return res.status(httpCodes.UNAUTHORIZED)
-            .json({
-                success: false,
-                message: msg
-            });
-    };
-
     if (!token) {
-        return unauthorized("No token provided.");
+        return AuthResponseFactory.unauthorized(res);
     }
 
     jwt.verify(token)
         .then((decoded) => {
             req.jwt = decoded;
+            req.authorized = true;
             next();
         })
         .catch(() => {
-            unauthorized();
+            return AuthResponseFactory.unauthorized(res);
         });
 };

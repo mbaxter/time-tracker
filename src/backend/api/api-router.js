@@ -1,16 +1,17 @@
 "use strict";
 const express = require('express');
-const AuthRoutes = require('./routes/auth-routes');
-const authMiddleware = require('./middleware/auth');
+const ResponseFactory = require('./response/response-factory');
+const RouterFactory = require('./router-factory');
 
 const createRouter = function() {
     const router = express.Router();
 
-    AuthRoutes.setPublicRoutes(router);
+    router.use('/auth', RouterFactory.Auth.create());
 
-    router.use(authMiddleware);
-
-    AuthRoutes.setPrivateRoutes(router);
+    // Catch-all 404 for unhandled routes
+    router.all('*', (req, res) => {
+       ResponseFactory.notFound(res);
+    });
 
     return router;
 };

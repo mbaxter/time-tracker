@@ -12,9 +12,9 @@ AuthResponseFactory.authToken = function(res, jwtToken) {
     });
 };
 
-AuthResponseFactory.unauthorized = function(res) {
+AuthResponseFactory.invalidCredentials = function(res) {
     return res.status(httpCodes.UNAUTHORIZED).json({
-        error: "Invalid email or password."
+        error: "Invalid credentials."
     });
 };
 
@@ -22,6 +22,10 @@ AuthResponseFactory.emailOrPasswordMissing = function(res) {
     return res.status(httpCodes.BAD_REQUEST).json({
         error: "Email and password are required."
     });
+};
+
+AuthResponseFactory.unauthorized = function(res) {
+   return res.status(httpCodes.UNAUTHORIZED).end();
 };
 
 module.exports = AuthResponseFactory;
