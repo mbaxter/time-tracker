@@ -2,6 +2,11 @@
 const keyBy = require('lodash/keyBy');
 const AbstractCollection = require('./abstract-collection');
 const QueryOptionsBuilder = require('../query/query-options-builder');
+const clone = require('lodash/clone');
+const bcrypt = require('../../security/bcrypt');
+const Promise = require('bluebird');
+const userValidator = require('../../../shared/validation/model/user-validator');
+const first = require('lodash/first');
 
 class UserCollection extends AbstractCollection {
     /**
@@ -10,6 +15,53 @@ class UserCollection extends AbstractCollection {
      */
     static get tableName() {
         return 'user';
+    }
+
+    static get validator() {
+        return userValidator;
+    }
+
+    upsert(records, options = {}) {
+        // Hash the password values before upserted records
+        return Promise.map(records, (record) => {
+            return bcrypt.hash(record.password)
+                .then((hash) => {
+                    record = clone(record);
+                    record.password = hash;
+                    return record;
+                });
+        }).then((records) => {
+            return super.upsert(records, options);
+        });
+    }
+
+    /**
+     *
+     * @param {string} email
+     * @param {string} password
+     * @returns {Promise.<User>}
+     */
+    retrieveOneByEmailAddressAndPassword(email, password) {
+        const options = QueryOptionsBuilder.create()
+            .where('email_address', email);
+
+        return this._findAll(options)
+            .then((users) => {
+                return first(users);
+            })
+            .then((user) => {
+                if(!user) {
+                    return user;
+                }
+
+                return bcrypt.verify(password, user.password)
+                    .then((passwordIsValid) => {
+                        if(passwordIsValid) {
+                            return user;
+                        }
+                        return undefined;
+                    });
+            });
     }
 
     /**
@@ -43,14 +95,8 @@ class UserCollection extends AbstractCollection {
 
         return this.retrieveByEmailAddress(emails, options)
             .then((users) => {
-               return keyBy(users, 'email_address');
+                return keyBy(users, 'email_address');
             });
-    }
-
-    _findAll(options) {
-        options = QueryOptionsBuilder.toBuilder(options);
-        options = options.excludeFields(options, ['password']);
-        return super._findAll(options);
     }
 }
 

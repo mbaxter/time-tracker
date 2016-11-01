@@ -66,4 +66,13 @@ DateTimeFormatter.normalizeDate = function(date) {
     return moment.tz(date, 'UTC').format(DateTimeFormatter.internalFormat);
 };
 
+/**
+ *
+ * @param {string} value
+ * @returns {*}
+ */
+DateTimeFormatter.isValidNormalizedValue = function(value) {
+    return moment(value, DateTimeFormatter.internalFormat, true).isValid();
+};
+
 module.exports = DateTimeFormatter;

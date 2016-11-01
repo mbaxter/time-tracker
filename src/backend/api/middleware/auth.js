@@ -1,7 +1,7 @@
 "use strict";
 
 const httpCodes = require('http-status-codes');
-const jwt = require('../lib/jwt');
+const jwt = require('../../security/jwt');
 module.exports = function(req, res, next) {
     // Retrieve the token from the header
     const token = req.headers['x-access-token'];

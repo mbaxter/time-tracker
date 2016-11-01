@@ -1,6 +1,7 @@
 "use strict";
 require('../bootstrap');
 const loadFixtures = require('../db/fixtures/scripts/load-default-fixtures');
+const ValidationError = require('../db/collection/error/validation-error');
 
 loadFixtures()
     .then(() => {
@@ -11,6 +12,10 @@ loadFixtures()
         console.error('Encountered error loading fixtures: ' + err);
         if (err.stack) {
             console.log(err.stack);
+        }
+        if (err instanceof ValidationError) {
+            console.log("Validation data:");
+            console.log(JSON.stringify(err, null, 4));
         }
         process.exit(1);
     });

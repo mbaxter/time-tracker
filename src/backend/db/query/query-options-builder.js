@@ -85,6 +85,20 @@ class QueryOptionsBuilder {
     }
 
     /**
+     * Update query options to include the specified where clause
+     * @param {string} fieldName
+     * @param {[]} fieldValues
+     * @returns {QueryOptionsBuilder} Return a new builder with the whereIn update
+     */
+    where(fieldName, fieldValue) {
+        const options = this._cloneOptions();
+        this._prepWhereUpdate(options);
+        options.where[fieldName]= fieldValue;
+
+        return QueryOptionsBuilder.create(options);
+    }
+
+    /**
      * Updates query options to exclude the given fields
      * @param {string[]} fields
      * @returns {QueryOptionsBuilder} Return a new builder with the modified options

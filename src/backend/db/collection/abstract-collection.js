@@ -1,6 +1,7 @@
 "use strict";
 const Schema = require('../schema');
 const QueryOptionsBuilder = require('../query/query-options-builder');
+const ValidationError = require('./error/validation-error');
 
 class AbstractCollection {
     constructor() {
@@ -14,7 +15,11 @@ class AbstractCollection {
      * @return {string}
      */
     static get tableName() {
-        throw new Error(`[${this.name}] static tableName() method not implemented`);
+        throw new Error(`[${this.name}] static tableName getter is not implemented`);
+    }
+
+    static get validator() {
+        throw new Error(`[${this.name}] static validator getter is not implemented`);
     }
 
     static create() {
@@ -37,6 +42,16 @@ class AbstractCollection {
             records = [records];
         }
 
+        const validationResult = records.map((record) => {
+            const validator = this.constructor.validator;
+            return validator.validateCreate(record);
+        });
+
+        const isValid = validationResult.reduce((accum, result) => accum && result.isValid, true);
+        if (!isValid) {
+            throw ValidationError.create(records, validationResult);
+        }
+
         options = QueryOptionsBuilder.toObject(options);
         return this.model.bulkCreate(records, options);
     }
@@ -46,7 +61,7 @@ class AbstractCollection {
      * This is a good place to enforce required options like limits.
      * @param {object|QueryOptionsBuilder} options
      * @returns {Promise<*[]>}
-     * @private
+     * @protected
      */
     _findAll(options) {
         options = QueryOptionsBuilder.toBuilder(options);

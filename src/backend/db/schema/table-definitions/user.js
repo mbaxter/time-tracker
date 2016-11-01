@@ -32,14 +32,14 @@ const userDefinition = {
         type: Sequelize.INTEGER,
         field: 'role',
         allowNull: false,
-        default: UserRole.STANDARD
+        defaultValue: UserRole.STANDARD
     },
     timezone: {
         type: Sequelize.STRING,
         field: 'time_zone',
         allowNull: false,
         // See require('moment-timezone').tz.names() for timezone options
-        default: "UTC"
+        defaultValue: "UTC"
     },
 };
 
