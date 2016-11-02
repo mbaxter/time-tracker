@@ -21,7 +21,15 @@ class UserCollection extends AbstractCollection {
         return userValidator;
     }
 
-    upsert(records, options = {}) {
+    /**
+     * Stub that does not thing by default.
+     * This is a place to modify records before upserting.
+     * For example, you could hash plaintext passwords before inserting to the db.
+     * @param {Object[]} records
+     * @returns {Promise.<Object[]>}
+     * @private
+     */
+    _preprocessUpsert(records) {
         // Hash the password values before upserted records
         return Promise.map(records, (record) => {
             return bcrypt.hash(record.password)
@@ -30,8 +38,6 @@ class UserCollection extends AbstractCollection {
                     record.password = hash;
                     return record;
                 });
-        }).then((records) => {
-            return super.upsert(records, options);
         });
     }
 
