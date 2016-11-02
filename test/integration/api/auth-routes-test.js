@@ -5,11 +5,12 @@ const assert = require("assert");
 const Schema = require('../../../src/backend/db/schema');
 const schema = Schema.getInstance();
 const collection = require('../../../src/backend/db/collection');
-// const Promise = require('bluebird');
-const fetch = require('isomorphic-fetch');
 const httpCodes = require('http-status-codes');
+const AuthApi = require('../../../src/shared/fetch-api/auth');
 
-describe("/api/auth", () => {
+const authApi = AuthApi.create(`http://localhost:${process.env.PORT}`);
+
+describe("/auth", () => {
     before(() => {
         return schema.forceSync();
     });
@@ -34,24 +35,17 @@ describe("/api/auth", () => {
         describe("post request", () => {
             describe("with valid credentials", () => {
                 it("should return a valid response with a token", () => {
-                    return fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            email_address: user1.email_address,
-                            password: user1.password,
+                    return authApi.login(user1.email_address, user1.password)
+                        .then((response) => {
+                            assert.equal(response.url, url, "Url should match what we're expecting to test");
+                            assert.equal(response.status, httpCodes.OK);
+                            return response.json();
                         })
-                    }).then((response) => {
-                        assert.equal(response.status, httpCodes.OK);
-                        return response.json();
-                    }).then((json) => {
-                        const token = json.token;
-                        assert.ok(typeof token == 'string');
-                        assert.ok(token.length > 0);
-                    });
+                        .then((json) => {
+                            const token = json.token;
+                            assert.ok(typeof token == 'string');
+                            assert.ok(token.length > 0);
+                        });
                 });
             });
 
@@ -60,28 +54,27 @@ describe("/api/auth", () => {
                     {
                         case: "matching email, wrong password",
                         getCredentials: (user) => {
-                            return {
-                                email_address: user.email_address,
-                                password: user.password + 'bla'
-                            };
+                            return [
+                                user.email_address,
+                                user.password + 'bla'
+                            ];
                         }
                     },
                     {
                         case: "matching password, wrong email",
                         getCredentials: (user) => {
-                            return {
-                                email_address: 'some.other.person@test.com',
-                                password: user.password
-                            };
+                            return [
+                                'some.other.person@test.com',
+                                user.password
+                            ];
                         }
                     },
                     {
                         case: "wrong email and password",
                         getCredentials: (user) => {
-                            return {
-                                email_address: 'some.other.person@test.com',
-                                password: user.password + 'bla'
-                            };
+                            return [
+                                'some.other.person@test.com',
+                                user.password + 'bla'];
                         }
                     }
                 ];
@@ -89,20 +82,15 @@ describe("/api/auth", () => {
                 testCases.forEach((testCase) => {
                     describe(`with ${testCase.case}`, () => {
                         it("should return an unauthorized response with no token", () => {
-                            return fetch(url, {
-                                method: 'POST',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(testCase.getCredentials(user1))
-                            }).then((response) => {
-                                assert.equal(response.status, httpCodes.UNAUTHORIZED);
-                                return response.json();
-                            }).then((json) => {
-                                const token = json.token;
-                                assert.ok(typeof token == 'undefined');
-                            });
+                            return authApi.login(... testCase.getCredentials(user1))
+                                .then((response) => {
+                                    assert.equal(response.url, url, "Url should match what we're expecting to test");
+                                    assert.equal(response.status, httpCodes.UNAUTHORIZED);
+                                    return response.json();
+                                }).then((json) => {
+                                    const token = json.token;
+                                    assert.ok(typeof token == 'undefined');
+                                });
                         });
                     });
                 });
@@ -122,20 +110,15 @@ describe("/api/auth", () => {
                         });
 
                         it("should return a response indicating the request is bad", () => {
-                            return fetch(url, {
-                                method: 'POST',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(data)
-                            }).then((response) => {
-                                assert.equal(response.status, httpCodes.BAD_REQUEST);
-                                return response.json();
-                            }).then((json) => {
-                                const token = json.token;
-                                assert.ok(typeof token == 'undefined');
-                            });
+                            return authApi.post("login", data)
+                                .then((response) => {
+                                    assert.equal(response.url, url, "Url should match what we're expecting to test");
+                                    assert.equal(response.status, httpCodes.BAD_REQUEST);
+                                    return response.json();
+                                }).then((json) => {
+                                    const token = json.token;
+                                    assert.ok(typeof token == 'undefined');
+                                });
                         });
                     });
                 });
