@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require('assert');
-const stringPermutations = require('../../../../src/shared/string/permutations');
+const stringPermutations = require('../../../../../src/shared/util/string/permutations');
 
 describe('stringPermutations()', () => {
     describe('with a single array representing an empty string', () => {

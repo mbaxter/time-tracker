@@ -1,6 +1,6 @@
 "use strict";
 const moment = require('moment');
-const stringPermutations = require('../../string/permutations');
+const stringPermutations = require('../../util/string/permutations');
 
 const DateFormatter = {};
 
