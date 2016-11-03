@@ -20,6 +20,14 @@ ResponseFactory.notFound = function(res) {
     return res.status(httpCodes.NOT_FOUND).end();
 };
 
+ResponseFactory.badRequest = function(res, data) {
+    if (data) {
+        return res.status(httpCodes.BAD_REQUEST).json(data);
+    } else {
+        return res.status(httpCodes.BAD_REQUEST).end();
+    }
+};
+
 ResponseFactory.notImplemented = function(res) {
     return res.status(httpCodes.NOT_IMPLEMENTED).end();
 };

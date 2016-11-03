@@ -32,9 +32,33 @@ class AbstractCollection {
     }
 
     /**
+     * Returns a count of all the records in this collection (constrained by any options where clauses).
+     * @param {QueryOptionsBuilder|Object} options Sequelize query options
+     * @returns {Promise<Int>}
+     */
+    count(options = {}) {
+        return this.model.count(QueryOptionsBuilder.toObject(options));
+    }
+
+    /**
      *
-     * @param {object|object[]} records A single record or set of records to upsert
-     * @param {QueryOptionsBuilder|object} options Sequelize query options
+     * @param {Object} record
+     * @param {QueryOptionsBuilder|Object} options
+     * @returns {Promise.<*>} Promise resolves to the inserted record
+     */
+    create(record, options) {
+        return Promise.try(() => {
+            this._validateCreate([record]);
+            return this._preprocessUpsert([record]);
+        }).then(([record]) => {
+            return this.model.create(record, QueryOptionsBuilder.toObject(options));
+        });
+    }
+
+    /**
+     *
+     * @param {Object|Object[]} records A single record or set of records to upsert
+     * @param {QueryOptionsBuilder|Object} options Sequelize query options
      * @returns {Promise<*[]>|Promise.<Array.<*>>}
      */
     upsert(records, options = {}) {
@@ -43,12 +67,13 @@ class AbstractCollection {
             records = [records];
         }
 
-        this._validateCreate(records);
-        return this._preprocessUpsert(records)
-            .then((records) => {
-                options = QueryOptionsBuilder.toObject(options);
-                return this.model.bulkCreate(records, options);
-            });
+        return Promise.try(() => {
+            this._validateCreate(records);
+            return this._preprocessUpsert(records);
+        }).then((records) => {
+            options = QueryOptionsBuilder.toObject(options);
+            return this.model.bulkCreate(records, options);
+        });
     }
 
     /**
@@ -73,12 +98,13 @@ class AbstractCollection {
         if (!isValid) {
             throw ValidationError.create(records, validationResult);
         }
+        return validationResult;
     }
 
     /**
      * Private function for calling findAll sequelize method.
      * This is a good place to enforce required options like limits.
-     * @param {object|QueryOptionsBuilder} options
+     * @param {Object|QueryOptionsBuilder} options
      * @returns {Promise<*[]>}
      * @protected
      */

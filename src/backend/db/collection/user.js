@@ -6,7 +6,6 @@ const clone = require('lodash/clone');
 const bcrypt = require('../../security/bcrypt');
 const Promise = require('bluebird');
 const userValidator = require('../../../shared/validation/model/user-validator');
-const first = require('lodash/first');
 
 class UserCollection extends AbstractCollection {
     /**
@@ -51,10 +50,7 @@ class UserCollection extends AbstractCollection {
         const options = QueryOptionsBuilder.create()
             .where('email_address', email);
 
-        return this._findAll(options)
-            .then((users) => {
-                return first(users);
-            })
+        return this.model.findOne(options.getOptions())
             .then((user) => {
                 if(!user) {
                     return user;
