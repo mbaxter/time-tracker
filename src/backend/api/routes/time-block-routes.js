@@ -1,7 +1,7 @@
 "use strict";
-const BaseRoutes = require('./base-routes');
+const BaseModelRoutes = require('./base-model-routes');
 
-class TimeBlockRoutes extends BaseRoutes {
+class TimeBlockRoutes extends BaseModelRoutes {
     /**
      * Set public routes that do not require authentication
      * @param {express.Router} router

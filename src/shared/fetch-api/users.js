@@ -4,12 +4,12 @@ const FetchApi = require('./fetch-api');
 
 class UsersApi extends FetchApi {
     /**
-     * Posts a single user to the api for creation
-     * @param {Object} user
+     * Submits a single record to be inserted
+     * @param {Object} record
      * @returns {Promise.<Response>}
      */
-    postUser(user) {
-        return this.post("/users", user);
+    insertRecord(record) {
+        return this.post("/users", record);
     }
 }
 

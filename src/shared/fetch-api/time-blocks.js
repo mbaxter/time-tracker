@@ -5,12 +5,12 @@ const FetchApi = require('./fetch-api');
 class TimeBlockApi extends FetchApi {
 
     /**
-     * Posts a single user to the api for creation
-     * @param {Object} timeBlock
+     * Submits a single record to be inserted
+     * @param {Object} record
      * @returns {Promise.<Response>}
      */
-    postTimeBlock(timeBlock) {
-        return this.post("/time-blocks", timeBlock);
+    insertRecord(record) {
+        return this.post("/time-blocks", record);
     }
 }
 

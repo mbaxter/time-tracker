@@ -46,7 +46,7 @@ describe("Api endpoints for handling users", () => {
                             priorUserCount = count;
 
                             // After we get existing count, post a new user
-                            return usersApi.postUser(newUser);
+                            return usersApi.insertRecord(newUser);
                         })
                         .then((res) => {
                             assert.equal(res.url, url, "We should post to the url we're expecting");
@@ -76,7 +76,7 @@ describe("Api endpoints for handling users", () => {
                             priorUserCount = count;
 
                             // After we get existing count, post a new user
-                            return usersApi.postUser(existingUser);
+                            return usersApi.insertRecord(existingUser);
                         })
                         .then((res) => {
                             assert.equal(res.url, url, "We should post to the url we're expecting");
@@ -112,7 +112,7 @@ describe("Api endpoints for handling users", () => {
                                     priorUserCount = count;
 
                                     // After we get existing count, post a new user
-                                    return usersApi.postUser(userData);
+                                    return usersApi.insertRecord(userData);
                                 })
                                 .then((res) => {
                                     assert.equal(res.url, url, "We should post to the url we're expecting");

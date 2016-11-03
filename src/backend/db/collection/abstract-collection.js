@@ -3,6 +3,7 @@ const Schema = require('../schema');
 const QueryOptionsBuilder = require('../query/query-options-builder');
 const ValidationError = require('./error/validation-error');
 const Promise = require('bluebird');
+const NotImplementedError = require('../../error/method-not-implemented-error');
 
 class AbstractCollection {
     constructor() {
@@ -16,11 +17,15 @@ class AbstractCollection {
      * @return {string}
      */
     static get tableName() {
-        throw new Error(`[${this.name}] static tableName getter is not implemented`);
+        throw NotImplementedError.create(`${this.name}.tableName getter`);
     }
 
+    /**
+     * @abstract
+     * @return {ModelValidator}
+     */
     static get validator() {
-        throw new Error(`[${this.name}] static validator getter is not implemented`);
+        throw NotImplementedError.create(`${this.name}.validator getter`);
     }
 
     static create() {
