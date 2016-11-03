@@ -2,12 +2,9 @@
 const FetchApi = require('./fetch-api');
 
 class AuthApi extends FetchApi {
-    _getBasePath() {
-        return "auth";
-    }
 
    login(email, password) {
-       return this.post("login", {
+       return this.post("/auth/login", {
                 email_address: email,
                 password: password
             });

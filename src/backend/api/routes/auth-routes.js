@@ -1,11 +1,11 @@
 "use strict";
 
-const BaseRouterFactory = require('./base-router-factory');
+const BaseRoutes = require('./base-routes');
 const AuthResponseFactory = require('../response/auth-response-factory');
 const UserCollection = require('../../db/collection/user');
 const jwt = require('../../security/jwt');
 
-class AuthRouterFactory extends BaseRouterFactory {
+class AuthRoutes extends BaseRoutes {
     /**
      * Set public routes that do not require authentication
      * @param {express.Router} router
@@ -13,7 +13,7 @@ class AuthRouterFactory extends BaseRouterFactory {
      */
     static setPublicRoutes(router) {
         // Route for posting email, password that should return an auth token on success
-        router.post('/login', (req, res) => {
+        router.post('/auth/login', (req, res) => {
             const email = req.body.email_address || false;
             const password = req.body.password || false;
 
@@ -42,4 +42,4 @@ class AuthRouterFactory extends BaseRouterFactory {
     }
 }
 
-module.exports = AuthRouterFactory;
+module.exports = AuthRoutes;

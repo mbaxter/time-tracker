@@ -1,12 +1,12 @@
 "use strict";
 
-const BaseRouterFactory = require('./base-router-factory');
+const BaseRoutes = require('./base-routes');
 const ModelResponseFactory = require('../response/model-response-factory');
 const collection = require('../../db/collection');
 const isArray = require('lodash/isArray');
 const ValidationError = require('../../db/collection/error/validation-error');
 
-class UserRouterFactory extends BaseRouterFactory {
+class UserRoutes extends BaseRoutes {
     /**
      * Set public routes that do not require authentication
      * @param {express.Router} router
@@ -14,7 +14,7 @@ class UserRouterFactory extends BaseRouterFactory {
      */
     static setPublicRoutes(router) {
         // Post a single user
-        router.post("", (req, res) => {
+        router.post("/users", (req, res) => {
             const user = req.body;
             if (!user || isArray(user)) {
                 // Must supply one user object
@@ -36,15 +36,6 @@ class UserRouterFactory extends BaseRouterFactory {
             });
         });
     }
-
-    /**
-     * Set protected routes that require authentication
-     * @param {express.Router} router
-     * @returns {express.Router}
-     */
-    static setProtectedRoutes(router) {
-        return router;
-    }
 }
 
-module.exports = UserRouterFactory;
+module.exports = UserRoutes;

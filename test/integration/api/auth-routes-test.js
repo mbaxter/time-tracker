@@ -8,9 +8,9 @@ const collection = require('../../../src/backend/db/collection');
 const httpCodes = require('http-status-codes');
 const AuthApi = require('../../../src/shared/fetch-api/auth');
 
-const authApi = AuthApi.create(`http://localhost:${process.env.PORT}`);
+const authApi = AuthApi.create(`http://localhost:${process.env.PORT}/api`);
 
-describe("/auth", () => {
+describe("Api endpoints for authentication", () => {
     before(() => {
         return schema.forceSync();
     });
@@ -19,7 +19,7 @@ describe("/auth", () => {
         return schema.forceSync();
     });
 
-    describe("/login", () => {
+    describe("/auth/login", () => {
         let user1;
         let url;
         before(() => {
@@ -110,7 +110,7 @@ describe("/auth", () => {
                         });
 
                         it("should return a response indicating the request is bad", () => {
-                            return authApi.post("login", data)
+                            return authApi.post("/auth/login", data)
                                 .then((response) => {
                                     assert.equal(response.url, url, "Url should match what we're expecting to test");
                                     assert.equal(response.status, httpCodes.BAD_REQUEST);

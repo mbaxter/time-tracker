@@ -1,24 +1,11 @@
 "use strict";
 const fetch = require('isomorphic-fetch');
-const last = require('lodash/last');
 const urlJoin = require('../util/url/url-join');
 
 class FetchApi {
-    constructor(baseUrl = "/") {
-        this._baseUrl = urlJoin(baseUrl, "api", this._getBasePath());
-        // Remove any trailing slash
-        if (last(this._baseUrl) == "/") {
-            this._baseUrl = this._baseUrl.slice(0,-1);
-        }
-    }
-
-    /**
-     * Subclasses can override this to set a base path like "/users" for example
-     * @returns {string}
-     * @protected
-     */
-    _getBasePath() {
-        return "";
+    constructor(baseUrl = "/", authToken = null) {
+        this._baseUrl = baseUrl;
+        this._authToken = authToken;
     }
 
     static create(baseUrl) {
@@ -46,10 +33,14 @@ class FetchApi {
     }
 
     static getHeaders() {
-        return {
+        const headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         };
+        if (this._authToken) {
+            headers['Authorization'] = `Bearer ${this._authToken}`;
+        }
+        return headers;
     }
 }
 
