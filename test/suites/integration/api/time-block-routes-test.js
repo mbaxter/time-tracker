@@ -14,7 +14,7 @@ const apiUrl = process.env.API_URL;
 const timeBlocksApi = fetchApi.TimeBlocks.create(apiUrl);
 
 describe('Api routes for handling time blocks', () => {
-    // Setup some users with login tokens
+    // Setup some fixtures
     let fixtures;
     before(() => {
         return Fixtures.loadDefaults()

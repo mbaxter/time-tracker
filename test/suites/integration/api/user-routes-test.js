@@ -8,6 +8,7 @@ const httpCodes = require('http-status-codes');
 const Schema = require('../../../../src/backend/db/schema');
 const schema = Schema.getInstance();
 const UsersApi = require('../../../../src/shared/fetch-api/users');
+const Fixtures = require('../../../helpers/fixtures');
 
 const apiUrl = process.env.API_URL;
 const usersApi = UsersApi.create(apiUrl);
@@ -16,16 +17,14 @@ describe("Api endpoints for handling users", () => {
     describe("/users", () => {
         let existingUser;
         let url;
+        // Setup some users with login tokens
+        let fixtures;
         before(() => {
             url = `${apiUrl}/users`;
-            // Insert a user
-            existingUser = {
-                email_address: "testy.mctesterson@test.com",
-                password: "12345678910"
-            };
-            return schema.forceSync()
-                .then(() => {
-                    return collection.User.upsert([existingUser]);
+            return Fixtures.loadDefaults()
+                .then((data) => {
+                    fixtures = data;
+                    existingUser = fixtures.users[0];
                 });
         });
 

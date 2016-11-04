@@ -2,9 +2,9 @@
 // Setup env variables
 require('../../../../src/backend/bootstrap');
 const assert = require("assert");
+const Fixtures = require('../../../helpers/fixtures');
 const Schema = require('../../../../src/backend/db/schema');
 const schema = Schema.getInstance();
-const collection = require('../../../../src/backend/db/collection');
 const httpCodes = require('http-status-codes');
 const AuthApi = require('../../../../src/shared/fetch-api/auth');
 
@@ -12,8 +12,13 @@ const apiUrl = process.env.API_URL;
 const authApi = AuthApi.create(apiUrl);
 
 describe("Api endpoints for authentication", () => {
+    // Setup some fixtures
+    let fixtures;
     before(() => {
-        return schema.forceSync();
+        return Fixtures.loadDefaults()
+            .then((data) => {
+                fixtures = data;
+            });
     });
 
     after(() => {
@@ -21,16 +26,10 @@ describe("Api endpoints for authentication", () => {
     });
 
     describe("/auth/login", () => {
-        let user1;
-        let url;
+        let url, user1;
         before(() => {
+            user1 = fixtures.users[0];
             url = `${apiUrl}/auth/login`;
-            // Insert a user
-            user1 = {
-                email_address: "testy.mctesterson@test.com",
-                password: "12345678910"
-            };
-            return collection.User.upsert([user1]);
         });
 
         describe("post request", () => {
