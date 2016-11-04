@@ -4,6 +4,7 @@ const NotImplementedError = require('../../error/method-not-implemented-error');
 const ModelResponseFactory = require('../response/model-response-factory');
 const isArray = require('lodash/isArray');
 const ValidationError = require('../../db/collection/error/validation-error');
+const QueryOptionsBuilder = require('../../db/query/query-options-builder');
 
 class BaseModelRoutes extends BaseRoutes {
     static get collection() {
@@ -28,6 +29,26 @@ class BaseModelRoutes extends BaseRoutes {
                         return ModelResponseFactory.notFound(res);
                     }
                     ModelResponseFactory.returnRecord(res, record);
+                });
+        };
+    }
+
+    static getRetrieveUserCollectionHandler(userId, limit, offset, queryOptions) {
+        queryOptions = queryOptions || QueryOptionsBuilder.create();
+        queryOptions.limit(limit, offset);
+
+        const collection = this.collection;
+
+        return (req, res) => {
+            if(req.jwt.userId != userId) {
+                return ModelResponseFactory.forbidden(res, {
+                    error: "Attempt to query for records that are not owned by current user."
+                });
+            }
+
+            collection.retrieveAll(queryOptions, limit, offset)
+                .then((records) => {
+                    ModelResponseFactory.returnRecordSet(res, records);
                 });
         };
     }

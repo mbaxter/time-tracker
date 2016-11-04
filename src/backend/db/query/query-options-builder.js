@@ -65,7 +65,10 @@ class QueryOptionsBuilder {
 
     orderBy(fieldName, sortOrder = 'ASC') {
         const options = this._cloneOptions();
-        options.order = [fieldName, sortOrder];
+        if (!options.order) {
+            options.order = [];
+        }
+        options.order.push([fieldName, sortOrder]);
 
         return QueryOptionsBuilder.create(options);
     }

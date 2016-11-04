@@ -1,6 +1,7 @@
 "use strict";
 const BaseModelRoutes = require('./base-model-routes');
 const collection = require('../../db/collection');
+const QueryOptionsBuilder = require('../../db/query/query-options-builder');
 
 class TimeBlockRoutes extends BaseModelRoutes {
     static get collection() {
@@ -25,6 +26,15 @@ class TimeBlockRoutes extends BaseModelRoutes {
     static setProtectedRoutes(router) {
         // Post a single record
         router.post("/time-blocks", this.getInsertRecordHandler(true));
+
+        // Get user's timeBlocks
+        router.get("/users/:userId/time-blocks", (req, res) => {
+            const queryOptions = QueryOptionsBuilder.create()
+                .orderBy('start', 'DESC');
+
+            const handler = this.getRetrieveUserCollectionHandler(req.params.userId, req.params.limit, req.params.offset, queryOptions);
+            handler(req, res);
+        });
 
         return router;
     }

@@ -93,6 +93,13 @@ class AbstractCollection {
         });
     }
 
+    retrieveAll(options = {}, limit = 1000, offset = 0) {
+        options = QueryOptionsBuilder.toBuilder(options);
+        options.limit(limit, offset);
+
+        return this._findAll(options);
+    }
+
     /**
      * Utility method for getting back all records from a table
      * This should never be used in production

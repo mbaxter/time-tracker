@@ -31,4 +31,10 @@ ModelResponseFactory.returnRecord = function(res, record) {
     });
 };
 
+ModelResponseFactory.returnRecordSet = function(res, records) {
+    return res.status(httpCodes.OK).json({
+        records: records
+    });
+};
+
 module.exports = ModelResponseFactory;

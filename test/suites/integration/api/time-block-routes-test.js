@@ -238,7 +238,7 @@ describe('Api routes for handling time blocks', () => {
                    return  timeBlocksApi.getUserRecords(user.id,1000,0)
                         .then((res) => {
                             assert.equal(res.status, httpCodes.FORBIDDEN);
-                            assert.equal(res.url, `${apiUrl}/user/${user.id}/time-blocks?limit=1000&offset=0`);
+                            assert.equal(res.url, `${apiUrl}/users/${user.id}/time-blocks?limit=1000&offset=0`);
                         });
                 });
             });
