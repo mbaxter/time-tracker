@@ -1,9 +1,9 @@
 "use strict";
 require('../bootstrap');
-const loadFixtures = require('../db/fixtures/scripts/load-default-fixtures');
+const defaultFixturesLoader = require('../db/fixtures/loaders/default-fixtures-loader');
 const ValidationError = require('../db/collection/error/validation-error');
 
-loadFixtures()
+defaultFixturesLoader()
     .then(() => {
         console.log('Successfully loaded default db fixtures.');
         process.exit();

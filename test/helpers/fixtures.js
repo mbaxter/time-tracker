@@ -1,5 +1,5 @@
 "use strict";
-const loadFixtures = require('../../src/backend/db/fixtures/scripts/load-default-fixtures');
+const defaultFixturesLoader = require('../../src/backend/db/fixtures/loaders/default-fixtures-loader');
 const userJwt = require('../../src/backend/security/user-jwt');
 const Promise = require('bluebird');
 
@@ -18,7 +18,7 @@ const appendToUserIdToRecordsMap = function(userIdToRecords, userId, collectionN
 };
 
 Fixtures.loadDefaults = function() {
-    return loadFixtures({days: 1})
+    return defaultFixturesLoader({days: 1})
         .then((fixtures) => {
             // Add mapping from userId to valid auth token
             fixtures.userIdToToken = {};
