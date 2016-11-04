@@ -32,55 +32,137 @@ describe('Api routes for handling time blocks', () => {
         before(() => {
             url = `${apiUrl}/time-blocks`;
         });
+
         describe('POST request', () => {
-            let timeBlockData;
+            let timeBlock;
+            let timeBlockUser, otherUser;
             before(() => {
-                const user = fixtures.users[0];
-                timeBlockData = {
-                    user_id: user.id,
+                timeBlockUser = fixtures.users[0];
+                otherUser = fixtures.users[1];
+                timeBlock = {
+                    user_id: timeBlockUser.id,
                     start: DateTimeFormatter.normalize("2016-01-01", "12:00", "UTC"),
                     end: DateTimeFormatter.normalize("2016-01-01", "13:00", "UTC")
                 };
             });
 
             describe('with valid entry', () => {
-                let initialEntryCount;
-                let request;
-                before(() => {
-                    return collection.TimeBlock.count()
-                        .then((count) => {
-                            initialEntryCount = count;
-                        }).then(() => {
-                            timeBlocksApi.authToken = Fixtures.getToken(fixtures, timeBlockData.user_id);
-                            request = timeBlocksApi.insertRecord(timeBlockData);
-                            return request;
-                        });
+
+                describe("and vaild auth token", () => {
+                    it("should succeed and create a new entry", () => {
+                        let initialEntryCount;
+                        return collection.TimeBlock.count()
+                            .then((count) => {
+                                initialEntryCount = count;
+                            })
+                            .then(() => {
+                                timeBlocksApi.authToken = Fixtures.getToken(fixtures, timeBlockUser.id);
+                                return timeBlocksApi.insertRecord(timeBlock);
+                            })
+                            .then((response) => {
+                                assert.ok(response.url, url, "Url we posted to should match our expectation");
+                                assert.equal(response.status, httpCodes.CREATED);
+                                return collection.TimeBlock.count();
+                            }).then((newCount) => {
+                                assert.equal(newCount, initialEntryCount + 1, "TimeBlock record count should increment by 1");
+                            });
+                    });
                 });
-                it("should succeed and create a new entry", () => {
-                    return request.then((response) => {
-                        assert.ok(response.url, url, "Url we posted to should match our expectation");
-                        assert.equal(response.status, httpCodes.CREATED);
-                        return collection.TimeBlock.count();
-                    }).then((newCount) => {
-                        assert.equal(newCount, initialEntryCount + 1, "TimeBlock record count should increment by 1");
+
+                describe("and auth token for wrong user", () => {
+                    it("should fail with a forbidden response", () => {
+                        let initialEntryCount;
+                        return collection.TimeBlock.count()
+                            .then((count) => {
+                                initialEntryCount = count;
+                            })
+                            .then(() => {
+                                timeBlocksApi.authToken = Fixtures.getToken(fixtures, otherUser.id);
+                                return timeBlocksApi.insertRecord(timeBlock);
+                            })
+                            .then((response) => {
+                                assert.ok(response.url, url, "Url we posted to should match our expectation");
+                                assert.equal(response.status, httpCodes.FORBIDDEN);
+                                return collection.TimeBlock.count();
+                            }).then((newCount) => {
+                                assert.equal(newCount, initialEntryCount, "TimeBlock record count should not change");
+                            });
+                    });
+                });
+
+                describe("and no auth token", () => {
+                    it("should fail with a authorization error", () => {
+                        let initialEntryCount;
+                        return collection.TimeBlock.count()
+                            .then((count) => {
+                                initialEntryCount = count;
+                            })
+                            .then(() => {
+                                timeBlocksApi.authToken = null;
+                                return timeBlocksApi.insertRecord(timeBlock);
+                            })
+                            .then((response) => {
+                                assert.ok(response.url, url, "Url we posted to should match our expectation");
+                                assert.equal(response.status, httpCodes.UNAUTHORIZED);
+                                return collection.TimeBlock.count();
+                            }).then((newCount) => {
+                                assert.equal(newCount, initialEntryCount, "TimeBlock record count should not change");
+                            });
                     });
                 });
             });
 
-            describe('with entry fails validation', () => {
-
+            describe('with entry that fails validation', () => {
+                it("should fail", () => {
+                    let initialEntryCount;
+                    return collection.TimeBlock.count()
+                        .then((count) => {
+                            initialEntryCount = count;
+                        })
+                        .then(() => {
+                            const user = fixtures.users[0];
+                            timeBlocksApi.authToken = Fixtures.getToken(fixtures, user.id);
+                            return timeBlocksApi.insertRecord({
+                                user_id: user.id,
+                                start: DateTimeFormatter.normalize("2016-01-01", "12:00", "UTC")
+                                // No end datetime
+                            });
+                        })
+                        .then((response) => {
+                            assert.ok(response.url, url, "Url we posted to should match our expectation");
+                            assert.equal(response.status, httpCodes.BAD_REQUEST);
+                            return collection.TimeBlock.count();
+                        }).then((newCount) => {
+                            assert.equal(newCount, initialEntryCount, "TimeBlock record count should not increment");
+                        });
+                });
             });
 
             describe('with improperly formatted data', () => {
-
-            });
-
-            describe('with no data', () => {
-
-            });
-
-            describe('with valid entry for wrong user', () => {
-
+                it("should fail", () => {
+                    let initialEntryCount;
+                    return collection.TimeBlock.count()
+                        .then((count) => {
+                            initialEntryCount = count;
+                        })
+                        .then(() => {
+                            const user = fixtures.users[0];
+                            timeBlocksApi.authToken = Fixtures.getToken(fixtures, user.id);
+                            // Post an array instead of a single record
+                            return timeBlocksApi.insertRecord([{
+                                user_id: user.id,
+                                start: DateTimeFormatter.normalize("2016-01-01", "12:00", "UTC"),
+                                end: DateTimeFormatter.normalize("2016-01-01", "13:00", "UTC")
+                            }]);
+                        })
+                        .then((response) => {
+                            assert.ok(response.url, url, "Url we posted to should match our expectation");
+                            assert.equal(response.status, httpCodes.BAD_REQUEST);
+                            return collection.TimeBlock.count();
+                        }).then((newCount) => {
+                            assert.equal(newCount, initialEntryCount, "TimeBlock record count should not increment");
+                        });
+                });
             });
         });
     });
