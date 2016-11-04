@@ -2,7 +2,8 @@
 const Sequelize = require("sequelize");
 const UserRole = require('../../../../shared/constants/user-role');
 
-const userDefinition = {
+const userDefinition = {};
+userDefinition.fields = {
     id: {
         type: Sequelize.BIGINT.UNSIGNED,
         field: 'id',
@@ -42,6 +43,8 @@ const userDefinition = {
         defaultValue: "UTC"
     },
 };
+
+userDefinition.instanceMethods = {};
 
 module.exports = userDefinition;
 

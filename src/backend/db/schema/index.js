@@ -20,10 +20,17 @@ class Schema {
     _createTables() {
         for (let tableName of keys(tables)) {
             let definition = tables[tableName];
-            connection.define(tableName, definition, {
+            let table = connection.define(tableName, definition.fields, {
                 freezeTableName: true,
                 underscored: true
             });
+
+            for (let key in definition.instanceMethods) {
+                if (!definition.instanceMethods.hasOwnProperty(key)) {
+                    continue;
+                }
+                table.Instance.prototype[key] = definition.instanceMethods[key];
+            }
         }
     }
 

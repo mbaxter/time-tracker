@@ -1,7 +1,9 @@
 "use strict";
 const Sequelize = require("sequelize");
+const DateTimeFormatter = require('../../../../shared/datetime/format/date-time-formatter');
 
-const timeBlockDefinition = {
+const timeBlockDefinition = {};
+timeBlockDefinition.fields = {
     id: {
         type: Sequelize.BIGINT.UNSIGNED,
         field: 'id',
@@ -27,6 +29,17 @@ const timeBlockDefinition = {
         type: Sequelize.DATE,
         field: 'end',
         allowNull: false
+    }
+};
+
+timeBlockDefinition.instanceMethods = {
+    'toJSON' : function() {
+        return {
+            id: this.id,
+            user_id: this.user_id,
+            start: DateTimeFormatter.normalizeDate(this.start),
+            end: DateTimeFormatter.normalizeDate(this.end)
+        };
     }
 };
 
