@@ -4,6 +4,7 @@ const QueryOptionsBuilder = require('../query/query-options-builder');
 const ValidationError = require('./error/validation-error');
 const Promise = require('bluebird');
 const NotImplementedError = require('../../error/method-not-implemented-error');
+const first = require('lodash/first');
 
 class AbstractCollection {
     constructor() {
@@ -60,6 +61,17 @@ class AbstractCollection {
         });
     }
 
+    retrieveOneById(id, options = {}) {
+        options = QueryOptionsBuilder.toBuilder(options);
+        options = options.where('id', id);
+        options = options.limit(1);
+
+        return this._findAll(options)
+            .then((records) => {
+                return first(records);
+            });
+    }
+
     /**
      *
      * @param {Object|Object[]} records A single record or set of records to upsert
@@ -110,7 +122,7 @@ class AbstractCollection {
      * Private function for calling findAll sequelize method.
      * This is a good place to enforce required options like limits.
      * @param {Object|QueryOptionsBuilder} options
-     * @returns {Promise<*[]>}
+     * @returns {Promise<Object[]>}
      * @protected
      */
     _findAll(options) {

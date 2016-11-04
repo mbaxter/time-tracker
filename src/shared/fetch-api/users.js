@@ -11,6 +11,10 @@ class UsersApi extends FetchApi {
     insertRecord(record) {
         return this.post("/users", record);
     }
+
+    getCurrentUser() {
+        return this.get("/users/me");
+    }
 }
 
 module.exports = UsersApi;

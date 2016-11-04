@@ -14,22 +14,25 @@ const apiUrl = process.env.API_URL;
 const usersApi = UsersApi.create(apiUrl);
 
 describe("Api endpoints for handling users", () => {
+    // Setup some users with login tokens
+    let fixtures;
+    let existingUser;
+    before(() => {
+        return Fixtures.loadDefaults()
+            .then((data) => {
+                fixtures = data;
+                existingUser = fixtures.users[0];
+            });
+    });
+
+    after(() => {
+        return schema.forceSync();
+    });
+
     describe("/users", () => {
-        let existingUser;
         let url;
-        // Setup some users with login tokens
-        let fixtures;
         before(() => {
             url = `${apiUrl}/users`;
-            return Fixtures.loadDefaults()
-                .then((data) => {
-                    fixtures = data;
-                    existingUser = fixtures.users[0];
-                });
-        });
-
-        after(() => {
-            return schema.forceSync();
         });
 
         describe("post request", () => {
@@ -132,34 +135,47 @@ describe("Api endpoints for handling users", () => {
         });
     });
 
-    describe("users/<userId>", () => {
-        describe("GET request", () => {
-            describe("with matching, valid auth token", () => {
-
-            });
-
-            describe("with invalid auth token", () => {
-
-            });
-
-            describe("with no auth token", () => {
-
-            });
-        });
-    });
-
     describe("users/me", () => {
         describe("GET request", () => {
             describe("with valid auth token", () => {
-
+                it("should return the current user", () => {
+                    const user = fixtures.users[0];
+                    usersApi.authToken = Fixtures.getToken(fixtures, user.id);
+                    return usersApi.getCurrentUser()
+                        .then((res) => {
+                            assert.equal(res.status, httpCodes.OK);
+                            assert.equal(res.url, `${apiUrl}/users/me`);
+                            return res.json();
+                        }).then((json) => {
+                            assert.ok(json.record);
+                            assert.equal(json.record.id, user.id);
+                            assert.equal(json.record.email_address, user.email_address);
+                            assert.ok(json.record.password == undefined, "Password shouldn't be sent back");
+                        });
+                });
             });
 
             describe("with invalid auth token", () => {
-
+                it("should fail", () => {
+                    const user = fixtures.users[0];
+                    usersApi.authToken = Fixtures.getToken(fixtures, user.id).slice(1);
+                    return usersApi.getCurrentUser()
+                        .then((res) => {
+                            assert.equal(res.status, httpCodes.UNAUTHORIZED);
+                            assert.equal(res.url, `${apiUrl}/users/me`);
+                        });
+                });
             });
 
             describe("with no auth token", () => {
-
+                it("should fail", () => {
+                    usersApi.authToken = null;
+                    return usersApi.getCurrentUser()
+                        .then((res) => {
+                            assert.equal(res.status, httpCodes.UNAUTHORIZED);
+                            assert.equal(res.url, `${apiUrl}/users/me`);
+                        });
+                });
             });
         });
     });

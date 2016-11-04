@@ -19,6 +19,19 @@ class BaseModelRoutes extends BaseRoutes {
         return recordUserId && this.userIdMatchesCurrentUser(req, recordUserId);
     }
 
+    static getRetrieveByIdHandler(id, queryOptions) {
+        const collection = this.collection;
+        return (req, res) => {
+            collection.retrieveOneById(id, queryOptions)
+                .then((record) => {
+                    if (!record) {
+                        return ModelResponseFactory.notFound(res);
+                    }
+                    ModelResponseFactory.returnRecord(res, record);
+                });
+        };
+    }
+
     /**
      * Returns a request handler that expects the body of the request to be a single json object representing a
      * single new record to be inserted.

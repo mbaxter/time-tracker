@@ -25,4 +25,10 @@ ModelResponseFactory.duplicateConflict = function(res) {
     });
 };
 
+ModelResponseFactory.returnRecord = function(res, record) {
+    return res.status(httpCodes.OK).json({
+        record: record
+    });
+};
+
 module.exports = ModelResponseFactory;
