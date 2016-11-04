@@ -18,7 +18,7 @@ const appendToUserIdToRecordsMap = function(userIdToRecords, userId, collectionN
 };
 
 Fixtures.loadDefaults = function() {
-    return defaultFixturesLoader({days: 1})
+    return defaultFixturesLoader({days: 1, blocksPerDay: [2,2]})
         .then((fixtures) => {
             // Add mapping from userId to valid auth token
             fixtures.userIdToToken = {};
@@ -45,6 +45,12 @@ Fixtures.loadDefaults = function() {
 
 Fixtures.getToken = function(fixtures, userId) {
     return fixtures.userIdToToken[userId];
+};
+
+Fixtures.getUserRecords = function(fixtures, userId, collectionName) {
+    const userRecords = fixtures.userIdToRecords[userId];
+    let records = userRecords ? userRecords[collectionName] : [];
+    return records || [];
 };
 
 module.exports = Fixtures;

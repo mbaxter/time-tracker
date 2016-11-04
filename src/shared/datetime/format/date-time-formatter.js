@@ -1,7 +1,6 @@
 /**
  * DateTimeFormatter handles transforming datetime data from server-side ISO string to a display-friendly format
  * Also handles taking in date & time data in various formats and normalizing to an ISO string
- * @todo - Add isValidForDisplay() and isValidNormalizedValue() methods and tests.  Update tests to use these utilities
  */
 "use strict";
 

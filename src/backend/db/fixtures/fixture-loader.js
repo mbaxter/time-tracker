@@ -71,6 +71,10 @@ FixtureLoader._loadFixtures = function({users = [], timeBlocks = []} = {}) {
             // Upsert timeBlocks
             return collection.TimeBlock.upsert(timeBlocks);
         })
+        .then(() => {
+            // Re-query for time blocks so we can get the ids
+            return collection.TimeBlock.dangerouslyRetrieveAll();
+        })
         .then((newTimeBlocks) => {
             // Transform new timeBlock records into plain objects
             finalFixtures.timeBlocks = newTimeBlocks.map((newTimeBlock) => {

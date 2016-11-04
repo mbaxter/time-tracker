@@ -8,13 +8,15 @@ const TimeFactory = require('../../../../shared/datetime/factory/time-factory');
  * @param {*} options
  * @param {number} options.days
  * @param {number} options.userId
- * @param {string} timezone
+ * @param {string} options.timezone
  * @returns {Array} Returns an array of timeBlock fixtures
  */
 const timeBlockGenerator = function({
     days = 100,
     userId = null,
     timezone = 'UTC',
+    // @todo - clean up api, blocksPerDay is a little awkward and unclear
+    blocksPerDay = [0, 7]
 } = {}) {
     const fixtures = [];
 
@@ -24,7 +26,7 @@ const timeBlockGenerator = function({
 
     let date = DateFactory.today();
     for (let i = 0; i < days; i++) {
-        let numBlocks = getNumBlocks(0,7);
+        let numBlocks = getNumBlocks(... blocksPerDay);
         let time = TimeFactory.fromHourRange(9,11);
         for (let j = 0; j < numBlocks; j++) {
             let blockStart = time;

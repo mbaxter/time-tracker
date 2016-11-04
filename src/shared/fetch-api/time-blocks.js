@@ -12,6 +12,17 @@ class TimeBlocksApi extends FetchApi {
     insertRecord(record) {
         return this.post("/time-blocks", record);
     }
+
+    /**
+     *
+     * @param {int} userId
+     * @param {int} limit
+     * @param {int} offset
+     * @returns {Promise.<Response>}
+     */
+    getUserRecords(userId, limit = 1000, offset = 0) {
+        return this.get(`/users/${userId}/time-blocks?limit=${limit}&offset=${offset}`);
+    }
 }
 
 module.exports = TimeBlocksApi;

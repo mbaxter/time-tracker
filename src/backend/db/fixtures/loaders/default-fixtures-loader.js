@@ -9,12 +9,12 @@ const schema = Schema.getInstance();
 /**
  * @return Promise
  */
-module.exports = function({days = 100} = {}) {
+module.exports = function({days = 100, blocksPerDay = [0,7]} = {}) {
     return schema.forceSync()
         .then(() => {
            // generate TimeBlock fixtures
             const timeBlockChunks = userFixtures.map((user, index) => {
-                return timeBlockGenerator({userId: index, timezone: user.timezone, days:days});
+                return timeBlockGenerator({userId: index, timezone: user.timezone, days:days, blocksPerDay:blocksPerDay});
             });
 
             return Array.prototype.concat.apply([], timeBlockChunks);

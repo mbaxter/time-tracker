@@ -94,6 +94,14 @@ class AbstractCollection {
     }
 
     /**
+     * Utility method for getting back all records from a table
+     * This should never be used in production
+     */
+    dangerouslyRetrieveAll() {
+        return this.model.findAll();
+    }
+
+    /**
      * Stub that does not thing by default.
      * This is a place to modify records before upserting.
      * For example, you could hash plaintext passwords before inserting to the db.
@@ -125,7 +133,7 @@ class AbstractCollection {
      * @returns {Promise<Object[]>}
      * @protected
      */
-    _findAll(options) {
+    _findAll(options = {}) {
         options = QueryOptionsBuilder.toBuilder(options);
         options.enforceLimit();
         return this.model.findAll(options.getOptions());

@@ -8,6 +8,7 @@ const Fixtures = require('../../../helpers/fixtures');
 
 const fetchApi = require('../../../../src/shared/fetch-api');
 const DateTimeFormatter = require('../../../../src/shared/datetime/format/date-time-formatter');
+const orderBy = require('lodash/orderBy');
 
 const schema = Schema.getInstance();
 const apiUrl = process.env.API_URL;
@@ -168,17 +169,78 @@ describe('Api routes for handling time blocks', () => {
     });
 
 
-    describe('/user/<userId>/time-blocks', () => {
+    describe('/users/<userId>/time-blocks', () => {
         describe("GET request", () => {
-            describe("with valid auth token", () => {
-
+            let user, otherUser;
+            let expectedRecords;
+            before(() => {
+                user = fixtures.users[0];
+                otherUser = fixtures.users[1];
+                expectedRecords = Fixtures.getUserRecords(fixtures, user.id, "timeBlocks");
+                // Expect records to come in descending order by start field
+                expectedRecords = orderBy(expectedRecords, 'start', 'desc');
             });
-            describe("with no auth token", () => {
+            describe("with valid auth token", () => {
+                describe("with no offset", () => {
+                    it("should return all records successfully", () => {
+                        timeBlocksApi.authToken = Fixtures.getToken(fixtures, user.id, 1000, 0);
+                        return timeBlocksApi.getUserRecords(user.id)
+                            .then((res) => {
+                                assert.equal(res.status, httpCodes.OK);
+                                assert.equal(res.url, `${apiUrl}/users/${user.id}/time-blocks?limit=1000&offset=0`);
+                                return res.json();
+                            }).then((json) => {
+                            assert.deepEqual(json.records, expectedRecords);
+                        });
+                    });
+                });
 
+                describe("with offset and small limit", () => {
+                    it("should return a subset of records successfully", () => {
+                        timeBlocksApi.authToken = Fixtures.getToken(fixtures, user.id);
+                        return timeBlocksApi.getUserRecords(user.id,1,1)
+                            .then((res) => {
+                                assert.equal(res.status, httpCodes.OK);
+                                assert.equal(res.url, `${apiUrl}/users/${user.id}/time-blocks?limit=1&offset=1`);
+                                return res.json();
+                            }).then((json) => {
+                            assert.deepEqual(json.records, expectedRecords.slice(1,2));
+                        });
+                    });
+                });
+            });
+
+            describe("with no auth token", () => {
+                it("should fail with unauthorized error", () => {
+                    timeBlocksApi.authToken = null;
+                    return timeBlocksApi.getUserRecords(user.id,1000,0)
+                        .then((res) => {
+                            assert.equal(res.status, httpCodes.UNAUTHORIZED);
+                            assert.equal(res.url, `${apiUrl}/users/${user.id}/time-blocks?limit=1000&offset=0`);
+                        });
+                });
             });
 
             describe("with invalid auth token", () => {
+                it("should fail with unauthorized error", () => {
+                    timeBlocksApi.authToken = "X";
+                    return timeBlocksApi.getUserRecords(user.id,1000,0)
+                        .then((res) => {
+                            assert.equal(res.status, httpCodes.UNAUTHORIZED);
+                            assert.equal(res.url, `${apiUrl}/users/${user.id}/time-blocks?limit=1000&offset=0`);
+                        });
+                });
+            });
 
+            describe("with wrong auth token", () => {
+                it("should fail with forbidden error", () => {
+                    timeBlocksApi.authToken = Fixtures.getToken(fixtures, otherUser.id);
+                   return  timeBlocksApi.getUserRecords(user.id,1000,0)
+                        .then((res) => {
+                            assert.equal(res.status, httpCodes.FORBIDDEN);
+                            assert.equal(res.url, `${apiUrl}/user/${user.id}/time-blocks?limit=1000&offset=0`);
+                        });
+                });
             });
         });
     });
