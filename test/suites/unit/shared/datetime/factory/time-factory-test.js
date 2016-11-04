@@ -1,6 +1,6 @@
 "use strict";
 const assert = require('assert');
-const TimeFactory = require('../../../../../src/shared/datetime/factory/time-factory');
+const TimeFactory = require('../../../../../../src/shared/datetime/factory/time-factory');
 const uniq = require('lodash/uniq');
 
 describe("TimeFactory", () => {

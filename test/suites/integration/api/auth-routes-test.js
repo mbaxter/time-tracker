@@ -1,14 +1,15 @@
 "use strict";
 // Setup env variables
-require('../../../src/backend/bootstrap');
+require('../../../../src/backend/bootstrap');
 const assert = require("assert");
-const Schema = require('../../../src/backend/db/schema');
+const Schema = require('../../../../src/backend/db/schema');
 const schema = Schema.getInstance();
-const collection = require('../../../src/backend/db/collection');
+const collection = require('../../../../src/backend/db/collection');
 const httpCodes = require('http-status-codes');
-const AuthApi = require('../../../src/shared/fetch-api/auth');
+const AuthApi = require('../../../../src/shared/fetch-api/auth');
 
-const authApi = AuthApi.create(`http://localhost:${process.env.PORT}/api`);
+const apiUrl = process.env.API_URL;
+const authApi = AuthApi.create(apiUrl);
 
 describe("Api endpoints for authentication", () => {
     before(() => {
@@ -23,7 +24,7 @@ describe("Api endpoints for authentication", () => {
         let user1;
         let url;
         before(() => {
-            url = `http://localhost:${process.env.PORT}/api/auth/login`;
+            url = `${apiUrl}/auth/login`;
             // Insert a user
             user1 = {
                 email_address: "testy.mctesterson@test.com",

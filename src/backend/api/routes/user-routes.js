@@ -15,7 +15,7 @@ class UserRoutes extends BaseModelRoutes {
      */
     static setPublicRoutes(router) {
         // Post a single user
-        router.post("/users", this.getInsertRecordHandler());
+        router.post("/users", this.getInsertRecordHandler(false));
     }
 }
 

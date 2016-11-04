@@ -32,8 +32,12 @@ ResponseFactory.notImplemented = function(res) {
     return res.status(httpCodes.NOT_IMPLEMENTED).end();
 };
 
-ResponseFactory.forbidden = function(res) {
-    return res.status(httpCodes.FORBIDDEN).end();
+ResponseFactory.forbidden = function(res, data) {
+    if (data) {
+        return res.status(httpCodes.FORBIDDEN).json(data);
+    } else {
+        return res.status(httpCodes.FORBIDDEN).end();
+    }
 };
 
 module.exports = ResponseFactory;

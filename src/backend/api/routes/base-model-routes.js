@@ -10,12 +10,21 @@ class BaseModelRoutes extends BaseRoutes {
         throw NotImplementedError.create(`${this.name}.collection getter`);
     }
 
+    static userIdMatchesCurrentUser(req, userId) {
+        return req.jwt && req.jwt.userId == userId;
+    }
+
+    static recordBelongsToCurrentUser(req, record, userField = 'user_id') {
+        const recordUserId = record ? record[userField] : null;
+        return recordUserId && this.userIdMatchesCurrentUser(req, recordUserId);
+    }
+
     /**
      * Returns a request handler that expects the body of the request to be a single json object representing a
      * single new record to be inserted.
      * @returns {function}
      */
-    static getInsertRecordHandler() {
+    static getInsertRecordHandler(checkOwnership = true) {
         const collection = this.collection;
         return (req, res) => {
             const record = req.body;
@@ -24,6 +33,13 @@ class BaseModelRoutes extends BaseRoutes {
                 // Batch upsert (array of users) is not supported
                 return ModelResponseFactory.badRequest(res, {
                     error: "Must supply a single record."
+                });
+            }
+
+            if (checkOwnership && !this.recordBelongsToCurrentUser(req, record)) {
+                // Attempt to update other users records is forbidden
+                return ModelResponseFactory.forbidden(res, {
+                    error: "Attempt to insert record that is not owned by current user."
                 });
             }
 

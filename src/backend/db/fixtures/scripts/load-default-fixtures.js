@@ -9,20 +9,20 @@ const schema = Schema.getInstance();
 /**
  * @return Promise
  */
-module.exports = function() {
+module.exports = function({days = 100} = {}) {
     return schema.forceSync()
         .then(() => {
            // generate TimeBlock fixtures
             const timeBlockChunks = userFixtures.map((user, index) => {
-                return timeBlockGenerator({userId: index, timezone: user.timezone, days:100});
+                return timeBlockGenerator({userId: index, timezone: user.timezone, days:days});
             });
 
             return Array.prototype.concat.apply([], timeBlockChunks);
         })
         .then((timeBlocks) => {
             return {
-                user: userFixtures,
-                time_block: timeBlocks
+                users: userFixtures,
+                timeBlocks: timeBlocks
             };
         })
         .then((fixtures) => {

@@ -3,7 +3,7 @@
 const BaseRoutes = require('./base-routes');
 const AuthResponseFactory = require('../response/auth-response-factory');
 const UserCollection = require('../../db/collection/user');
-const jwt = require('../../security/jwt');
+const userJwt = require('../../security/user-jwt');
 
 class AuthRoutes extends BaseRoutes {
     /**
@@ -28,12 +28,10 @@ class AuthRoutes extends BaseRoutes {
                         return AuthResponseFactory.invalidCredentials(res);
                     }
 
-                    return jwt.sign({
-                        userId: user.id,
-                        role: user.role
-                    }).then((jwtToken) => {
-                        return AuthResponseFactory.authToken(res, jwtToken);
-                    });
+                    return userJwt.sign(user)
+                        .then((jwtToken) => {
+                            return AuthResponseFactory.authToken(res, jwtToken);
+                        });
                 })
                 .catch((err) => {
                     return AuthResponseFactory.internalError(res, err);

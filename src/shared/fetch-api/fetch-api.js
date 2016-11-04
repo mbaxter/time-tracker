@@ -8,6 +8,14 @@ class FetchApi {
         this._authToken = authToken;
     }
 
+    set authToken(token) {
+        this._authToken = token;
+    }
+
+    clearAuthToken() {
+        this._authToken = null;
+    }
+
     static create(baseUrl) {
         return new this(baseUrl);
     }
@@ -22,7 +30,7 @@ class FetchApi {
 
     makeRequest(path, method="GET", data) {
         const options = {};
-        options.headers = this.constructor.getHeaders();
+        options.headers = this.getHeaders();
         options.method = method;
         if (data) {
             options.body = JSON.stringify(data);
@@ -32,7 +40,7 @@ class FetchApi {
         return fetch(url, options);
     }
 
-    static getHeaders() {
+    getHeaders() {
         const headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'

@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require('assert');
-const urlJoin = require('../../../../../src/shared/util/url/url-join');
+const urlJoin = require('../../../../../../src/shared/util/url/url-join');
 
 describe("urlJoin()", () => {
     const testCases = [

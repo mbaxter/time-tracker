@@ -1,22 +1,23 @@
 "use strict";
 // Setup env variables
-require('../../../src/backend/bootstrap');
+require('../../../../src/backend/bootstrap');
 const assert = require("assert");
 const clone = require('lodash/clone');
-const collection = require('../../../src/backend/db/collection');
+const collection = require('../../../../src/backend/db/collection');
 const httpCodes = require('http-status-codes');
-const Schema = require('../../../src/backend/db/schema');
+const Schema = require('../../../../src/backend/db/schema');
 const schema = Schema.getInstance();
-const UsersApi = require('../../../src/shared/fetch-api/users');
+const UsersApi = require('../../../../src/shared/fetch-api/users');
 
-const usersApi = UsersApi.create(`http://localhost:${process.env.PORT}/api`);
+const apiUrl = process.env.API_URL;
+const usersApi = UsersApi.create(apiUrl);
 
 describe("Api endpoints for handling users", () => {
     describe("/users", () => {
         let existingUser;
         let url;
         before(() => {
-            url = `http://localhost:${process.env.PORT}/api/users`;
+            url = `${apiUrl}/users`;
             // Insert a user
             existingUser = {
                 email_address: "testy.mctesterson@test.com",

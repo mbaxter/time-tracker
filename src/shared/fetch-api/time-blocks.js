@@ -2,7 +2,7 @@
 
 const FetchApi = require('./fetch-api');
 
-class TimeBlockApi extends FetchApi {
+class TimeBlocksApi extends FetchApi {
 
     /**
      * Submits a single record to be inserted
@@ -14,4 +14,4 @@ class TimeBlockApi extends FetchApi {
     }
 }
 
-module.exports = TimeBlockApi;
+module.exports = TimeBlocksApi;

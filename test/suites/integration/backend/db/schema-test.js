@@ -1,8 +1,8 @@
 "use strict";
 // Setup env variables
-require('../../../../src/backend/bootstrap');
+require('../../../../../src/backend/bootstrap');
 const assert = require('assert');
-const Schema = require('../../../../src/backend/db/schema');
+const Schema = require('../../../../../src/backend/db/schema');
 const mysql = require('promise-mysql');
 const values = require('lodash/values');
 
