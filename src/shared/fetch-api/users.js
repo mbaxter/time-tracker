@@ -16,6 +16,10 @@ class UsersApi extends FetchApi {
         return this.patch(`/users/${id}`, fields);
     }
 
+    deleteRecord(id) {
+        return this.del(`/users/${id}`);
+    }
+
     getCurrentUser() {
         return this.get("/users/me");
     }

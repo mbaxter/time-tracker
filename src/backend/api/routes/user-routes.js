@@ -45,6 +45,14 @@ class UserRoutes extends BaseModelRoutes {
             standardHandler(req, res);
         });
 
+        // Delete user record
+        router.delete("/users/:userId", (req, res) => {
+            const id = req.params.userId;
+
+            let standardHandler = this.getDeleteByIdHandler(id);
+            standardHandler(req, res);
+        });
+
         return router;
     }
 }

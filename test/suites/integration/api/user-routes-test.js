@@ -9,6 +9,7 @@ const Schema = require('../../../../src/backend/db/schema');
 const schema = Schema.getInstance();
 const UsersApi = require('../../../../src/shared/fetch-api/users');
 const Fixtures = require('../../../helpers/fixtures');
+const QueryOptionsBuilder = require('../../../../src/backend/db/query/query-options-builder');
 
 const apiUrl = process.env.API_URL;
 const usersApi = UsersApi.create(apiUrl);
@@ -200,6 +201,121 @@ describe("Api endpoints for handling users", () => {
                         .then((res) => {
                             assert.equal(res.url, `${apiUrl}/users/${standardUser.id}`);
                             assert.equal(res.status, httpCodes.UNAUTHORIZED);
+                        });
+                });
+            });
+        });
+
+        describe("DELETE request", () => {
+            let standardTimeBlocks;
+            before(() => {
+                standardTimeBlocks = Fixtures.getUserRecords(fixtures, standardUser.id, 'timeBlocks');
+            });
+            describe("with id matching authToken user", () => {
+                it("should successfully delete the record and its child records", () => {
+                    let userId = standardUser.id;
+                    usersApi.authToken = standardToken;
+                    let initialCount;
+                    return collection.User.count()
+                        .then((count) => {
+                            initialCount = count;
+                            return usersApi.deleteRecord(userId);
+                        }).then((res) => {
+                            assert.equal(res.url, `${apiUrl}/users/${userId}`);
+                            assert.equal(res.status, httpCodes.OK);
+                            return collection.User.count();
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialCount - 1, "One record should be deleted");
+                            return collection.TimeBlock.count(QueryOptionsBuilder.create().where('user_id',userId));
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, 0, "All owned timeBlocks should be deleted");
+                        });
+                });
+            });
+
+            describe("with admin authToken and id belonging to different user", () => {
+                it("should successfully delete the record", () => {
+                    let userId = standardUser.id;
+                    usersApi.authToken = adminToken;
+                    let initialCount;
+                    return collection.User.count()
+                        .then((count) => {
+                            initialCount = count;
+                            return usersApi.deleteRecord(userId);
+                        }).then((res) => {
+                            assert.equal(res.url, `${apiUrl}/users/${userId}`);
+                            assert.equal(res.status, httpCodes.OK);
+                            return collection.User.count();
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialCount - 1, "One record should be deleted");
+                            return collection.TimeBlock.count(QueryOptionsBuilder.create().where('user_id',userId));
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, 0, "All owned timeBlocks should be deleted");
+                        });
+                });
+            });
+
+            describe("with standard authToken and id belonging to different user", () => {
+                it("should fail with a 'Not Found' error", () => {
+                    let userId = adminUser.id;
+                    usersApi.authToken = standardToken;
+                    let initialCount;
+                    let initialTimeBlockCount = standardTimeBlocks.length;
+                    return collection.User.count()
+                        .then((count) => {
+                            initialCount = count;
+                            return usersApi.deleteRecord(userId);
+                        }).then((res) => {
+                            assert.equal(res.url, `${apiUrl}/users/${userId}`);
+                            assert.equal(res.status, httpCodes.FORBIDDEN);
+                            return collection.User.count();
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialCount, "No records should be deleted");
+                            return collection.TimeBlock.count(QueryOptionsBuilder.create().where('user_id',userId));
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialTimeBlockCount, "No timeBlocks should be deleted");
+                        });
+                });
+            });
+
+            describe("with valid authToken and non-existent userId", () => {
+                it ("should fail with a 'Not Found' error", () => {
+                    let userId = 999999;
+                    usersApi.authToken = standardToken;
+                    let initialCount;
+                    return collection.User.count()
+                        .then((count) => {
+                            initialCount = count;
+                            return usersApi.deleteRecord(userId);
+                        }).then((res) => {
+                            assert.equal(res.url, `${apiUrl}/users/${userId}`);
+                            assert.equal(res.status, httpCodes.NOT_FOUND);
+                            return collection.User.count();
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialCount, "No records should be deleted");
+                        });
+                });
+            });
+
+            describe("with no authToken", () => {
+                it("should fail with an 'Unauthorized' error", () => {
+                    let userId = standardUser.id;
+                    usersApi.authToken = null;
+                    let initialCount;
+                    let initialTimeBlockCount = standardTimeBlocks.length;
+                    return collection.User.count()
+                        .then((count) => {
+                            initialCount = count;
+                            return usersApi.deleteRecord(userId);
+                        }).then((res) => {
+                            assert.equal(res.url, `${apiUrl}/users/${userId}`);
+                            assert.equal(res.status, httpCodes.UNAUTHORIZED);
+                            return collection.User.count();
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialCount, "No records should be deleted");
+                            return collection.TimeBlock.count(QueryOptionsBuilder.create().where('user_id',userId));
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialTimeBlockCount, "No timeBlocks should be deleted");
                         });
                 });
             });

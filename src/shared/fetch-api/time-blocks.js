@@ -17,8 +17,8 @@ class TimeBlocksApi extends FetchApi {
         return this.patch(`/time-blocks/${id}`, fields);
     }
 
-    deleteRecord(id, fields) {
-        return this.del(`/time-blocks/${id}`, fields);
+    deleteRecord(id) {
+        return this.del(`/time-blocks/${id}`);
     }
 
     /**
