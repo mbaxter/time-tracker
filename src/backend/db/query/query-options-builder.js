@@ -49,12 +49,13 @@ class QueryOptionsBuilder {
 
     limit(limit = 1000, offset = 0) {
         const options = this._cloneOptions();
-        options.limit = limit;
-        options.offset = offset;
+        options.limit = parseInt(limit, 10) || 1000;
+        options.offset = parseInt(offset,10) || 0;
         return QueryOptionsBuilder.create(options);
     }
 
     enforceLimit(limit = 1000) {
+        limit = parseInt(limit, 10) || 1000;
         const options = this._cloneOptions();
         if (!options.limit || options.limit > limit) {
             options.limit = limit;

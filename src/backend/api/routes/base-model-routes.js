@@ -35,7 +35,7 @@ class BaseModelRoutes extends BaseRoutes {
 
     static getRetrieveUserCollectionHandler(userId, limit, offset, queryOptions) {
         queryOptions = queryOptions || QueryOptionsBuilder.create();
-        queryOptions.limit(limit, offset);
+        queryOptions = queryOptions.where('user_id', userId);
 
         const collection = this.collection;
 

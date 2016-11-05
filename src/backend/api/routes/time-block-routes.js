@@ -31,8 +31,10 @@ class TimeBlockRoutes extends BaseModelRoutes {
         router.get("/users/:userId/time-blocks", (req, res) => {
             const queryOptions = QueryOptionsBuilder.create()
                 .orderBy('start', 'DESC');
+            const limit = req.query.limit;
+            const offset = req.query.offset;
 
-            const handler = this.getRetrieveUserCollectionHandler(req.params.userId, req.params.limit, req.params.offset, queryOptions);
+            const handler = this.getRetrieveUserCollectionHandler(req.params.userId, limit, offset, queryOptions);
             handler(req, res);
         });
 

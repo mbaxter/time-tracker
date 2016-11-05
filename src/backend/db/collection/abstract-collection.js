@@ -95,7 +95,7 @@ class AbstractCollection {
 
     retrieveAll(options = {}, limit = 1000, offset = 0) {
         options = QueryOptionsBuilder.toBuilder(options);
-        options.limit(limit, offset);
+        options = options.limit(limit, offset);
 
         return this._findAll(options);
     }
@@ -142,7 +142,7 @@ class AbstractCollection {
      */
     _findAll(options = {}) {
         options = QueryOptionsBuilder.toBuilder(options);
-        options.enforceLimit();
+        options = options.enforceLimit();
         return this.model.findAll(options.getOptions());
     }
 }

@@ -15,23 +15,19 @@ const apiUrl = process.env.API_URL;
 const timeBlocksApi = fetchApi.TimeBlocks.create(apiUrl);
 
 describe('Api routes for handling time blocks', () => {
-    // Setup some fixtures
-    let fixtures;
-    before(() => {
-        return Fixtures.loadDefaults()
-            .then((data) => {
-                fixtures = data;
-            });
-    });
-
     after(() => {
         return schema.forceSync();
     });
 
     describe("/time-blocks", () => {
-        let url;
+        // Setup some fixtures
+        let fixtures, url;
         before(() => {
             url = `${apiUrl}/time-blocks`;
+            return Fixtures.loadDefaults()
+                .then((data) => {
+                    fixtures = data;
+                });
         });
 
         describe('POST request', () => {
@@ -170,6 +166,15 @@ describe('Api routes for handling time blocks', () => {
 
 
     describe('/users/<userId>/time-blocks', () => {
+        // Setup some fixtures
+        let fixtures;
+        before(() => {
+            return Fixtures.loadDefaults()
+                .then((data) => {
+                    fixtures = data;
+                });
+        });
+
         describe("GET request", () => {
             let user, otherUser;
             let expectedRecords;
