@@ -101,7 +101,11 @@ class BaseModelRoutes extends BaseRoutes {
                 .then((record) => {
                     const fields = req.body;
 
-                    if(!isPlainObject(fields) || isEmpty(fields)) {
+                    if (!isPlainObject(fields) || isEmpty(fields)) {
+                        return ModelResponseFactory.badRequest(res);
+                    }
+                    // Don't allow id or user id to be modified
+                    if ((fields.id && fields.id != id ) || fields.user_id && fields.user_id != record.user_id) {
                         return ModelResponseFactory.badRequest(res);
                     }
 

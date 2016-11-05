@@ -13,6 +13,10 @@ class TimeBlocksApi extends FetchApi {
         return this.post("/time-blocks", record);
     }
 
+    updateRecord(id, fields) {
+        return this.patch(`/time-blocks/${id}`, fields);
+    }
+
     /**
      *
      * @param {int} userId

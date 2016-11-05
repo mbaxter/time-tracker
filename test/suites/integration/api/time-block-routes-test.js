@@ -195,8 +195,8 @@ describe('Api routes for handling time blocks', () => {
                                 assert.equal(res.url, `${apiUrl}/users/${user.id}/time-blocks?limit=1000&offset=0`);
                                 return res.json();
                             }).then((json) => {
-                            assert.deepEqual(json.records, expectedRecords);
-                        });
+                                assert.deepEqual(json.records, expectedRecords);
+                            });
                     });
                 });
 
@@ -209,8 +209,8 @@ describe('Api routes for handling time blocks', () => {
                                 assert.equal(res.url, `${apiUrl}/users/${user.id}/time-blocks?limit=1&offset=1`);
                                 return res.json();
                             }).then((json) => {
-                            assert.deepEqual(json.records, expectedRecords.slice(1,2));
-                        });
+                                assert.deepEqual(json.records, expectedRecords.slice(1,2));
+                            });
                     });
                 });
             });
@@ -240,7 +240,7 @@ describe('Api routes for handling time blocks', () => {
             describe("with wrong auth token", () => {
                 it("should fail with forbidden error", () => {
                     timeBlocksApi.authToken = Fixtures.getToken(fixtures, otherUser.id);
-                   return  timeBlocksApi.getUserRecords(user.id,1000,0)
+                    return  timeBlocksApi.getUserRecords(user.id,1000,0)
                         .then((res) => {
                             assert.equal(res.status, httpCodes.FORBIDDEN);
                             assert.equal(res.url, `${apiUrl}/users/${user.id}/time-blocks?limit=1000&offset=0`);
@@ -249,4 +249,109 @@ describe('Api routes for handling time blocks', () => {
             });
         });
     });
+
+    describe('/time-blocks/<id>', () => {
+        // Setup some fixtures
+        let fixtures, adminUser, standardUser, adminToken, standardToken, adminTimeBlocks, standardTimeBlocks;
+        beforeEach(() => {
+            return Fixtures.loadDefaults()
+                .then((data) => {
+                    fixtures = data;
+                    adminUser = fixtures.users[0];
+                    standardUser = fixtures.users[1];
+                    adminToken = Fixtures.getToken(fixtures, adminUser.id);
+                    standardToken = Fixtures.getToken(fixtures, standardUser.id);
+                    adminTimeBlocks = Fixtures.getUserRecords(fixtures, adminUser.id, 'timeBlocks');
+                    standardTimeBlocks = Fixtures.getUserRecords(fixtures, standardUser.id, 'timeBlocks');
+                });
+        });
+
+        describe("PATCH request", () => {
+            describe("with timeBlockId matching authToken user", () => {
+                it("should successfully update the record", () => {
+                    let newDate = DateTimeFormatter.normalizeDate(new Date());
+                    let timeBlockId = standardTimeBlocks[0].id;
+                    timeBlocksApi.authToken = standardToken;
+                    return timeBlocksApi.updateRecord(timeBlockId, {end: newDate})
+                        .then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.OK);
+                            return res.json();
+                        }).then((json) => {
+                            assert.ok(json.record);
+                            assert.equal(json.record.end, newDate);
+                        });
+                });
+            });
+
+            describe("with admin authToken and timeBlockId belonging to different user", () => {
+                it("should successfully update the record", () => {
+                    let newDate = DateTimeFormatter.normalizeDate(new Date());
+                    let timeBlockId = standardTimeBlocks[0].id;
+                    timeBlocksApi.authToken = adminToken;
+                    return timeBlocksApi.updateRecord(timeBlockId, {end: newDate})
+                        .then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.OK);
+                            return res.json();
+                        }).then((json) => {
+                            assert.ok(json.record);
+                            assert.equal(json.record.end, newDate);
+                        });
+                });
+            });
+
+            describe("with standard authToken and timeBlockId belonging to different user", () => {
+                it("should fail with a 'Not Found' error", () => {
+                    let newDate = DateTimeFormatter.normalizeDate(new Date());
+                    let timeBlockId = adminTimeBlocks[0].id;
+                    timeBlocksApi.authToken = standardToken;
+                    return timeBlocksApi.updateRecord(timeBlockId, {end: newDate})
+                        .then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.FORBIDDEN);
+                        });
+                });
+            });
+
+            describe("with valid authToken and non-existent timeBlockId", () => {
+                it ("should fail with a 'Not Found' error", () => {
+                    let newDate = DateTimeFormatter.normalizeDate(new Date());
+                    let timeBlockId = 999999;
+                    timeBlocksApi.authToken = standardToken;
+                    return timeBlocksApi.updateRecord(timeBlockId, {end: newDate})
+                        .then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.NOT_FOUND);
+                        });
+                });
+            });
+
+            describe("with no authToken", () => {
+                it("should fail with an 'Unauthorized' error", () => {
+                    let newDate = DateTimeFormatter.normalizeDate(new Date());
+                    let timeBlockId = standardTimeBlocks[0].id;
+                    timeBlocksApi.authToken = null;
+                    return timeBlocksApi.updateRecord(timeBlockId, {end: newDate})
+                        .then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.UNAUTHORIZED);
+                        });
+                });
+            });
+
+            describe("with admin authToken and a payload that updates userId", () => {
+                it("should fail with a 'Bad Request' error", () => {
+                    let timeBlockId = adminTimeBlocks[0].id;
+                    timeBlocksApi.authToken = adminToken;
+                    return timeBlocksApi.updateRecord(timeBlockId, {user_id: standardUser.id})
+                        .then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.BAD_REQUEST);
+                        });
+                });
+            });
+        });
+    });
+
 });

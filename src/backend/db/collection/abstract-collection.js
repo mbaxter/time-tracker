@@ -5,6 +5,8 @@ const ValidationError = require('./error/validation-error');
 const Promise = require('bluebird');
 const NotImplementedError = require('../../error/method-not-implemented-error');
 const first = require('lodash/first');
+const defaults = require('lodash/defaults');
+const omit = require('lodash/omit');
 
 class AbstractCollection {
     constructor() {
@@ -58,7 +60,8 @@ class AbstractCollection {
      */
     updateRecord(record, data) {
         return Promise.try(() => {
-            this._validateUpdate([data]);
+            const fullUpdate = defaults(data, omit(record.toJSON(), ['id','created_at', 'updated_at']));
+            this._validateUpdate([fullUpdate]);
             return this._preprocessUpsert([data]);
         }).then(([data]) => {
             return record.update(data);

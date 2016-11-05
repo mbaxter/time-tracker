@@ -27,6 +27,14 @@ class TimeBlockRoutes extends BaseModelRoutes {
         // Post a single record
         router.post("/time-blocks", this.getInsertRecordHandler());
 
+        // Update a record
+        router.patch("/time-blocks/:id", (req, res) => {
+            const id = req.params.id;
+
+            let standardHandler = this.getUpdateByIdHandler(id);
+            standardHandler(req, res);
+        });
+
         // Get user's timeBlocks
         router.get("/users/:userId/time-blocks", (req, res) => {
             const queryOptions = QueryOptionsBuilder.create()
