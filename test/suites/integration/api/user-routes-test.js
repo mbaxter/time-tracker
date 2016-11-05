@@ -14,25 +14,21 @@ const apiUrl = process.env.API_URL;
 const usersApi = UsersApi.create(apiUrl);
 
 describe("Api endpoints for handling users", () => {
-    // Setup some users with login tokens
-    let fixtures;
-    let existingUser;
-    before(() => {
-        return Fixtures.loadDefaults()
-            .then((data) => {
-                fixtures = data;
-                existingUser = fixtures.users[0];
-            });
-    });
-
     after(() => {
         return schema.forceSync();
     });
 
     describe("/users", () => {
         let url;
+        let fixtures;
+        let existingUser;
         before(() => {
             url = `${apiUrl}/users`;
+            return Fixtures.loadDefaults()
+                .then((data) => {
+                    fixtures = data;
+                    existingUser = fixtures.users[0];
+                });
         });
 
         describe("post request", () => {
@@ -67,6 +63,9 @@ describe("Api endpoints for handling users", () => {
                         .then((actualUser) => {
                             assert.ok(actualUser);
                             assert.equal(actualUser.email_address, newUser.email_address);
+                            // Make sure password was hashed
+                            assert.ok(actualUser.password);
+                            assert.notEqual(actualUser.password, newUser.password);
                         });
                 });
             });
@@ -135,7 +134,87 @@ describe("Api endpoints for handling users", () => {
         });
     });
 
+    describe("users/id", () => {
+        let fixtures, adminUser, standardUser, adminToken, standardToken;
+        beforeEach(() => {
+            return Fixtures.loadDefaults()
+                .then((data) => {
+                    fixtures = data;
+                    adminUser = fixtures.users[0];
+                    standardUser = fixtures.users[1];
+                    adminToken = Fixtures.getToken(fixtures, adminUser.id);
+                    standardToken = Fixtures.getToken(fixtures, standardUser.id);
+                });
+        });
+
+        describe("PATCH request", () => {
+            describe("against standard user with that user's auth token", () => {
+                 it("should successfully update the user", () => {
+                     const newEmail = "new.email@test.com";
+                     usersApi.authToken = standardToken;
+                     return usersApi.updateRecord(standardUser.id, {email_address: newEmail})
+                         .then((res) => {
+                             assert.equal(res.url, `${apiUrl}/users/${standardUser.id}`);
+                             assert.equal(res.status, httpCodes.OK);
+                             return res.json();
+                         }).then((json) => {
+                             assert.ok(json.record && json.record.email_address);
+                             assert.equal(json.record.email_address, newEmail);
+                         });
+                 });
+            });
+
+            describe("against standard user with an admin's auth token", () => {
+                it("should successfully update the user", () => {
+                    const newEmail = "new.email@test.com";
+                    usersApi.authToken = adminToken;
+                    return usersApi.updateRecord(standardUser.id, {email_address: newEmail})
+                        .then((res) => {
+                            assert.equal(res.url, `${apiUrl}/users/${standardUser.id}`);
+                            assert.equal(res.status, httpCodes.OK);
+                            return res.json();
+                        }).then((json) => {
+                            assert.ok(json.record && json.record.email_address);
+                            assert.equal(json.record.email_address, newEmail);
+                        });
+                });
+            });
+
+            describe("against one user with a different non-admin user's token", () => {
+                it("should fail with error forbidden", () => {
+                    const newEmail = "new.email@test.com";
+                    usersApi.authToken = standardToken;
+                    return usersApi.updateRecord(adminUser.id, {email_address: newEmail})
+                        .then((res) => {
+                            assert.equal(res.url, `${apiUrl}/users/${adminUser.id}`);
+                            assert.equal(res.status, httpCodes.FORBIDDEN);
+                        });
+                });
+            });
+
+            describe("with no auth token", () => {
+                it("should fail with error unauthorized", () => {
+                    const newEmail = "new.email@test.com";
+                    usersApi.authToken = null;
+                    return usersApi.updateRecord(standardUser.id, {email_address: newEmail})
+                        .then((res) => {
+                            assert.equal(res.url, `${apiUrl}/users/${standardUser.id}`);
+                            assert.equal(res.status, httpCodes.UNAUTHORIZED);
+                        });
+                });
+            });
+        });
+    });
+
     describe("users/me", () => {
+        let fixtures;
+        before(() => {
+            return Fixtures.loadDefaults()
+                .then((data) => {
+                    fixtures = data;
+                });
+        });
+
         describe("GET request", () => {
             describe("with valid auth token", () => {
                 it("should return the current user", () => {

@@ -5,6 +5,7 @@ const QueryOptionsBuilder = require('../query/query-options-builder');
 const clone = require('lodash/clone');
 const bcrypt = require('../../security/bcrypt');
 const Promise = require('bluebird');
+const isUndefined = require('lodash/isUndefined');
 const userValidator = require('../../../shared/validation/model/user-validator');
 
 class UserCollection extends AbstractCollection {
@@ -31,6 +32,10 @@ class UserCollection extends AbstractCollection {
     _preprocessUpsert(records) {
         // Hash the password values before upserted records
         return Promise.map(records, (record) => {
+            if (isUndefined(record.password)) {
+                return record;
+            }
+
             return bcrypt.hash(record.password)
                 .then((hash) => {
                     record = clone(record);

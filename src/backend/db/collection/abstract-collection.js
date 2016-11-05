@@ -33,6 +33,10 @@ class AbstractCollection {
         return new this();
     }
 
+    get name() {
+        return this.model.name;
+    }
+
     getAllFields() {
         return Object.keys(this.model.attributes);
     }
@@ -44,6 +48,21 @@ class AbstractCollection {
      */
     count(options = {}) {
         return this.model.count(QueryOptionsBuilder.toObject(options));
+    }
+
+    /**
+     * Updates an instance
+     * @param {Instance} record
+     * @param {Object} data Key-value pairs of fields to update
+     * @returns {Promise.<Instance>}
+     */
+    updateRecord(record, data) {
+        return Promise.try(() => {
+            this._validateUpdate([data]);
+            return this._preprocessUpsert([data]);
+        }).then(([data]) => {
+            return record.update(data);
+        });
     }
 
     /**
@@ -120,10 +139,10 @@ class AbstractCollection {
         return Promise.resolve(records);
     }
 
-    _validateCreate(records) {
+    _validate(records, forCreation) {
         const validationResult = records.map((record) => {
             const validator = this.constructor.validator;
-            return validator.validateCreate(record);
+            return validator.validate(record, forCreation);
         });
 
         const isValid = validationResult.reduce((accum, result) => accum && result.isValid, true);
@@ -131,6 +150,14 @@ class AbstractCollection {
             throw ValidationError.create(records, validationResult);
         }
         return validationResult;
+    }
+
+    _validateCreate(records) {
+        return this._validate(records, true);
+    }
+
+    _validateUpdate(records) {
+        return this._validate(records, false);
     }
 
     /**

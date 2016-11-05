@@ -25,7 +25,7 @@ class TimeBlockRoutes extends BaseModelRoutes {
      */
     static setProtectedRoutes(router) {
         // Post a single record
-        router.post("/time-blocks", this.getInsertRecordHandler(true));
+        router.post("/time-blocks", this.getInsertRecordHandler());
 
         // Get user's timeBlocks
         router.get("/users/:userId/time-blocks", (req, res) => {

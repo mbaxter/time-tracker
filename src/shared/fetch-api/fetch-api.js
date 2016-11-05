@@ -28,6 +28,18 @@ class FetchApi {
         return this.makeRequest(path, "POST", data);
     }
 
+    patch(path, data) {
+        return this.makeRequest(path, "PATCH", data);
+    }
+
+    put(path, data) {
+        return this.makeRequest(path, "PUT", data);
+    }
+
+    del(path, data) {
+        return this.makeRequest(path, "DELETE", data);
+    }
+
     makeRequest(path, method="GET", data) {
         const options = {};
         options.headers = this.getHeaders();

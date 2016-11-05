@@ -37,6 +37,14 @@ class UserRoutes extends BaseModelRoutes {
             standardHandler(req, res);
         });
 
+        // Update user record
+        router.patch("/users/:userId", (req, res) => {
+            const id = req.params.userId;
+
+            let standardHandler = this.getUpdateByIdHandler(id);
+            standardHandler(req, res);
+        });
+
         return router;
     }
 }

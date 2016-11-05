@@ -12,6 +12,10 @@ class UsersApi extends FetchApi {
         return this.post("/users", record);
     }
 
+    updateRecord(id, fields) {
+        return this.patch(`/users/${id}`, fields);
+    }
+
     getCurrentUser() {
         return this.get("/users/me");
     }

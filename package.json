@@ -11,7 +11,7 @@
     "build-server": "npm run build-server-verbose > /dev/null",
     "build-server-verbose": "babel src --out-dir build --ignore src/frontend",
     "build-server-watch": "babel src --watch --out-dir build --ignore src/frontend",
-    "fixtures": "npm run build-server && node build/backend/scripts/load-default-db-fixtures.js",
+    "fixtures": "node build/backend/scripts/load-default-db-fixtures.js",
     "lint": "$(npm bin)/eslint {src,test}/*",
     "test": "$(npm bin)/mocha -R spec --compilers js:babel-core/register --require babel-polyfill --recursive test/suites"
   },

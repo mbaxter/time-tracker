@@ -2,9 +2,12 @@
 const BaseRoutes = require('./base-routes');
 const NotImplementedError = require('../../error/method-not-implemented-error');
 const ModelResponseFactory = require('../response/model-response-factory');
-const isArray = require('lodash/isArray');
 const ValidationError = require('../../db/collection/error/validation-error');
 const QueryOptionsBuilder = require('../../db/query/query-options-builder');
+const Permissions = require('../../../shared/permissions');
+const Tables = require('../../../shared/constants/tables');
+const isPlainObject = require('lodash/isPlainObject');
+const isEmpty = require('lodash/isEmpty');
 
 class BaseModelRoutes extends BaseRoutes {
     static get collection() {
@@ -15,7 +18,8 @@ class BaseModelRoutes extends BaseRoutes {
         return req.jwt && req.jwt.userId == userId;
     }
 
-    static recordBelongsToCurrentUser(req, record, userField = 'user_id') {
+    static recordBelongsToCurrentUser(req, record) {
+        const userField = this.collection.name == Tables.User ? 'id' : 'user_id';
         const recordUserId = record ? record[userField] : null;
         return recordUserId && this.userIdMatchesCurrentUser(req, recordUserId);
     }
@@ -25,11 +29,14 @@ class BaseModelRoutes extends BaseRoutes {
         return (req, res) => {
             collection.retrieveOneById(id, queryOptions)
                 .then((record) => {
-                    if (!record) {
+                    if (!record || (!Permissions.canReadOtherUsersRecords(req.jwt.role, collection.name) &&
+                        !this.recordBelongsToCurrentUser(req, record))) {
                         return ModelResponseFactory.notFound(res);
                     }
+
                     ModelResponseFactory.returnRecord(res, record);
-                });
+                })
+                .catch(this.getModelCRUDErrorHandler(res));
         };
     }
 
@@ -40,7 +47,7 @@ class BaseModelRoutes extends BaseRoutes {
         const collection = this.collection;
 
         return (req, res) => {
-            if(req.jwt.userId != userId) {
+            if(req.jwt.userId != userId && !Permissions.canReadOtherUsersRecords(req.jwt.role, collection.table)) {
                 return ModelResponseFactory.forbidden(res, {
                     error: "Attempt to query for records that are not owned by current user."
                 });
@@ -49,7 +56,8 @@ class BaseModelRoutes extends BaseRoutes {
             collection.retrieveAll(queryOptions, limit, offset)
                 .then((records) => {
                     ModelResponseFactory.returnRecordSet(res, records);
-                });
+                })
+                .catch(this.getModelCRUDErrorHandler(res));
         };
     }
 
@@ -62,31 +70,71 @@ class BaseModelRoutes extends BaseRoutes {
         const collection = this.collection;
         return (req, res) => {
             const record = req.body;
-            if (!record || isArray(record)) {
+            if (!isPlainObject(record) || isEmpty(record)) {
                 // Must supply one user object
-                // Batch upsert (array of users) is not supported
                 return ModelResponseFactory.badRequest(res, {
                     error: "Must supply a single record."
                 });
             }
 
-            if (checkOwnership && !this.recordBelongsToCurrentUser(req, record)) {
+            if (checkOwnership && !Permissions.canCreateOtherUsersRecords(req.jwt.role, collection.name) &&
+                !this.recordBelongsToCurrentUser(req, record)) {
                 // Attempt to update other users records is forbidden
                 return ModelResponseFactory.forbidden(res, {
                     error: "Attempt to insert record that is not owned by current user."
                 });
             }
 
-            collection.create(record).then((record) => {
-                return ModelResponseFactory.insertSuccess(res, record);
-            }).catch((err) => {
-                if (err instanceof ValidationError) {
-                    return ModelResponseFactory.validationError(res, err);
-                } else if(err.name == 'SequelizeUniqueConstraintError') {
-                    return ModelResponseFactory.duplicateConflict(res);
-                }
-                ModelResponseFactory.internalError(err);
-            });
+            collection.create(record)
+                .then((record) => {
+                    return ModelResponseFactory.insertSuccess(res, record);
+                })
+                .catch(this.getModelCRUDErrorHandler(res));
+        };
+    }
+
+    static getUpdateByIdHandler(id) {
+        const collection = this.collection;
+
+        return (req, res) => {
+            this.collection.retrieveOneById(id)
+                .then((record) => {
+                    const fields = req.body;
+
+                    if(!isPlainObject(fields) || isEmpty(fields)) {
+                        return ModelResponseFactory.badRequest(res);
+                    }
+
+                    if (record && !Permissions.canUpdateOtherUsersRecords(req.jwt.role, collection.name) &&
+                        !this.recordBelongsToCurrentUser(req, record)) {
+                        // Attempt to update other users records is forbidden
+                        return ModelResponseFactory.forbidden(res, {
+                            error: "Attempt to update record that is not owned by current user."
+                        });
+                    }
+
+                    if (!record) {
+                        return ModelResponseFactory.notFound(res);
+                    }
+
+                    return collection.updateRecord(record, fields)
+                        .then((record) => {
+                            ModelResponseFactory.returnRecord(res, record);
+                        });
+                })
+                .catch(this.getModelCRUDErrorHandler(res));
+        };
+    }
+
+    static getModelCRUDErrorHandler(res) {
+        return (err) => {
+            if (err instanceof ValidationError) {
+                return ModelResponseFactory.validationError(res, err);
+            } else if(err.name == 'SequelizeUniqueConstraintError') {
+                return ModelResponseFactory.duplicateConflict(res);
+            }
+            console.log(err);
+            ModelResponseFactory.internalError(res, err);
         };
     }
 }
