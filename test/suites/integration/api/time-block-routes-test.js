@@ -352,6 +352,105 @@ describe('Api routes for handling time blocks', () => {
                 });
             });
         });
+
+        describe("DELETE request", () => {
+            describe("with timeBlockId matching authToken user", () => {
+                it("should successfully delete the record", () => {
+                    let timeBlockId = standardTimeBlocks[0].id;
+                    timeBlocksApi.authToken = standardToken;
+                    let initialCount;
+                    return collection.TimeBlock.count()
+                        .then((count) => {
+                            initialCount = count;
+                            return timeBlocksApi.deleteRecord(timeBlockId);
+                        }).then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.OK);
+                            return collection.TimeBlock.count();
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialCount - 1, "One record should be deleted");
+
+                        });
+                });
+            });
+
+            describe("with admin authToken and timeBlockId belonging to different user", () => {
+                it("should successfully delete the record", () => {
+                    let timeBlockId = standardTimeBlocks[0].id;
+                    timeBlocksApi.authToken = adminToken;
+                    let initialCount;
+                    return collection.TimeBlock.count()
+                        .then((count) => {
+                            initialCount = count;
+                            return timeBlocksApi.deleteRecord(timeBlockId);
+                        }).then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.OK);
+                            return collection.TimeBlock.count();
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialCount - 1, "One record should be deleted");
+
+                        });
+                });
+            });
+
+            describe("with standard authToken and timeBlockId belonging to different user", () => {
+                it("should fail with a 'Not Found' error", () => {
+                    let timeBlockId = adminTimeBlocks[0].id;
+                    timeBlocksApi.authToken = standardToken;
+                    let initialCount;
+                    return collection.TimeBlock.count()
+                        .then((count) => {
+                            initialCount = count;
+                            return timeBlocksApi.deleteRecord(timeBlockId);
+                        }).then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.FORBIDDEN);
+                            return collection.TimeBlock.count();
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialCount, "No records should be deleted");
+                        });
+                });
+            });
+
+            describe("with valid authToken and non-existent timeBlockId", () => {
+                it ("should fail with a 'Not Found' error", () => {
+                    let timeBlockId = 999999;
+                    timeBlocksApi.authToken = standardToken;
+                    let initialCount;
+                    return collection.TimeBlock.count()
+                        .then((count) => {
+                            initialCount = count;
+                            return timeBlocksApi.deleteRecord(timeBlockId);
+                        }).then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.NOT_FOUND);
+                            return collection.TimeBlock.count();
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialCount, "No records should be deleted");
+                        });
+                });
+            });
+
+            describe("with no authToken", () => {
+                it("should fail with an 'Unauthorized' error", () => {
+                    let timeBlockId = standardTimeBlocks[0].id;
+                    timeBlocksApi.authToken = null;
+                    let initialCount;
+                    return collection.TimeBlock.count()
+                        .then((count) => {
+                            initialCount = count;
+                            return timeBlocksApi.deleteRecord(timeBlockId);
+                        }).then((res) => {
+                            assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
+                            assert.equal(res.status, httpCodes.UNAUTHORIZED);
+                            return collection.TimeBlock.count();
+                        }).then((finalCount) => {
+                            assert.equal(finalCount, initialCount, "No records should be deleted");
+                        });
+                });
+            });
+        });
     });
 
 });

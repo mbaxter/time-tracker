@@ -68,6 +68,10 @@ class AbstractCollection {
         });
     }
 
+    deleteRecord(record) {
+        return record.destroy();
+    }
+
     /**
      *
      * @param {Object} record

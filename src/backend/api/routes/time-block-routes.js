@@ -35,6 +35,14 @@ class TimeBlockRoutes extends BaseModelRoutes {
             standardHandler(req, res);
         });
 
+        // Delete a record
+        router.delete("/time-blocks/:id", (req, res) => {
+            const id = req.params.id;
+
+            let standardHandler = this.getDeleteByIdHandler(id);
+            standardHandler(req, res);
+        });
+
         // Get user's timeBlocks
         router.get("/users/:userId/time-blocks", (req, res) => {
             const queryOptions = QueryOptionsBuilder.create()

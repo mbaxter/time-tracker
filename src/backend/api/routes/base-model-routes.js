@@ -130,6 +130,33 @@ class BaseModelRoutes extends BaseRoutes {
         };
     }
 
+    static getDeleteByIdHandler(id) {
+        const collection = this.collection;
+
+        return (req, res) => {
+            this.collection.retrieveOneById(id)
+                .then((record) => {
+                    if (record && !Permissions.canDeleteOtherUsersRecords(req.jwt.role, collection.name) &&
+                        !this.recordBelongsToCurrentUser(req, record)) {
+                        // Attempt to update other users records is forbidden
+                        return ModelResponseFactory.forbidden(res, {
+                            error: "Attempt to delete record that is not owned by current user."
+                        });
+                    }
+
+                    if (!record) {
+                        return ModelResponseFactory.notFound(res);
+                    }
+
+                    return collection.deleteRecord(record)
+                        .then(() => {
+                            ModelResponseFactory.ok(res);
+                        });
+                })
+                .catch(this.getModelCRUDErrorHandler(res));
+        };
+    }
+
     static getModelCRUDErrorHandler(res) {
         return (err) => {
             if (err instanceof ValidationError) {

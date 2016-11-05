@@ -16,6 +16,10 @@ ResponseFactory.internalError = function(res, err) {
     });
 };
 
+ResponseFactory.ok = function(res) {
+    return res.status(httpCodes.OK).end();
+};
+
 ResponseFactory.notFound = function(res) {
     return res.status(httpCodes.NOT_FOUND).end();
 };
