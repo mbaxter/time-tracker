@@ -37,12 +37,11 @@ const modelConfig = [
     {
         message: "Invalid date range.  Start must be earlier than end.",
         validators: [(model) => {
-            if (isUndefined(model.start) && isUndefined(model.end)) {
+            if (isUndefined(model.start) || isUndefined(model.end)) {
+                // Not enough information to validate
                 return true;
             }
-            if (isUndefined(model.start) || isUndefined(model.end)) {
-                return false;
-            }
+
             return model.start < model.end;
         }]
     }
