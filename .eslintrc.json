@@ -2,7 +2,7 @@
   "env" :{
     "commonjs": true
   },
-  "extends": "eslint:recommended",
+  "extends": ["eslint:recommended","plugin:react/recommended"],
   "globals": {
   },
   "parserOptions": {
@@ -12,6 +12,9 @@
       "jsx": true
     }
   },
+  "plugins": [
+    "react"
+  ],
   "rules": {
     "curly": 2,
     "no-var": 2,

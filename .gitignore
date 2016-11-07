@@ -1,7 +1,10 @@
-node_modules
 .idea
-build
-.env
 *.log
+.env
 docs
+# Ignore computed / compiled files
+public/js/app.js
+build
+node_modules
+
 
