@@ -1,16 +1,17 @@
 "use strict";
 
 const jwt = require('./jwt');
-const DateTimeFormatter = require('../../shared/datetime/format/date-time-formatter');
 
 const UserJwt = {};
 
 UserJwt.sign = function(user) {
-   return jwt.sign({
-       userId: user.id,
-       role: user.role,
-       issued: DateTimeFormatter.normalizeDate(new Date())
-   });
+    // See spec for standard fields: https://tools.ietf.org/html/rfc7519#section-4.1
+    return jwt.sign({
+        sub: user.email_address,
+        userId: user.id,
+        role: user.role,
+        iat: Math.min(Date.now() / 1000)
+    });
 };
 
 UserJwt.verify = jwt.verify;
