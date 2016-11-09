@@ -5,7 +5,6 @@ const Label = require('./field-label');
 const FieldError = require('./field-error');
 const noop = require('lodash/noop');
 const map = require('lodash/map');
-const values = require('lodash/values');
 
 class SelectField extends React.Component {
     render() {
