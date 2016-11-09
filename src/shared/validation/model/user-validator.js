@@ -17,7 +17,7 @@ const fieldConfig = {
         required: true,
         constraints: [
             {
-                message: "Password must be at least 10 characters.",
+                message: "Password must be at least 5 characters.",
                 validators: [fieldValidators.MinStringLength.create(5)]
             }
         ]

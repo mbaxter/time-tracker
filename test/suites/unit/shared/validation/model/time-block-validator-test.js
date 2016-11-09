@@ -13,9 +13,9 @@ const tester = new ModelValidatorTester({
     }],
     requiredFields:['user_id', 'start', 'end'],
     invalidFields: {
-        user_id: ['bla', '', false, true],
-        start: ['abc', true, false, ''],
-        end: ['abc', true, false, '']
+        user_id: ['bla', false, true],
+        start: ['abc', true, false],
+        end: ['abc', true, false]
     },
     invalidFieldsets: [
         {

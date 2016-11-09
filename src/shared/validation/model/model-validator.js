@@ -3,6 +3,8 @@ const ModelValidationResponse = require('./data/model-validation-response');
 const isUndefined = require('lodash/isUndefined');
 const keys = require('lodash/keys');
 const each = require('lodash/each');
+const humanize = require('humanize-string');
+const lowerCase = require('lodash/lowerCase');
 
 class ModelValidator {
 
@@ -50,10 +52,10 @@ class ModelValidator {
 
         each(this._fieldConfig, (config, fieldName) => {
             const fieldValue = model[fieldName];
-            if (isUndefined(fieldValue)) {
+            if (isUndefined(fieldValue) || fieldValue === '') {
                 if (enforceRequired && config.required) {
                     result.isValid = false;
-                    result.fieldErrors[fieldName] = `Field "${fieldName}" is required.`;
+                    result.fieldErrors[fieldName] = `${humanize(fieldName)} is required.`;
                 }
                 return;
             }
@@ -68,7 +70,7 @@ class ModelValidator {
         });
 
         if (!result.isValid) {
-            result.error = `Please correct field errors: ${keys(result.fieldErrors).join(', ')}`;
+            result.error = `Please correct fields: ${keys(result.fieldErrors).map(lowerCase).join(', ')}`;
         }
 
         return result;

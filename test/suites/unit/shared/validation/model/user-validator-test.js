@@ -15,10 +15,10 @@ const tester = new ModelValidatorTester({
     }],
     requiredFields:['email_address', 'password'],
     invalidFields: {
-        email_address: ['bla', '', false, true, 1, 'address@', '.com'],
-        password: ['abc', true, false, ''],
+        email_address: ['bla', false, true, 1, 'address@', '.com'],
+        password: ['abc', true, false],
         role: [9999, 'bla'],
-        timezone: ['x', '', false]
+        timezone: ['x', false, 3]
     }
 });
 

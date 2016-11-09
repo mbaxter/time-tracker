@@ -4,6 +4,8 @@ require('moment-timezone');
 
 module.exports.create = function() {
     return (val) => {
-        return moment.tz.zone(val) != null;
+        let stringVal = val || "";
+        stringVal = String(stringVal);
+        return moment.tz.zone(stringVal) != null;
     };
 };
