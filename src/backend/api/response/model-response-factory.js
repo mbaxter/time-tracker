@@ -9,7 +9,7 @@ const ModelResponseFactory = clone(ResponseFactory);
 ModelResponseFactory.validationError = function(res, validationError) {
     return res.status(httpCodes.BAD_REQUEST).json({
         error: validationError.message,
-        validationResults: validationError.toJSON()
+        validationErrors: validationError.toJSON()
     });
 };
 
