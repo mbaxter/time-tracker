@@ -14,7 +14,7 @@ const LoginPage = (props) => {
     return (
         <div>
             <h2>Login (or <Link to="/signup">Sign Up</Link>)</h2>
-            <UserForm {... props} />
+            <UserForm {... props} submitText={"Login"} includeFields={['email_address','password']}/>
         </div>
     );
 };
@@ -28,8 +28,7 @@ const mapStateToProps = (state) => {
         fields,
         fieldErrors,
         error,
-        disabled: requestStatus == RequestStatus.PENDING,
-        submitText: "Login"
+        disabled: requestStatus == RequestStatus.PENDING
     };
 };
 

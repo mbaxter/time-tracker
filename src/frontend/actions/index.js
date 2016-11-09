@@ -67,13 +67,16 @@ ActionCreators.login = (emailAddress, password) => {
         }
 
         // Validate input before making network request
-        const validationResponse = ModelValidator.User.validate({
-            email_address: emailAddress,
-            password: password
-        }, true);
-        if (!validationResponse.isValid) {
+        if (!emailAddress || !password) {
+            const fieldErrors = {};
+            if (!emailAddress) {
+                fieldErrors.email_address = "Email address is required.";
+            }
+            if (!password) {
+                fieldErrors.password = "Password is required.";
+            }
             // If input is invalid, short-circuit and return a failure immediately
-            return dispatch(ActionCreators.submitFormFailure(FormNames.LOGIN, validationResponse.error, validationResponse.fieldErrors));
+            return dispatch(ActionCreators.submitFormFailure(FormNames.LOGIN, "Required fields are missing.", fieldErrors));
         }
 
         // Track our new form submission

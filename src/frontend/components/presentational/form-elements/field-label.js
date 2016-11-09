@@ -1,7 +1,7 @@
 "use strict";
 const React = require('react');
 
-const RequiredFieldLabel = ({className, htmlFor, required, children}) => {
+const FieldLabel = ({className, htmlFor, required, children}) => {
     return (
         <label {... {className,htmlFor}}>
             {children}
@@ -10,16 +10,16 @@ const RequiredFieldLabel = ({className, htmlFor, required, children}) => {
     );
 };
 
-RequiredFieldLabel.propTypes = {
+FieldLabel.propTypes = {
     className: React.PropTypes.string,
     htmlFor: React.PropTypes.string,
     required: React.PropTypes.bool,
     children: React.PropTypes.node.isRequired
 };
 
-RequiredFieldLabel.defaultProps = {
+FieldLabel.defaultProps = {
     required: false,
     className: ""
 };
 
-module.exports = RequiredFieldLabel;
+module.exports = FieldLabel;
