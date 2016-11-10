@@ -21,7 +21,7 @@ ModelResponseFactory.insertSuccess = function(res, record) {
 
 ModelResponseFactory.duplicateConflict = function(res) {
     return res.status(httpCodes.CONFLICT).json({
-        error: "Duplicate record."
+        error: "Unable to fulfill request due to conflict with existing record."
     });
 };
 

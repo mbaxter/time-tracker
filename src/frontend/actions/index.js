@@ -5,10 +5,10 @@ const FormNames = require('../constants/form-names');
 const RequestStatus = require('../constants/request-status');
 const Api = require('../api');
 const ModelValidator = require('../../shared/validation/model');
-const httpCodes = require('http-status-codes');
 const get = require('lodash/get');
 const first = require('lodash/first');
 const routerHistory = ReactRouter.hashHistory;
+const noop = require('lodash/noop');
 
 const ActionCreators = {};
 
@@ -77,16 +77,13 @@ ActionCreators.deauthorize = () => {
     };
 };
 
+// Form Submissions
 ActionCreators.login = (emailAddress, password) => {
-    return (dispatch, getState) => {
-        const state = getState();
-        const requestStatus = get(state, `request.formSubmissions.${FormNames.LOGIN}.status`, RequestStatus.NONE);
-        if (requestStatus == RequestStatus.PENDING) {
-            // We've already got a pending login request, don't make another one
-            return;
-        }
+    const formAction = () => {
+        return Api.Auth.login(emailAddress, password);
+    };
 
-        // Validate input before making network request
+    const formValidate = () => {
         if (!emailAddress || !password) {
             const fieldErrors = {};
             if (!emailAddress) {
@@ -95,86 +92,90 @@ ActionCreators.login = (emailAddress, password) => {
             if (!password) {
                 fieldErrors.password = "Password is required.";
             }
-            // If input is invalid, short-circuit and return a failure immediately
-            return dispatch(ActionCreators.submitFormFailure(FormNames.LOGIN, "Required fields are missing.", fieldErrors));
+            return {
+                isValid: false,
+                error: "Required fields are missing.",
+                fieldErrors
+            };
         }
-
-        // Track our new form submission
-        dispatch(ActionCreators.showLoader());
-        dispatch(ActionCreators.submitForm(FormNames.LOGIN));
-
-        // Make api request to log in
-        Api.Auth.login(emailAddress, password)
-            .then((res) => {
-                return res.json().then((json) => {
-                    switch(res.status) {
-                        case httpCodes.OK:
-                            dispatch(ActionCreators.authorize(json.token));
-                            dispatch(ActionCreators.submitFormSuccess(FormNames.LOGIN));
-                            ActionCreators.navigateToPage("/app");
-                            break;
-                        default:
-                            dispatch(ActionCreators.submitFormFailure(FormNames.LOGIN, json.error));
-                    }
-                    dispatch(ActionCreators.hideLoader());
-                });
-            })
-            .catch(() => {
-                dispatch(ActionCreators.submitFormFailure(FormNames.LOGIN, "Request failed."));
-                dispatch(ActionCreators.hideLoader());
-            });
     };
+
+    const formSuccess = (json, dispatch) => {
+        dispatch(ActionCreators.authorize(json.token));
+        ActionCreators.navigateToPage("/app");
+    };
+
+    return ActionCreators.handleFormSubmission(FormNames.LOGIN, formAction, {formValidate, formSuccess});
 };
 
 ActionCreators.signup = (record) => {
+    const formAction = () => {
+        return Api.Users.insertRecord(record);
+    };
+
+    const formValidate = () => {
+        return ModelValidator.User.validateCreate(record);
+    };
+
+    const formSuccess = () => {
+        ActionCreators.navigateToPage("/login");
+    };
+
+    return ActionCreators.handleFormSubmission(FormNames.SIGNUP, formAction, {formValidate, formSuccess});
+};
+
+ActionCreators.handleFormSubmission = (formName, formAction, {formValidate = noop, formSuccess = noop, formFail = noop} = {}) => {
     return (dispatch, getState) => {
         const state = getState();
-        const requestStatus = get(state, `request.formSubmissions.${FormNames.SIGNUP}.status`, RequestStatus.NONE);
+        const requestStatus = get(state, `request.formSubmissions.${formName}.status`, RequestStatus.NONE);
         if (requestStatus == RequestStatus.PENDING) {
             // We've already got a pending request, don't make another one
             return;
         }
 
         // Validate input before making network request
-        const validationResponse = ModelValidator.User.validateCreate(record);
-        if (!validationResponse.isValid) {
+        const validationResponse = formValidate();
+        if (validationResponse && !validationResponse.isValid) {
             // If input is invalid, short-circuit and return a failure immediately
             return dispatch(ActionCreators.submitFormFailure(
-                FormNames.SIGNUP, validationResponse.error, validationResponse.fieldErrors));
+                formName, validationResponse.error, validationResponse.fieldErrors));
         }
 
         // Track our new form submission
         dispatch(ActionCreators.showLoader());
-        dispatch(ActionCreators.submitForm(FormNames.SIGNUP));
+        dispatch(ActionCreators.submitForm(formName));
+
+        const success = (json) => {
+            formSuccess(json, dispatch, getState);
+            dispatch(ActionCreators.submitFormSuccess(formName));
+            dispatch(ActionCreators.hideLoader());
+        };
+
+        const fail = (json = {}, error = "Request failed", fieldErrors = {}) => {
+            formFail(json, dispatch, getState);
+            dispatch(ActionCreators.submitFormFailure(formName, error, fieldErrors));
+            dispatch(ActionCreators.hideLoader());
+        };
 
         // Make api request to log in
-        Api.Users.insertRecord(record)
+        formAction()
             .then((res) => {
                 return res.json().then((json) => {
-                    const genericError = ActionCreators.submitFormFailure(FormNames.SIGNUP, json.error);
                     let validationError = json.validationErrors ? first(json.validationErrors) : null;
-                    switch(res.status) {
-                        case httpCodes.CREATED:
-                            dispatch(ActionCreators.authorize(json.token));
-                            dispatch(ActionCreators.submitFormSuccess(FormNames.SIGNUP));
-                            ActionCreators.navigateToPage("/login");
-                            break;
-                        case httpCodes.BAD_REQUEST:
-                            if (validationError) {
-                                dispatch(ActionCreators.submitFormFailure(FormNames.SIGNUP, validationError.error, validationError.fieldErrors));
-                            } else {
-                                dispatch(genericError);
-                            }
-                            break;
-                        default:
-                            dispatch(genericError);
+                    if (res.status >= 200 && res.status < 300) {
+                        success(json);
+                    } else {
+                        formFail(dispatch, getState);
+                        if (validationError) {
+                            fail(json, validationError.error, validationError.fieldErrors);
+                        } else {
+                            fail(json, json.error);
+                        }
                     }
-                    dispatch(ActionCreators.hideLoader());
                 });
             })
             .catch(() => {
-                dispatch(ActionCreators.submitFormFailure(FormNames.SIGNUP, "Request failed."));
-                dispatch(ActionCreators.hideLoader());
+                fail();
             });
     };
 };
