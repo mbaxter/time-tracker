@@ -2,6 +2,7 @@
 const env = require('./src/backend/bootstrap/env');
 const path = require('path');
 const webpack = require('webpack');
+const autoprefixer = require('autoprefixer');
 
 // Setup environmental variables to be exported to frontend via EnvionrmentPlugin
 env();
@@ -22,6 +23,10 @@ module.exports = {
                     presets: ["es2015", "react"],
                     plugins: ["transform-object-rest-spread", "transform-bluebird"]
                 }
+            },
+            {
+                test:   /\.css$/,
+                loader: "style!css!postcss-loader"
             }
         ]
     },
@@ -38,5 +43,8 @@ module.exports = {
         "react": "React",
         "react-dom": "ReactDOM",
         "react-router": "ReactRouter"
-    }
+    },
+    postcss: [
+        autoprefixer({ browsers: ['last 2 versions', '> 1%', '> 1% in US']})
+    ]
 };

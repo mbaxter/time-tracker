@@ -1,3 +1,5 @@
 "use strict";
 require('babel-polyfill');
-require('./jquery-to-json');
+const $ = require('./jquery-to-json');
+
+module.exports.$ = $;

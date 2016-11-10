@@ -1,5 +1,6 @@
 "use strict";
-require('./bootstrap');
+const bootstrap = require('./bootstrap');
+const $ = bootstrap.$;
 const React = require('react');
 const ReactDom = require('react-dom');
 const ReactRouter = require('react-router');
@@ -23,7 +24,7 @@ const IndexRedirect = ReactRouter.IndexRedirect;
 const IndexRoute = ReactRouter.IndexRoute;
 
 const storeMiddleware = [];
-if (process.env.NODE_ENV == 'dev') {
+if (process.env.NODE_ENV == 'development') {
     storeMiddleware.push(createLoggerMiddleware());
 }
 storeMiddleware.push(thunkMiddleware);
@@ -42,7 +43,7 @@ const requireAuthentication = (nextState, replace) => {
     }
 };
 
-ReactDom.render(
+$.ready(ReactDom.render(
     <Provider store={store}>
         <Router history={Router.hashHistory}>
             <Route path = "/" component={App}>
@@ -61,4 +62,6 @@ ReactDom.render(
             </Route>
         </Router>
     </Provider>
-    , document.getElementById('app'));
+    , document.getElementById('app'))
+);
+

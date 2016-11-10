@@ -13,7 +13,7 @@ const Link = ReactRouter.Link;
 const SignupPage = (props) => {
     return (
         <div>
-            <h2>Login (or <Link to="/login">Sign Up</Link>)</h2>
+            <h2>Sign Up (or <Link to="/login">Login</Link>)</h2>
             <UserForm {... props} submitText={"Sign Up"} excludeFields={['role']}/>
         </div>
     );

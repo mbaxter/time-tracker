@@ -22,6 +22,18 @@ ActionCreators.updateFormField = (formName, fieldName, fieldValue) => {
     };
 };
 
+ActionCreators.showLoader = () => {
+    return {
+        type: ActionTypes.SHOW_LOADER
+    };
+};
+
+ActionCreators.hideLoader = () => {
+    return {
+        type: ActionTypes.HIDE_LOADER
+    };
+};
+
 // Form Actions
 ActionCreators.submitForm = (formName) => {
     return {
@@ -88,6 +100,7 @@ ActionCreators.login = (emailAddress, password) => {
         }
 
         // Track our new form submission
+        dispatch(ActionCreators.showLoader());
         dispatch(ActionCreators.submitForm(FormNames.LOGIN));
 
         // Make api request to log in
@@ -103,10 +116,12 @@ ActionCreators.login = (emailAddress, password) => {
                         default:
                             dispatch(ActionCreators.submitFormFailure(FormNames.LOGIN, json.error));
                     }
+                    dispatch(ActionCreators.hideLoader());
                 });
             })
             .catch(() => {
                 dispatch(ActionCreators.submitFormFailure(FormNames.LOGIN, "Request failed."));
+                dispatch(ActionCreators.hideLoader());
             });
     };
 };
@@ -129,6 +144,7 @@ ActionCreators.signup = (record) => {
         }
 
         // Track our new form submission
+        dispatch(ActionCreators.showLoader());
         dispatch(ActionCreators.submitForm(FormNames.SIGNUP));
 
         // Make api request to log in
@@ -153,10 +169,12 @@ ActionCreators.signup = (record) => {
                         default:
                             dispatch(genericError);
                     }
+                    dispatch(ActionCreators.hideLoader());
                 });
             })
             .catch(() => {
                 dispatch(ActionCreators.submitFormFailure(FormNames.SIGNUP, "Request failed."));
+                dispatch(ActionCreators.hideLoader());
             });
     };
 };

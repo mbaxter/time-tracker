@@ -7,9 +7,7 @@ const formSubmission = (state = {status: RequestStatus.NONE, fields: {}, error: 
         case ActionTypes.FORM_SUBMISSION:
             return {
                 ... state,
-                status: RequestStatus.PENDING,
-                error: "",
-                fieldErrors: {}
+                status: RequestStatus.PENDING
             };
         case ActionTypes.FORM_SUBMISSION_SUCCESS:
             return {
