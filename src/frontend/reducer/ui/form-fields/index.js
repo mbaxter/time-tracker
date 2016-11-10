@@ -11,6 +11,8 @@ const formField = (state = {}, action) => {
                 ... state,
                 [action.fieldName]: action.fieldValue
             };
+        case ActionTypes.CLEAR_FORM:
+            return {};
         default:
             return state;
     }

@@ -22,6 +22,13 @@ ActionCreators.updateFormField = (formName, fieldName, fieldValue) => {
     };
 };
 
+ActionCreators.clearForm = (formName) => {
+   return {
+       type: ActionTypes.CLEAR_FORM,
+       formName
+   };
+};
+
 ActionCreators.showLoader = () => {
     return {
         type: ActionTypes.SHOW_LOADER
@@ -117,7 +124,10 @@ ActionCreators.signup = (record) => {
         return ModelValidator.User.validateCreate(record);
     };
 
-    const formSuccess = () => {
+    const formSuccess = (json, dispatch) => {
+        dispatch(ActionCreators.clearForm(FormNames.LOGIN));
+        dispatch(ActionCreators.updateFormField(FormNames.LOGIN, 'email_address', record.email_address));
+        dispatch(ActionCreators.updateFormField(FormNames.LOGIN, 'password', record.password));
         ActionCreators.navigateToPage("/login");
     };
 
