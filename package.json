@@ -58,6 +58,7 @@
     "moment-timezone": "0.5.7",
     "mysql": "2.11.1",
     "node-env-file": "0.1.8",
+    "node-uuid": "1.4.7",
     "react": "15.3.2",
     "react-dom": "15.3.2",
     "react-redux": "4.4.5",

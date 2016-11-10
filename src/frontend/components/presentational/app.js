@@ -2,6 +2,7 @@
 const React = require('react');
 const NavBar = require('./nav-bar');
 const Loader = require('../stateful/app-loader');
+const AppAlerts = require('../stateful/app-alerts');
 
 class App extends React.Component {
     render() {
@@ -10,6 +11,7 @@ class App extends React.Component {
                 <Loader/>
                 <NavBar/>
                 <div className="container">
+                    <AppAlerts />
                     {this.props.children}
                 </div>
             </div>

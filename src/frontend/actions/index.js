@@ -1,6 +1,8 @@
 "use strict";
 const ReactRouter = require('react-router');
 const ActionTypes = require('../constants/action-types');
+const AlertTypes = require('../constants/alert-types');
+const uuid = require('node-uuid');
 const FormNames = require('../constants/form-names');
 const RequestStatus = require('../constants/request-status');
 const Api = require('../api');
@@ -27,6 +29,22 @@ ActionCreators.clearForm = (formName) => {
        type: ActionTypes.CLEAR_FORM,
        formName
    };
+};
+
+ActionCreators.showAlert = (message, type = ActionTypes.INFO) => {
+   return {
+       type: ActionTypes.SHOW_ALERT,
+       alertType: type,
+       message,
+       id: uuid.v4()
+   };
+};
+
+ActionCreators.dismissAlert = (id) => {
+    return {
+        type: ActionTypes.DISMISS_ALERT,
+        id
+    };
 };
 
 ActionCreators.showLoader = () => {
@@ -128,6 +146,7 @@ ActionCreators.signup = (record) => {
         dispatch(ActionCreators.clearForm(FormNames.LOGIN));
         dispatch(ActionCreators.updateFormField(FormNames.LOGIN, 'email_address', record.email_address));
         dispatch(ActionCreators.updateFormField(FormNames.LOGIN, 'password', record.password));
+        dispatch(ActionCreators.showAlert(`New user created: ${record.email_address}.`, AlertTypes.SUCCESS));
         ActionCreators.navigateToPage("/login");
     };
 
