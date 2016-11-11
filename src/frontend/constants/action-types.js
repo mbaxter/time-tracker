@@ -14,7 +14,8 @@ const ActionTypes = {
     SHOW_LOADER: "SHOW_LOADER",
     HIDE_LOADER: "HIDE_LOADER",
     SHOW_ALERT: "SHOW_ALERT",
-    DISMISS_ALERT: "DISMISS_ALERT"
+    DISMISS_ALERT: "DISMISS_ALERT",
+    FADE_ALERT: "FADE_ALERT"
 };
 
 module.exports = ActionTypes;

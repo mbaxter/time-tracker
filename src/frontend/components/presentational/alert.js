@@ -1,4 +1,5 @@
 "use strict";
+require('../css/fx/fade.css');
 const React = require('react');
 const AlertTypes = require('../../constants/alert-types');
 const values = require('lodash/values');
@@ -29,7 +30,7 @@ const Alert = (props) => {
     }
 
     return (
-        <div className={`alert ${alertClass} alert-dismissible`} role="alert">
+        <div className={`alert ${alertClass} ${props.fade ? 'fade-out' : ''} alert-dismissible`} role="alert">
             <button type="button" className="close" aria-label="Close" onClick={() => props.onDismiss(props.id)}><span aria-hidden="true">&times;</span></button>
             <strong>{prefix}</strong>
             {" "}
@@ -41,11 +42,13 @@ const Alert = (props) => {
 Alert.propTypes = {
     id: React.PropTypes.string.isRequired,
     children: React.PropTypes.node.isRequired,
+    fade: React.PropTypes.bool,
     type: React.PropTypes.oneOf(values(AlertTypes)),
     onDismiss: React.PropTypes.func
 };
 
 Alert.defaultProps = {
+    fade: false,
     type: AlertTypes.INFO,
     onDismiss: noop
 };

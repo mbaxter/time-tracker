@@ -11,6 +11,7 @@ const get = require('lodash/get');
 const first = require('lodash/first');
 const routerHistory = ReactRouter.hashHistory;
 const noop = require('lodash/noop');
+const timeout = require('../util/timeout-promise');
 
 const ActionCreators = {};
 
@@ -29,6 +30,28 @@ ActionCreators.clearForm = (formName) => {
        type: ActionTypes.CLEAR_FORM,
        formName
    };
+};
+
+ActionCreators.showTemporaryAlert = (message, type) => {
+    return (dispatch) => {
+        const alert = ActionCreators.showAlert(message, type);
+        dispatch(alert);
+        timeout(4000)
+            .then(() => {
+                dispatch(ActionCreators.fadeAlert(alert.id));
+                return timeout(1000);
+            })
+            .then(() => {
+                dispatch(ActionCreators.dismissAlert(alert.id));
+            });
+    };
+};
+
+ActionCreators.fadeAlert = (id) => {
+    return {
+        type: ActionTypes.FADE_ALERT,
+        id
+    };
 };
 
 ActionCreators.showAlert = (message, type = ActionTypes.INFO) => {
@@ -146,7 +169,7 @@ ActionCreators.signup = (record) => {
         dispatch(ActionCreators.clearForm(FormNames.LOGIN));
         dispatch(ActionCreators.updateFormField(FormNames.LOGIN, 'email_address', record.email_address));
         dispatch(ActionCreators.updateFormField(FormNames.LOGIN, 'password', record.password));
-        dispatch(ActionCreators.showAlert(`New user created: ${record.email_address}.`, AlertTypes.SUCCESS));
+        dispatch(ActionCreators.showTemporaryAlert(`New user created: ${record.email_address}.`, AlertTypes.SUCCESS));
         ActionCreators.navigateToPage("/login");
     };
 

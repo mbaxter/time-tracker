@@ -1,0 +1,17 @@
+.alerts {
+    overflow: hidden;
+}
+
+.alert {
+    animation: alert-slide-in .2s 1 ease-out;
+}
+
+@keyframes alert-slide-in {
+    from {
+        margin-top: -55px;
+    }
+
+    to {
+        margin-top: 0px;
+    }
+}

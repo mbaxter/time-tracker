@@ -14,7 +14,7 @@ const alertsSelector = (state) => {
 const orderedAlertsSelector = reselect.createSelector(
     alertsSelector,
     (alerts) => {
-        return orderBy(values(alerts), 'created');
+        return orderBy(values(alerts), 'created', 'desc');
     }
 );
 
