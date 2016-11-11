@@ -151,6 +151,9 @@ ActionCreators.login = (emailAddress, password) => {
     const formSuccess = (json, dispatch) => {
         dispatch(ActionCreators.authorize(json.token));
         ActionCreators.navigateToPage("/app");
+        // Clear the form except for email_address
+        dispatch(ActionCreators.clearForm(FormNames.LOGIN));
+        dispatch(ActionCreators.updateFormField(FormNames.LOGIN, 'email_address', emailAddress));
     };
 
     return ActionCreators.handleFormSubmission(FormNames.LOGIN, formAction, {formValidate, formSuccess});
@@ -166,11 +169,15 @@ ActionCreators.signup = (record) => {
     };
 
     const formSuccess = (json, dispatch) => {
+        // Copy credentials to the login page and reroute there
         dispatch(ActionCreators.clearForm(FormNames.LOGIN));
         dispatch(ActionCreators.updateFormField(FormNames.LOGIN, 'email_address', record.email_address));
         dispatch(ActionCreators.updateFormField(FormNames.LOGIN, 'password', record.password));
-        dispatch(ActionCreators.showTemporaryAlert(`New user created: ${record.email_address}.`, AlertTypes.SUCCESS));
         ActionCreators.navigateToPage("/login");
+        // Show success alert
+        dispatch(ActionCreators.showTemporaryAlert(`New user created: ${record.email_address}.`, AlertTypes.SUCCESS));
+        // Clear out signup form
+        dispatch(ActionCreators.clearForm(FormNames.SIGNUP));
     };
 
     return ActionCreators.handleFormSubmission(FormNames.SIGNUP, formAction, {formValidate, formSuccess});

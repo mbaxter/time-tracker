@@ -21,6 +21,7 @@ const formField = (state = {}, action) => {
 const formFields = (state = {}, action) => {
     switch(action.type) {
         case ActionTypes.FORM_FIELD_UPDATE:
+        case ActionTypes.CLEAR_FORM:
             return {
                 ... state,
                 [action.formName]: formField(state[action.formName], action)
