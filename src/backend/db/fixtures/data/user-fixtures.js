@@ -13,7 +13,7 @@ module.exports = [
     {
         first_name: "Fred",
         last_name: "Astaire",
-        email_address: "user@test.com",
+        email_address: "demo@test.com",
         password: "12345",
         role: UserRole.STANDARD,
         timezone: "US/Eastern"
