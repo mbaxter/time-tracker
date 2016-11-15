@@ -24,10 +24,10 @@ const IndexRedirect = ReactRouter.IndexRedirect;
 const IndexRoute = ReactRouter.IndexRoute;
 
 const storeMiddleware = [];
+storeMiddleware.push(thunkMiddleware);
 if (process.env.NODE_ENV == 'development') {
     storeMiddleware.push(createLoggerMiddleware());
 }
-storeMiddleware.push(thunkMiddleware);
 
 let store = Redux.createStore(
     reducer,

@@ -7,6 +7,7 @@ const FormNames = require('../constants/form-names');
 const RecordTypes = require('../constants/record-types');
 const RequestStatus = require('../constants/request-status');
 const Api = require('../api');
+const BatchApi = require('../api/batch-api');
 const ModelValidator = require('../../shared/validation/model');
 const get = require('lodash/get');
 const first = require('lodash/first');
@@ -16,9 +17,9 @@ const timeout = require('../util/timeout-promise');
 const isArray = require('lodash/isArray');
 const httpCodes = require('http-status-codes');
 const Promise = require('bluebird');
-const error = require('../error');
+const subject = require('../selector/subject-selector');
 
-const apiRetryDelay = 1000;
+const requestRetryDelay = 1000;
 const batchSize = 1000;
 
 const ActionCreators = {};
@@ -141,154 +142,123 @@ ActionCreators.clearRecords = () => {
 // Request
 ActionCreators.initiateRequest = (requestName) => {
     return {
-        type: ActionTypes.INITIATE_REQUEST,
+        type: ActionTypes.SINGLETON_REQUEST_START,
         name: requestName
     };
 };
 
 ActionCreators.resolveRequest = (requestName) => {
     return {
-        type: ActionTypes.RESOLVE_REQUEST,
+        type: ActionTypes.SINGLETON_REQUEST_END,
         name: requestName
     };
 };
 
-ActionCreators.startBatchPull = (recordType, batchSize) => {
+ActionCreators.batchPullStart = (recordType) => {
     return {
         type: ActionTypes.BATCH_PULL_START,
-        name: recordType,
-        batchSize
+        name: recordType
     };
 };
 
-ActionCreators.batchPullProgress = (recordType, recordCount) => {
+ActionCreators.batchPullSuccess = (recordType, batchSize, chunkSize) => {
     return {
-        type: ActionTypes.BATCH_PULL_PROGRESS,
+        type: ActionTypes.BATCH_PULL_SUCCESS,
         name: recordType,
-        count: recordCount
+        finished: chunkSize != batchSize,
+        chunkSize
     };
 };
 
-ActionCreators.endBatchPull = (recordType) => {
+ActionCreators.batchPullFail = (recordType) => {
     return {
-        type: ActionTypes.BATCH_PULL_END,
+        type: ActionTypes.BATCH_PULL_FAIL,
         name: recordType
     };
 };
 
 // Fetch
-ActionCreators.fetchUserData = () => {
+ActionCreators.batchPullIfNecessary = (recordType) => {
     return (dispatch, getState) => {
-        const token = get(getState(), 'credentials.token', null);
-        return dispatch(ActionCreators.fetchCurrentUser(token))
-            .then(() => {
-                return dispatch(ActionCreators.fetchTimeBlocks());
-            });
+        // Determine whether we're ready for a pull
+        const state = getState();
+        const {finished = false, pending = false} = subject.batchPull(recordType, state);
+        const userId = subject.currentUserId(state);
+
+        // Start pull only if we're logged in and have a user id, we're not finished pulling and no request is pending
+        if (userId && !finished && !pending) {
+            return dispatch(ActionCreators.batchPull(recordType));
+        }
     };
 };
 
-ActionCreators.fetchCurrentUser = (userToken, retries = 0) => {
-    const requestName = `${ActionTypes.FETCH_CURRENT_USER}-${userToken}`;
-    const requestAction = () => {
-        return Api.Users.getCurrentUser();
-    };
-    const onSuccess = (json, dispatch) => {
-        dispatch(ActionCreators.appendRecords(RecordTypes.USER, [json.record]));
-        dispatch(ActionCreators.setCurrentUser(json.record.id));
-        return Promise.resolve(json.record.id);
-    };
-
-    return ActionCreators.makeAuthenticatedRequest(requestName, requestAction, {onSuccess, retries});
-};
-
-ActionCreators.fetchTimeBlocks = () => {
-    const recordType = RecordTypes.TIME_BLOCK;
-    return (dispatch, getState) => {
-        const offset = 0;
-        const userId = get(getState(), 'credentials.userId', null);
-        const batchAction = (offset) => {
-            return Api.TimeBlocks.getUserRecords(userId, batchSize, offset);
-        };
-        const onProgress = (json, dispatch) => {
-            dispatch(ActionCreators.appendRecords(recordType, json.records));
-        };
-        return dispatch(ActionCreators.fetchBatches(recordType, batchAction, {onProgress, offset}));
-    };
-};
-
-ActionCreators.fetchBatches = (recordType, batchAction, {onProgress = noop, offset = 0} = {}) => {
+ActionCreators.batchPull = (recordType) => {
     return (dispatch, getState) => {
         const state = getState();
-        const requestName = `batchPull-${recordType}`;
-        const requestStatus = get(state, requestName, RequestStatus.NONE);
-        if (requestStatus == RequestStatus.PENDING) {
-            return Promise.reject(error.DuplicateRequestError.create());
-        }
-        dispatch(ActionCreators.initiateRequest(requestName));
-        dispatch(ActionCreators.startBatchPull(recordType, batchSize));
-
-        let currentOffset = offset;
-        const batchRequest = () => {
-            return batchAction(currentOffset);
-        };
-        const onBatchSuccess = (json, dispatch, getState) => {
-            const records = json.records;
-            const recordCount = records.length;
-            currentOffset += recordCount;
-            dispatch(ActionCreators.batchPullProgress(requestName, recordCount));
-            onProgress(json, dispatch, getState);
-            if (recordCount == batchSize) {
-                // Pull next batch
-                return dispatch(ActionCreators.makeAuthenticatedRequest(`${requestName}-${currentOffset}`, batchRequest, {onSuccess: onBatchSuccess}));
-            }
-        };
-
-        const resolveBatchRequest = () => {
-            dispatch(ActionCreators.resolveRequest(requestName));
-            dispatch(ActionCreators.endBatchPull(recordType));
-            return Promise.resolve();
-        };
-        return dispatch(ActionCreators.makeAuthenticatedRequest(`${requestName}-${currentOffset}`, batchRequest, {onSuccess: onBatchSuccess}))
-            .then(resolveBatchRequest, resolveBatchRequest);
-    };
-};
-
-ActionCreators.makeAuthenticatedRequest = (requestName, requestAction, {onSuccess = noop, retries = 0} = {}) => {
-    return (dispatch, getState) => {
-        const state = getState();
-        const token = get(state, 'credentials.token');
-        if (!token) {
-            return Promise.reject(error.UnauthorizedError.create());
-        }
-
-        const isAlreadyFetching = get(state, `pending-requests.${requestName}`,0) > 0;
-        if (isAlreadyFetching) {
-            return Promise.reject(error.DuplicateRequestError.create());
-        }
-
-        dispatch(ActionCreators.initiateRequest(requestName));
-        return requestAction()
+        dispatch(ActionCreators.batchPullStart(recordType));
+        const {offset} = subject.batchPull(recordType, state);
+        const userId = subject.currentUserId(state);
+        BatchApi.pullBatch(recordType, {limit: batchSize, offset, userId})
             .then((res) => {
                 if (res.status == httpCodes.OK) {
-                    dispatch(ActionCreators.resolveRequest(requestName));
-                    return res.json()
-                        .then((json) => {
-                            return onSuccess(json, dispatch, getState);
-                        });
-                } else if (res.status == httpCodes.UNAUTHORIZED) {
+                   return res.json();
+                }
+
+                return Promise.reject(res);
+            })
+            .then((json) => {
+                dispatch(ActionCreators.batchPullSuccess(recordType, batchSize, json.records.length));
+                dispatch(ActionCreators.appendRecords(recordType, json.records));
+            })
+            .catch((res = {}) => {
+                dispatch(ActionCreators.batchPullFail(recordType));
+                if (res.status == httpCodes.UNAUTHORIZED) {
                     dispatch(ActionCreators.logout());
-                    dispatch(ActionCreators.resolveRequest(requestName));
-                    return Promise.reject(error.UnauthorizedError.create());
-                } else {
-                    if (retries > 0) {
-                        return timeout(apiRetryDelay)
-                            .then(() => {
-                                dispatch(ActionCreators.resolveRequest(requestName));
-                                return dispatch(ActionCreators.makeAuthenticatedRequest(requestName, requestAction, retries - 1)(dispatch, getState));
-                            });
-                    }
-                    dispatch(ActionCreators.resolveRequest(requestName));
-                    return Promise.reject(error.FailedRequestError.create(res.status));
+                }
+            });
+
+    };
+};
+
+ActionCreators.fetchAppData = () => {
+    return (dispatch) => {
+        dispatch(ActionCreators.fetchCurrentUserIfNecessary());
+        dispatch(ActionCreators.batchPullIfNecessary(RecordTypes.TIME_BLOCK));
+    };
+};
+
+ActionCreators.fetchCurrentUserIfNecessary = () => {
+    return (dispatch, getState) => {
+        const state = getState();
+        const userId = subject.currentUserId(state);
+        const {pending = false, lastRequestAt = 0} = subject.singletonRequest("fetchCurrentUser", state);
+        const elapsedTimeSinceLastRequest = Date.now() - lastRequestAt;
+        if (!pending && !userId && elapsedTimeSinceLastRequest > requestRetryDelay) {
+           return dispatch(ActionCreators.fetchCurrentUser());
+        }
+    };
+};
+
+ActionCreators.fetchCurrentUser = () => {
+    return (dispatch) => {
+        dispatch(ActionCreators.initiateRequest('fetchCurrentUser'));
+        Api.Users.getCurrentUser()
+            .then((res) => {
+                if (res.status == httpCodes.OK) {
+                    return res.json();
+                }
+
+                return Promise.reject(res);
+            })
+            .then((json) => {
+                dispatch(ActionCreators.appendRecords(RecordTypes.USER, [json.record]));
+                dispatch(ActionCreators.setCurrentUser(json.record.id));
+                dispatch(ActionCreators.resolveRequest('fetchCurrentUser'));
+            })
+            .catch((res) => {
+                dispatch(ActionCreators.resolveRequest('fetchCurrentUser'));
+                if (res.status == httpCodes.UNAUTHORIZED) {
+                    dispatch(ActionCreators.logout());
                 }
             });
     };
