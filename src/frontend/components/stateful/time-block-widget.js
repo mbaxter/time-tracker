@@ -2,8 +2,7 @@
 const React = require('react');
 const ReactRedux = require('react-redux');
 const TimeBlockDatatable = require('../presentational/time-block-datatable');
-const get = require('lodash/get');
-const RecordTypes = require('../../constants/record-types');
+const subjectSelector = require('../../selector/subject-selector');
 const orderedTimeBlocksSelector = require('../../selector/ordered-time-blocks');
 
 const TimeBlockWidget = (props) => {
@@ -14,8 +13,7 @@ const TimeBlockWidget = (props) => {
 
 const mapStateToProps = (state) => {
     const data = orderedTimeBlocksSelector(state);
-    const userId = get(state, 'credentials.userId');
-    const timezone = get(state, `records.${RecordTypes.USER}.${userId}.timezone`, 'UTC');
+    const {timezone = "UTC"} = subjectSelector.currentUser(state) || {};
     return {
         data,
         timezone

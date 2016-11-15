@@ -2,6 +2,7 @@
 const get = require('lodash/get');
 const curry = require('lodash/curry');
 const RecordTypes = require('../../constants/record-types');
+const RequestStatus = require('../../constants/request-status');
 
 const SubjectSelectors = {};
 
@@ -16,6 +17,18 @@ SubjectSelectors.authenticated = (state) => {
 SubjectSelectors.batchPull = curry((recordType, state) => {
     return get(state, `request.batchPull.${recordType}`, {pending: false, offset: 0, finished: false, lastPulled: 0});
 });
+
+SubjectSelectors.formFields = (formName, state) => {
+    return get(state, `ui.formFields.${formName}`, {});
+};
+
+SubjectSelectors.formSubmission = curry((formName, state) => {
+    return get(state, `request.formSubmissions.${formName}`, {status: RequestStatus.NONE, error: "", fieldErrors: {}});
+});
+
+SubjectSelectors.loaderRequests = (state) => {
+    return get(state, 'ui.loader.requests', 0);
+};
 
 SubjectSelectors.singletonRequest = curry((requestName, state) => {
     return get(state, `request.singleton.${requestName}`, {pending: false, lastRequestAt: 0});

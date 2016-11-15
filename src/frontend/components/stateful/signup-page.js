@@ -4,9 +4,9 @@ const ReactRedux = require('react-redux');
 const ReactRouter = require('react-router');
 const UserForm = require('../presentational/user-form');
 const actions = require('../../actions');
-const PageNames = require('../../constants/form-names');
+const FormNames = require('../../constants/form-names');
 const RequestStatus = require('../../constants/request-status');
-const get = require('lodash/get');
+const subjectSelector = require('../../selector/subject-selector');
 
 const Link = ReactRouter.Link;
 
@@ -20,22 +20,21 @@ const SignupPage = (props) => {
 };
 
 const mapStateToProps = (state) => {
-    const fields = get(state, `ui.formFields.${PageNames.SIGNUP}`, {});
-    const error = get(state, `request.formSubmissions.${PageNames.SIGNUP}.error`,"");
-    const fieldErrors = get(state, `request.formSubmissions.${PageNames.SIGNUP}.fieldErrors`,{});
-    const requestStatus = get(state, `request.formSubmissions.${PageNames.SIGNUP}.status`);
+    const fields = subjectSelector.formFields(FormNames.SIGNUP, state);
+    const {error, fieldErrors, status} = subjectSelector.formSubmission(FormNames.SIGNUP, state);
+
     return {
         fields,
         fieldErrors,
         error,
-        disabled: requestStatus == RequestStatus.PENDING
+        disabled: status == RequestStatus.PENDING
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         onChange: (fieldName, value) => {
-            dispatch(actions.updateFormField(PageNames.SIGNUP, fieldName, value));
+            dispatch(actions.updateFormField(FormNames.SIGNUP, fieldName, value));
         },
         onSubmit: (formData) => {
             dispatch(actions.signup(formData));

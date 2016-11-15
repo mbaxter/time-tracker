@@ -9,7 +9,6 @@ const RequestStatus = require('../constants/request-status');
 const Api = require('../api');
 const BatchApi = require('../api/batch-api');
 const ModelValidator = require('../../shared/validation/model');
-const get = require('lodash/get');
 const first = require('lodash/first');
 const routerHistory = ReactRouter.hashHistory;
 const noop = require('lodash/noop');
@@ -354,8 +353,8 @@ ActionCreators.signup = (record) => {
 ActionCreators.handleFormSubmission = (formName, formAction, {formValidate = noop, formSuccess = noop, formFail = noop} = {}) => {
     return (dispatch, getState) => {
         const state = getState();
-        const requestStatus = get(state, `request.formSubmissions.${formName}.status`, RequestStatus.NONE);
-        if (requestStatus == RequestStatus.PENDING) {
+        const {status = RequestStatus.NONE} = subject.formSubmission(formName, state);
+        if (status == RequestStatus.PENDING) {
             // We've already got a pending request, don't make another one
             return;
         }

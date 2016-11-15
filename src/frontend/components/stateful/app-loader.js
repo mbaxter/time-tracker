@@ -1,10 +1,10 @@
 "use strict";
 const ReactRedux = require('react-redux');
 const Loader = require('../presentational/loader');
-const get = require('lodash/get');
+const subjectSelector = require('../../selector/subject-selector');
 
 const mapStateToProps = (state) => {
-    const loaderRequestCount = get(state, 'ui.loader.requests', 0);
+    const loaderRequestCount = subjectSelector.loaderRequests(state);
     return {
         isEnabled: loaderRequestCount > 0
     };

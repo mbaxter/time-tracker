@@ -8,7 +8,6 @@ const Redux = require('redux');
 const ReactRedux = require('react-redux');
 const thunkMiddleware = require('redux-thunk').default;
 const createLoggerMiddleware = require('redux-logger');
-const get = require('lodash/get');
 // App components
 const App = require('./components/presentational/app');
 const LoginPage = require('./components/stateful/login-page');
@@ -16,6 +15,7 @@ const SignupPage = require('./components/stateful/signup-page');
 const TimeTrackerApp = require('./components/stateful/time-tracker-app');
 const HomePage = require('./components/presentational/home-page');
 const reducer = require('./reducer');
+const subjectSelector = require('./selector/subject-selector');
 
 const Router = ReactRouter.Router;
 const Provider = ReactRedux.Provider;
@@ -38,7 +38,7 @@ let store = Redux.createStore(
 
 const requireAuthentication = (nextState, replace) => {
     const state = store.getState();
-    if (!get(state, 'credentials.authenticated', false)) {
+    if (!subjectSelector.authenticated(state)) {
         replace('/login');
     }
 };
