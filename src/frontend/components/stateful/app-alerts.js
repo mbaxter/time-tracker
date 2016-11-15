@@ -2,25 +2,11 @@
 const ReactRedux = require('react-redux');
 const Alerts = require('../presentational/alerts');
 const actions = require('../../actions');
-const reselect = require('reselect');
-const get = require('lodash/get');
-const values = require('lodash/values');
-const orderBy = require('lodash/orderBy');
-
-const alertsSelector = (state) => {
-    return get(state, "ui.alerts", {});
-};
-
-const orderedAlertsSelector = reselect.createSelector(
-    alertsSelector,
-    (alerts) => {
-        return orderBy(values(alerts), 'created', 'desc');
-    }
-);
+const orderedAlerts = require('../../selector/ordered-alerts');
 
 const mapStateToProps = (state) => {
     return {
-        alerts: orderedAlertsSelector(state)
+        alerts: orderedAlerts(state)
     };
 };
 
