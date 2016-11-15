@@ -2,7 +2,6 @@
 const React = require('react');
 const Row = require('./datatable-row');
 const Header = require('./datatable-header');
-const pick = require('lodash/pick');
 
 class Datatable extends React.Component {
    render() {
@@ -11,9 +10,9 @@ class Datatable extends React.Component {
               <Header columns={this.props.columns.map((col) => col.header)}/>
               <tbody>
               {
-                 this.props.data.map((row) => {
+                 this.props.data.map((row, index) => {
                     return (
-                        <Row data={this.props.columns.map((col) => col.displayTransform(row))}/>
+                        <Row key={index} data={this.props.columns.map((col) => col.displayTransform(row))}/>
                     );
                  })
               }

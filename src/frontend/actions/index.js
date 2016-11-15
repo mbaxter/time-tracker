@@ -4,6 +4,7 @@ const ActionTypes = require('../constants/action-types');
 const AlertTypes = require('../constants/alert-types');
 const uuid = require('node-uuid');
 const FormNames = require('../constants/form-names');
+const RecordTypes = require('../constants/record-types');
 const RequestStatus = require('../constants/request-status');
 const Api = require('../api');
 const ModelValidator = require('../../shared/validation/model');
@@ -12,6 +13,13 @@ const first = require('lodash/first');
 const routerHistory = ReactRouter.hashHistory;
 const noop = require('lodash/noop');
 const timeout = require('../util/timeout-promise');
+const isArray = require('lodash/isArray');
+const httpCodes = require('http-status-codes');
+const Promise = require('bluebird');
+const error = require('../error');
+
+const apiRetryDelay = 1000;
+const batchSize = 1000;
 
 const ActionCreators = {};
 
@@ -26,10 +34,10 @@ ActionCreators.updateFormField = (formName, fieldName, fieldValue) => {
 };
 
 ActionCreators.clearForm = (formName) => {
-   return {
-       type: ActionTypes.CLEAR_FORM,
-       formName
-   };
+    return {
+        type: ActionTypes.CLEAR_FORM,
+        formName
+    };
 };
 
 ActionCreators.showTemporaryAlert = (message, type) => {
@@ -55,12 +63,12 @@ ActionCreators.fadeAlert = (id) => {
 };
 
 ActionCreators.showAlert = (message, type = ActionTypes.INFO) => {
-   return {
-       type: ActionTypes.SHOW_ALERT,
-       alertType: type,
-       message,
-       id: uuid.v4()
-   };
+    return {
+        type: ActionTypes.SHOW_ALERT,
+        alertType: type,
+        message,
+        id: uuid.v4()
+    };
 };
 
 ActionCreators.dismissAlert = (id) => {
@@ -107,11 +115,186 @@ ActionCreators.submitFormSuccess = (formName) => {
 };
 
 // Routing
-ActionCreators.navigateToPage = function(url) {
+ActionCreators.navigateToPage = (url) => {
     routerHistory.push(url);
 };
 
-// Authentication / Login
+// Records
+ActionCreators.appendRecords = (recordType, records) => {
+    if (!isArray(records)) {
+        records = [records];
+    }
+
+    return {
+        type: ActionTypes.APPEND_RECORDS,
+        recordType,
+        records
+    };
+};
+
+ActionCreators.clearRecords = () => {
+    return {
+        type: ActionTypes.CLEAR_RECORDS
+    };
+};
+
+// Request
+ActionCreators.initiateRequest = (requestName) => {
+    return {
+        type: ActionTypes.INITIATE_REQUEST,
+        name: requestName
+    };
+};
+
+ActionCreators.resolveRequest = (requestName) => {
+    return {
+        type: ActionTypes.RESOLVE_REQUEST,
+        name: requestName
+    };
+};
+
+ActionCreators.startBatchPull = (recordType, batchSize) => {
+    return {
+        type: ActionTypes.BATCH_PULL_START,
+        name: recordType,
+        batchSize
+    };
+};
+
+ActionCreators.batchPullProgress = (recordType, recordCount) => {
+    return {
+        type: ActionTypes.BATCH_PULL_PROGRESS,
+        name: recordType,
+        count: recordCount
+    };
+};
+
+ActionCreators.endBatchPull = (recordType) => {
+    return {
+        type: ActionTypes.BATCH_PULL_END,
+        name: recordType
+    };
+};
+
+// Fetch
+ActionCreators.fetchUserData = () => {
+    return (dispatch, getState) => {
+        const token = get(getState(), 'credentials.token', null);
+        return dispatch(ActionCreators.fetchCurrentUser(token))
+            .then(() => {
+                return dispatch(ActionCreators.fetchTimeBlocks());
+            });
+    };
+};
+
+ActionCreators.fetchCurrentUser = (userToken, retries = 0) => {
+    const requestName = `${ActionTypes.FETCH_CURRENT_USER}-${userToken}`;
+    const requestAction = () => {
+        return Api.Users.getCurrentUser();
+    };
+    const onSuccess = (json, dispatch) => {
+        dispatch(ActionCreators.appendRecords(RecordTypes.USER, [json.record]));
+        dispatch(ActionCreators.setCurrentUser(json.record.id));
+        return Promise.resolve(json.record.id);
+    };
+
+    return ActionCreators.makeAuthenticatedRequest(requestName, requestAction, {onSuccess, retries});
+};
+
+ActionCreators.fetchTimeBlocks = () => {
+    const recordType = RecordTypes.TIME_BLOCK;
+    return (dispatch, getState) => {
+        const offset = 0;
+        const userId = get(getState(), 'credentials.userId', null);
+        const batchAction = (offset) => {
+            return Api.TimeBlocks.getUserRecords(userId, batchSize, offset);
+        };
+        const onProgress = (json, dispatch) => {
+            dispatch(ActionCreators.appendRecords(recordType, json.records));
+        };
+        return dispatch(ActionCreators.fetchBatches(recordType, batchAction, {onProgress, offset}));
+    };
+};
+
+ActionCreators.fetchBatches = (recordType, batchAction, {onProgress = noop, offset = 0} = {}) => {
+    return (dispatch, getState) => {
+        const state = getState();
+        const requestName = `batchPull-${recordType}`;
+        const requestStatus = get(state, requestName, RequestStatus.NONE);
+        if (requestStatus == RequestStatus.PENDING) {
+            return Promise.reject(error.DuplicateRequestError.create());
+        }
+        dispatch(ActionCreators.initiateRequest(requestName));
+        dispatch(ActionCreators.startBatchPull(recordType, batchSize));
+
+        let currentOffset = offset;
+        const batchRequest = () => {
+            return batchAction(currentOffset);
+        };
+        const onBatchSuccess = (json, dispatch, getState) => {
+            const records = json.records;
+            const recordCount = records.length;
+            currentOffset += recordCount;
+            dispatch(ActionCreators.batchPullProgress(requestName, recordCount));
+            onProgress(json, dispatch, getState);
+            if (recordCount == batchSize) {
+                // Pull next batch
+                return dispatch(ActionCreators.makeAuthenticatedRequest(`${requestName}-${currentOffset}`, batchRequest, {onSuccess: onBatchSuccess}));
+            }
+        };
+
+        const resolveBatchRequest = () => {
+            dispatch(ActionCreators.resolveRequest(requestName));
+            dispatch(ActionCreators.endBatchPull(recordType));
+            return Promise.resolve();
+        };
+        return dispatch(ActionCreators.makeAuthenticatedRequest(`${requestName}-${currentOffset}`, batchRequest, {onSuccess: onBatchSuccess}))
+            .then(resolveBatchRequest, resolveBatchRequest);
+    };
+};
+
+ActionCreators.makeAuthenticatedRequest = (requestName, requestAction, {onSuccess = noop, retries = 0} = {}) => {
+    return (dispatch, getState) => {
+        const state = getState();
+        const token = get(state, 'credentials.token');
+        if (!token) {
+            return Promise.reject(error.UnauthorizedError.create());
+        }
+
+        const isAlreadyFetching = get(state, `pending-requests.${requestName}`,0) > 0;
+        if (isAlreadyFetching) {
+            return Promise.reject(error.DuplicateRequestError.create());
+        }
+
+        dispatch(ActionCreators.initiateRequest(requestName));
+        return requestAction()
+            .then((res) => {
+                if (res.status == httpCodes.OK) {
+                    dispatch(ActionCreators.resolveRequest(requestName));
+                    return res.json()
+                        .then((json) => {
+                            return onSuccess(json, dispatch, getState);
+                        });
+                } else if (res.status == httpCodes.UNAUTHORIZED) {
+                    dispatch(ActionCreators.logout());
+                    dispatch(ActionCreators.resolveRequest(requestName));
+                    return Promise.reject(error.UnauthorizedError.create());
+                } else {
+                    if (retries > 0) {
+                        return timeout(apiRetryDelay)
+                            .then(() => {
+                                dispatch(ActionCreators.resolveRequest(requestName));
+                                return dispatch(ActionCreators.makeAuthenticatedRequest(requestName, requestAction, retries - 1)(dispatch, getState));
+                            });
+                    }
+                    dispatch(ActionCreators.resolveRequest(requestName));
+                    return Promise.reject(error.FailedRequestError.create(res.status));
+                }
+            });
+    };
+};
+
+// Authentication / Credentials
 ActionCreators.authorize = (token) => {
     return {
         type: ActionTypes.AUTHORIZE,
@@ -122,6 +305,20 @@ ActionCreators.authorize = (token) => {
 ActionCreators.deauthorize = () => {
     return {
         type: ActionTypes.DEAUTHORIZE
+    };
+};
+
+ActionCreators.setCurrentUser = (id) => {
+    return {
+        type: ActionTypes.SET_CURRENT_USER,
+        id
+    };
+};
+
+ActionCreators.logout = () => {
+    return (dispatch) => {
+        dispatch(ActionCreators.deauthorize());
+        dispatch(ActionCreators.clearRecords());
     };
 };
 
@@ -150,6 +347,7 @@ ActionCreators.login = (emailAddress, password) => {
 
     const formSuccess = (json, dispatch) => {
         dispatch(ActionCreators.authorize(json.token));
+        Api.setAuthToken(json.token);
         ActionCreators.navigateToPage("/app");
         // Clear the form except for email_address
         dispatch(ActionCreators.clearForm(FormNames.LOGIN));
@@ -216,7 +414,7 @@ ActionCreators.handleFormSubmission = (formName, formAction, {formValidate = noo
             dispatch(ActionCreators.hideLoader());
         };
 
-        // Make api request to log in
+        // Make api request
         formAction()
             .then((res) => {
                 return res.json().then((json) => {

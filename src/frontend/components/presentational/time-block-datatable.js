@@ -4,6 +4,7 @@ const DateTimeFormatter = require('../../../shared/datetime/format/date-time-for
 const TimeRangeFormatter = require('../../../shared/datetime/format/time-range-formatter');
 const Datatable = require('./datatable');
 const noop = require('lodash/noop');
+const DatatableActions = require('./datatable/datatable-actions');
 
 const TimeBlockDataTable = (props) => {
     const columns = [
@@ -38,10 +39,7 @@ const TimeBlockDataTable = (props) => {
             header: "Actions",
             displayTransform: (row) => {
                return (
-                   <div className="btn-group" role="group">
-                       <button key="edit" className="btn btn-default btn-xs" onClick={() => props.onEdit(row)}>Edit</button>
-                       <button key="del" className="btn btn-default btn-xs" onClick={() => props.onDelete(row)}>Delete</button>
-                   </div>
+                   <DatatableActions row={row} onEdit={props.onEdit} onDelete={props.onDelete}/>
                );
             }
         }
@@ -55,7 +53,8 @@ const TimeBlockDataTable = (props) => {
 TimeBlockDataTable.propTypes = {
     data: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
     onDelete: React.PropTypes.func.isRequired,
-    onEdit: React.PropTypes.func.isRequired
+    onEdit: React.PropTypes.func.isRequired,
+    timezone: React.PropTypes.string.isRequired
 };
 
 TimeBlockDataTable.defaultProps = {

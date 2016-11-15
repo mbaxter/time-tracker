@@ -4,9 +4,9 @@ const React = require('react');
 const DatatableRow = (props) => {
     return (
         <tr>
-            {props.data.map((datum) => {
+            {props.data.map((datum, key) => {
                 return (
-                    <td>{datum}</td>
+                    <td key={key}>{datum}</td>
                 );
             })}
         </tr>

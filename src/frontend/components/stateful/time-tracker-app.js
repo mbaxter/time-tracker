@@ -2,8 +2,13 @@
 const React = require('react');
 const ReactRedux = require('react-redux');
 const get = require('lodash/get');
+const actions = require('../../actions');
 
 class TimeTrackerApp extends React.Component {
+    componentDidMount() {
+        this.props.dispatch(actions.fetchUserData());
+    }
+
     render() {
         if (!this.props.isAuthenticated) {
             return false;
@@ -19,6 +24,7 @@ class TimeTrackerApp extends React.Component {
 
 TimeTrackerApp.propTypes = {
     children: React.PropTypes.node,
+    dispatch: React.PropTypes.func.isRequired,
     isAuthenticated: React.PropTypes.bool
 };
 
