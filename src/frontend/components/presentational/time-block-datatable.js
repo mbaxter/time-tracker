@@ -5,11 +5,10 @@ const TimeRangeFormatter = require('../../../shared/datetime/format/time-range-f
 const Datatable = require('./datatable');
 const noop = require('lodash/noop');
 const DatatableActions = require('./datatable/datatable-actions');
-const Paging = require('./datatable/paging');
-const pick = require('lodash/pick');
+const Paging = require('./datatable/add-ons/paging');
+const DateFilter = require('./datatable/add-ons/date-filter');
 
 const TimeBlockDataTable = (props) => {
-    const pagingProps = pick(props, ['onGoToPage', 'currentPage', 'totalPages']);
     const columns = [
         {
             header: "Date",
@@ -50,8 +49,9 @@ const TimeBlockDataTable = (props) => {
 
     return (
         <div>
+            <DateFilter {... props.dateFilter}/>
             <Datatable data={props.data} columns={columns}/>
-            <Paging {... pagingProps} />
+            <Paging {... props.paging} />
         </div>
     );
 };
@@ -62,16 +62,14 @@ TimeBlockDataTable.propTypes = {
     onEdit: React.PropTypes.func.isRequired,
     timezone: React.PropTypes.string.isRequired,
     // Paging attributes
-    onGoToPage: React.PropTypes.func.isRequired,
-    currentPage: React.PropTypes.number.isRequired,
-    totalPages: React.PropTypes.number,
+    paging: React.PropTypes.shape(Paging.propTypes),
+    // Date Filter
+    dateFilter: React.PropTypes.shape(DateFilter.propTypes)
 };
 
 TimeBlockDataTable.defaultProps = {
     onEdit: noop,
     onDelete: noop,
-    onGoToPage: noop,
-    currentPage: 1,
     data: []
 };
 

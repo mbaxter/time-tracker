@@ -19,6 +19,8 @@ const Promise = require('bluebird');
 const subject = require('../selector/subject-selector');
 const clamp = require('lodash/clamp');
 const AppConfig = require('../constants/app-configuration');
+const DateFormatter = require('../../shared/datetime/format/date-formatter');
+const humanize = require('humanize-string');
 
 const ActionCreators = {};
 
@@ -108,6 +110,82 @@ ActionCreators.goToPage = (tableName, getData, page) => {
             name: tableName,
             page
         });
+    };
+};
+
+ActionCreators.applyDateFilter = (datatableName, from, to) => {
+    return {
+        type: ActionTypes.DATE_FILTER_APPLY,
+        name: datatableName,
+        from,
+        to
+    };
+};
+
+ActionCreators.applyDateFilterError = (datatableName, error) => {
+    return {
+        type: ActionTypes.DATE_FILTER_APPLY_ERROR,
+        name: datatableName,
+        error
+    };
+};
+
+ActionCreators.clearDateFilter = (datatableName) => {
+    return {
+        type: ActionTypes.DATE_FILTER_CLEAR,
+        name: datatableName
+    };
+};
+
+ActionCreators.setDateFilterField = (datatableName, fieldName, fieldValue) => {
+    return {
+        type: ActionTypes.DATE_FILTER_SET_FIELD,
+        name: datatableName,
+        fieldName,
+        fieldValue
+    };
+};
+
+ActionCreators.submitDateFilter = (datatableName, formData) => {
+    return (dispatch) => {
+        // Validate
+        let isValid = true;
+        let invalidFields = [];
+        let missingFields = [];
+        let formattedFields = {};
+        const validateField = (fieldName) => {
+            const value = formData[fieldName];
+            if (!value) {
+                isValid = false;
+                missingFields.push(fieldName);
+            } else {
+                const normalized = DateFormatter.normalize(value);
+                if (!DateFormatter.isValidNormalizedValue(normalized)) {
+                    isValid = false;
+                    invalidFields.push(fieldName);
+                } else {
+                    formattedFields[fieldName] = normalized;
+                }
+            }
+        };
+        validateField('from');
+        validateField('to');
+
+        if (isValid) {
+            let switchOrder = formattedFields.from > formattedFields.to;
+            let from = switchOrder ? formattedFields.to : formattedFields.from;
+            let to = switchOrder ? formattedFields.from : formattedFields.to;
+            dispatch(ActionCreators.applyDateFilter(datatableName, from, to));
+        } else {
+            let error = "";
+            if (missingFields.length > 0) {
+                error = `Missing fields: ${missingFields.map(humanize).join(', ')}.  `;
+            }
+            if (invalidFields.length > 0) {
+                error += `Invalid fields: ${invalidFields.map(humanize).join(', ')}.`;
+            }
+            dispatch(ActionCreators.applyDateFilterError(datatableName, error));
+        }
     };
 };
 
@@ -221,7 +299,7 @@ ActionCreators.batchPull = (recordType) => {
         BatchApi.pullBatch(recordType, {limit: AppConfig.REQUEST_BATCH_SIZE, offset, userId})
             .then((res) => {
                 if (res.status == httpCodes.OK) {
-                   return res.json();
+                    return res.json();
                 }
 
                 return Promise.reject(res);
@@ -254,7 +332,7 @@ ActionCreators.fetchCurrentUserIfNecessary = () => {
         const {pending = false, lastRequestAt = 0} = subject.apiRequest("fetchCurrentUser", state);
         const elapsedTimeSinceLastRequest = Date.now() - lastRequestAt;
         if (!pending && !userId && elapsedTimeSinceLastRequest > AppConfig.REQUEST_RETRY_DELAY) {
-           return dispatch(ActionCreators.fetchCurrentUser());
+            return dispatch(ActionCreators.fetchCurrentUser());
         }
     };
 };

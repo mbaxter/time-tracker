@@ -1,6 +1,6 @@
 "use strict";
-require('../../css/fx/flex.css');
-require('../../css/paging.css');
+require('../../../css/fx/flex.css');
+require('../../../css/paging.css');
 const React = require('react');
 const noop = require('lodash/noop');
 
@@ -38,7 +38,7 @@ const Paging = (props) => {
 
 Paging.propTypes = {
     onGoToPage: React.PropTypes.func.isRequired,
-    currentPage: React.PropTypes.number.isRequired,
+    currentPage: React.PropTypes.number,
     totalPages: React.PropTypes.number,
 };
 

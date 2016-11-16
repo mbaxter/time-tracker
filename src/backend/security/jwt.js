@@ -22,12 +22,12 @@ module.exports.sign = function(data) {
 module.exports.verify = function(token) {
     return new Promise(function(resolve, reject){
         if (!token) {
-            return reject("No token provided");
+            return reject(new Error("No token provided"));
         }
 
         jwt.verify(token, process.env.SECRET, function(err, decoded) {
             if (err) {
-                reject("Invalid token");
+                reject(new Error("Invalid token"));
             } else {
                 resolve(decoded);
             }

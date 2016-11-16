@@ -30,4 +30,8 @@ DateFormatter.formatForDisplay = function(normalizedDate, includeYear = false) {
     return moment(normalizedDate, DateFormatter.internalFormat, true).format(format);
 };
 
+DateFormatter.isValidNormalizedValue = function(value) {
+    return moment(value, DateFormatter.internalFormat, true).isValid();
+};
+
 module.exports = DateFormatter;

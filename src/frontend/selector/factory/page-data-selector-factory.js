@@ -12,7 +12,7 @@ module.exports = (getDataSelector, tableName) => {
                 offset -= adjustment;
             }
             const currentPage = Math.floor(offset / pageSize) + 1;
-            const totalPages = Math.ceil(data.length / pageSize);
+            const totalPages = Math.ceil(data.length / pageSize) || 1;
             data = data.slice(offset, offset + pageSize);
             return {
                 currentPage,
