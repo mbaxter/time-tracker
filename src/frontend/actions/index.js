@@ -162,14 +162,14 @@ ActionCreators.clearRecords = () => {
 // Request
 ActionCreators.initiateRequest = (requestName) => {
     return {
-        type: ActionTypes.SINGLETON_REQUEST_START,
+        type: ActionTypes.API_REQUEST_START,
         name: requestName
     };
 };
 
 ActionCreators.resolveRequest = (requestName) => {
     return {
-        type: ActionTypes.SINGLETON_REQUEST_END,
+        type: ActionTypes.API_REQUEST_END,
         name: requestName
     };
 };
@@ -251,7 +251,7 @@ ActionCreators.fetchCurrentUserIfNecessary = () => {
     return (dispatch, getState) => {
         const state = getState();
         const userId = subject.currentUserId(state);
-        const {pending = false, lastRequestAt = 0} = subject.singletonRequest("fetchCurrentUser", state);
+        const {pending = false, lastRequestAt = 0} = subject.apiRequest("fetchCurrentUser", state);
         const elapsedTimeSinceLastRequest = Date.now() - lastRequestAt;
         if (!pending && !userId && elapsedTimeSinceLastRequest > AppConfig.REQUEST_RETRY_DELAY) {
            return dispatch(ActionCreators.fetchCurrentUser());
