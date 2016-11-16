@@ -16,7 +16,7 @@ const recordType = (state = {}, action) => {
 
 const record = (state = {}, action) => {
      switch(action.type) {
-         case ActionTypes.CLEAR_RECORDS:
+         case ActionTypes.CLEAR_CREDENTIALS:
              return {};
          case ActionTypes.APPEND_RECORDS:
              return {

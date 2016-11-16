@@ -20,6 +20,8 @@ const formField = (state = {}, action) => {
 
 const formFields = (state = {}, action) => {
     switch(action.type) {
+        case ActionTypes.CLEAR_CREDENTIALS:
+            return {};
         case ActionTypes.FORM_FIELD_UPDATE:
         case ActionTypes.CLEAR_FORM:
             return {

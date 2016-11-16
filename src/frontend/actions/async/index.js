@@ -18,6 +18,7 @@ const AppConfig = require('../../constants/app-configuration');
 const DateFormatter = require('../../../shared/datetime/format/date-formatter');
 const humanize = require('humanize-string');
 const SyncActionCreators = require('../sync');
+const haveCredentialsBeenClearedFactory = require('../../selector/factory/have-credentials-been-cleared');
 
 const AsyncActionCreators = {};
 
@@ -130,6 +131,7 @@ AsyncActionCreators.batchPull = (recordType) => {
         dispatch(SyncActionCreators.batchPullStart(recordType));
         const {offset} = subject.batchPull(recordType, state);
         const userId = subject.currentUserId(state);
+        const haveCredentialsBeenCleared = haveCredentialsBeenClearedFactory(getState());
         BatchApi.pullBatch(recordType, {limit: AppConfig.REQUEST_BATCH_SIZE, offset, userId})
             .then((res) => {
                 if (res.status == httpCodes.OK) {
@@ -139,10 +141,16 @@ AsyncActionCreators.batchPull = (recordType) => {
                 return Promise.reject(res);
             })
             .then((json) => {
+                if (haveCredentialsBeenCleared(getState())) {
+                    return;
+                }
                 dispatch(SyncActionCreators.batchPullSuccess(recordType, AppConfig.REQUEST_BATCH_SIZE, json.records.length));
                 dispatch(SyncActionCreators.appendRecords(recordType, json.records));
             })
             .catch((res = {}) => {
+                if (haveCredentialsBeenCleared(getState())) {
+                    return;
+                }
                 dispatch(SyncActionCreators.batchPullFail(recordType));
                 if (res.status == httpCodes.UNAUTHORIZED) {
                     dispatch(AsyncActionCreators.logout());
@@ -165,8 +173,9 @@ AsyncActionCreators.fetchCurrentUserIfNecessary = () => {
 };
 
 AsyncActionCreators.fetchCurrentUser = () => {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(SyncActionCreators.initiateRequest('fetchCurrentUser'));
+        const haveCredentialsBeenCleared = haveCredentialsBeenClearedFactory(getState());
         Api.Users.getCurrentUser()
             .then((res) => {
                 if (res.status == httpCodes.OK) {
@@ -176,12 +185,18 @@ AsyncActionCreators.fetchCurrentUser = () => {
                 return Promise.reject(res);
             })
             .then((json) => {
+                if (haveCredentialsBeenCleared(getState())){
+                    return;
+                }
                 dispatch(SyncActionCreators.appendRecords(RecordTypes.USER, [json.record]));
                 dispatch(SyncActionCreators.setCurrentUser(json.record.id));
                 dispatch(SyncActionCreators.resolveRequest('fetchCurrentUser'));
             })
             .catch((res) => {
                 dispatch(SyncActionCreators.resolveRequest('fetchCurrentUser'));
+                if (haveCredentialsBeenCleared(getState())){
+                    return;
+                }
                 if (res.status == httpCodes.UNAUTHORIZED) {
                     dispatch(AsyncActionCreators.logout());
                 }
@@ -191,8 +206,7 @@ AsyncActionCreators.fetchCurrentUser = () => {
 
 AsyncActionCreators.logout = () => {
     return (dispatch) => {
-        dispatch(SyncActionCreators.deauthorize());
-        dispatch(SyncActionCreators.clearRecords());
+        dispatch(SyncActionCreators.clearCredentials());
     };
 };
 
@@ -220,11 +234,12 @@ AsyncActionCreators.login = (emailAddress, password) => {
     };
 
     const formSuccess = (json, dispatch) => {
+        // Make sure any previous data is cleared out first
+        dispatch(SyncActionCreators.clearCredentials());
         dispatch(SyncActionCreators.authorize(json.token));
         Api.setAuthToken(json.token);
         SyncActionCreators.navigateToPage("/app");
-        // Clear the form except for email_address
-        dispatch(SyncActionCreators.clearForm(FormNames.LOGIN));
+        // Clear the login form except for email_address
         dispatch(SyncActionCreators.updateFormField(FormNames.LOGIN, 'email_address', emailAddress));
     };
 

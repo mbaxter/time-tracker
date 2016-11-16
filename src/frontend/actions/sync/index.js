@@ -17,16 +17,16 @@ SyncActionCreators.authorize = (token) => {
     };
 };
 
-SyncActionCreators.deauthorize = () => {
-    return {
-        type: ActionTypes.DEAUTHORIZE
-    };
-};
-
 SyncActionCreators.setCurrentUser = (id) => {
     return {
         type: ActionTypes.SET_CURRENT_USER,
         id
+    };
+};
+
+SyncActionCreators.clearCredentials = () => {
+    return {
+        type: ActionTypes.CLEAR_CREDENTIALS
     };
 };
 
@@ -122,12 +122,6 @@ SyncActionCreators.appendRecords = (recordType, records) => {
         type: ActionTypes.APPEND_RECORDS,
         recordType,
         records
-    };
-};
-
-SyncActionCreators.clearRecords = () => {
-    return {
-        type: ActionTypes.CLEAR_RECORDS
     };
 };
 

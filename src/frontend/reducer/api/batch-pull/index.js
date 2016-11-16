@@ -28,6 +28,8 @@ const batchPullByName = (state = {pending: false, offset: 0, finished: false, la
 
 const batchPull = (state = {}, action) => {
     switch (action.type) {
+        case ActionType.CLEAR_CREDENTIALS:
+            return {};
         case ActionType.BATCH_PULL_START:
         case ActionType.BATCH_PULL_FAIL:
         case ActionType.BATCH_PULL_SUCCESS:
@@ -35,8 +37,6 @@ const batchPull = (state = {}, action) => {
                 ... state,
                 [action.name]: batchPullByName(state[action.name], action)
             };
-        case ActionType.DEAUTHORIZE:
-            return {};
         default:
             return state;
     }

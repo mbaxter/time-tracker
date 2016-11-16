@@ -16,6 +16,8 @@ const pagingByName = (state = {offset: 0, pageSize: AppConfig.TABLE_PAGING_SIZE}
 
 const paging = (state = {}, action) => {
     switch(action.type) {
+        case ActionTypes.CLEAR_CREDENTIALS:
+            return {};
         case ActionTypes.PAGING_GO_TO_PAGE:
             return {
                 ... state,

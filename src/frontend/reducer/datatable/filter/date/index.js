@@ -41,6 +41,8 @@ const dateFilterByName = (state = {filter: {}, fields: {}, error: ""}, action) =
 
 const dateFilter = (state = {}, action) => {
    switch(action.type) {
+       case ActionTypes.CLEAR_CREDENTIALS:
+           return {};
        case ActionTypes.DATE_FILTER_APPLY:
        case ActionTypes.DATE_FILTER_APPLY_ERROR:
        case ActionTypes.DATE_FILTER_CLEAR:

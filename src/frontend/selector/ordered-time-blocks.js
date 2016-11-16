@@ -5,8 +5,9 @@ const orderBy = require('lodash/orderBy');
 const values = require('lodash/values');
 
 module.exports = reselect.createSelector(
+    subjectSelectors.currentUserId,
     subjectSelectors.timeBlocks,
-    (alerts) => {
-        return orderBy(values(alerts), 'start', 'desc');
+    (userId, alerts) => {
+        return orderBy(values(alerts).filter((record) => record.user_id == userId), 'start', 'desc');
     }
 );

@@ -36,6 +36,8 @@ const formSubmission = (state = {status: RequestStatus.NONE, error: "", fieldErr
 
 const formSubmissions = (state = {}, action) => {
     switch (action.type) {
+        case ActionTypes.CLEAR_CREDENTIALS:
+            return {};
         case ActionTypes.FORM_SUBMISSION:
         case ActionTypes.FORM_SUBMISSION_FAIL:
         case ActionTypes.FORM_SUBMISSION_SUCCESS:

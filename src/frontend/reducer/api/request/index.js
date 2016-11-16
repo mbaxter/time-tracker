@@ -1,7 +1,7 @@
 "use strict";
 const ActionType = require('../../../constants/action-types');
 
-const singletonByName = (state = {pending: false, lastRequestAt: 0}, action) => {
+const requestByName = (state = {pending: false, lastRequestAt: 0}, action) => {
     switch (action.type) {
         case ActionType.API_REQUEST_START:
             return {
@@ -19,17 +19,19 @@ const singletonByName = (state = {pending: false, lastRequestAt: 0}, action) => 
     }
 };
 
-const singleton = (state = {}, action) => {
+const request = (state = {}, action) => {
     switch (action.type) {
+        case ActionType.CLEAR_CREDENTIALS:
+            return {};
         case ActionType.API_REQUEST_START:
         case ActionType.API_REQUEST_END:
             return {
                 ... state,
-                [action.name]: singletonByName(state[action.name], action)
+                [action.name]: requestByName(state[action.name], action)
             };
         default:
             return state;
     }
 };
 
-module.exports = singleton;
+module.exports = request;

@@ -29,6 +29,10 @@ SubjectSelectors.currentUserId = (state) => {
     return get(state, 'credentials.userId');
 };
 
+SubjectSelectors.clearedCredentialsCount = (state) => {
+   return get(state, `credentials.cleared`, 0);
+};
+
 SubjectSelectors.dateFilter = curry((datatableName, state) => {
     return get(state, `datatable.filter.date.${datatableName}`, {filter: {}, fields: {}, error: ""});
 });
