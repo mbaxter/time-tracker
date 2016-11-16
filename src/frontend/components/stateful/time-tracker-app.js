@@ -29,10 +29,10 @@ class TimeTrackerApp extends React.Component {
         // Show / hide loader as the shouldFetch state changes
         if (!this._fetching && shouldFetch) {
             this._fetching = true;
-            this.props.dispatch(actions.showLoader());
+            this.props.dispatch(actions.sync.showLoader());
         } else if (this._fetching && !shouldFetch) {
             this._fetching = false;
-            this.props.dispatch(actions.hideLoader());
+            this.props.dispatch(actions.sync.hideLoader());
         }
 
         // Fetch app data
@@ -44,14 +44,14 @@ class TimeTrackerApp extends React.Component {
     _cleanupFetching() {
         if (this._fetching) {
             this._fetching = false;
-            this.props.dispatch(actions.hideLoader());
+            this.props.dispatch(actions.sync.hideLoader());
             clearTimeout(this._fetchTimeout);
             this._fetchTimeout = false;
         }
     }
 
     _fetchData() {
-        this.props.dispatch(actions.fetchAppData());
+        this.props.dispatch(actions.async.fetchAppData());
         if (this.props.shouldFetch) {
             // Try fetching again after a delay
             this._fetchTimeout = setTimeout(() => this._fetchData(), 150);

@@ -13,7 +13,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         onDismiss: (alertId) => {
-            dispatch(actions.dismissAlert(alertId));
+            dispatch(actions.sync.dismissAlert(alertId));
         }
     };
 };

@@ -41,10 +41,10 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
    return {
        onChange: (fieldName, value) => {
-          dispatch(actions.updateFormField(FormNames.LOGIN, fieldName, value));
+          dispatch(actions.sync.updateFormField(FormNames.LOGIN, fieldName, value));
        },
        onSubmit: (formData) => {
-           dispatch(actions.login(formData.email_address, formData.password));
+           dispatch(actions.async.login(formData.email_address, formData.password));
        }
    };
 };

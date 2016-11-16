@@ -33,16 +33,16 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     const onGoToPage = (page) => {
-        dispatch(actions.goToPage(RecordTypes.TIME_BLOCK, timeBlockDataSelector, page));
+        dispatch(actions.async.goToDatatablePage(RecordTypes.TIME_BLOCK, timeBlockDataSelector, page));
     };
     const onDateFilterChange = (fieldName, fieldValue) => {
-        dispatch(actions.setDateFilterField(RecordTypes.TIME_BLOCK, fieldName, fieldValue));
+        dispatch(actions.sync.setDateFilterField(RecordTypes.TIME_BLOCK, fieldName, fieldValue));
     };
     const onDateFilterSubmit = (formData) => {
-        dispatch(actions.submitDateFilter(RecordTypes.TIME_BLOCK, formData));
+        dispatch(actions.async.submitDateFilter(RecordTypes.TIME_BLOCK, formData));
     };
     const onDateFilterClear = () => {
-        dispatch(actions.clearDateFilter(RecordTypes.TIME_BLOCK));
+        dispatch(actions.sync.clearDateFilter(RecordTypes.TIME_BLOCK));
     };
 
     return {

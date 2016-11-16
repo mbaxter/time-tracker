@@ -34,10 +34,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         onChange: (fieldName, value) => {
-            dispatch(actions.updateFormField(FormNames.SIGNUP, fieldName, value));
+            dispatch(actions.sync.updateFormField(FormNames.SIGNUP, fieldName, value));
         },
         onSubmit: (formData) => {
-            dispatch(actions.signup(formData));
+            dispatch(actions.async.signup(formData));
         }
     };
 };
