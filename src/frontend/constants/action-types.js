@@ -26,7 +26,8 @@ const ActionTypes = {
     HIDE_LOADER: "HIDE_LOADER",
     SHOW_ALERT: "SHOW_ALERT",
     DISMISS_ALERT: "DISMISS_ALERT",
-    FADE_ALERT: "FADE_ALERT"
+    FADE_ALERT: "FADE_ALERT",
+    PAGING_GO_TO_PAGE: "PAGING_GO_TO_PAGE"
 };
 
 module.exports = ActionTypes;

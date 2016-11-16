@@ -17,9 +17,8 @@ const isArray = require('lodash/isArray');
 const httpCodes = require('http-status-codes');
 const Promise = require('bluebird');
 const subject = require('../selector/subject-selector');
-
-const requestRetryDelay = 1000;
-const batchSize = 1000;
+const clamp = require('lodash/clamp');
+const AppConfig = require('../constants/app-configuration');
 
 const ActionCreators = {};
 
@@ -87,6 +86,28 @@ ActionCreators.showLoader = () => {
 ActionCreators.hideLoader = () => {
     return {
         type: ActionTypes.HIDE_LOADER
+    };
+};
+
+ActionCreators.goToPage = (tableName, getData, page) => {
+    return (dispatch, getState) => {
+        const state = getState();
+        const data = getData(state);
+        const {pageSize = AppConfig.TABLE_PAGING_SIZE} = subject.paging(tableName, state);
+        const lastPage = Math.ceil(data.length / pageSize);
+
+        // Make sure page is in bounds
+        if(page < 0) {
+            // Offset page from the end
+            page += (lastPage + 1);
+        }
+        page = clamp(page, 1, lastPage);
+
+        dispatch({
+            type: ActionTypes.PAGING_GO_TO_PAGE,
+            name: tableName,
+            page
+        });
     };
 };
 
@@ -197,7 +218,7 @@ ActionCreators.batchPull = (recordType) => {
         dispatch(ActionCreators.batchPullStart(recordType));
         const {offset} = subject.batchPull(recordType, state);
         const userId = subject.currentUserId(state);
-        BatchApi.pullBatch(recordType, {limit: batchSize, offset, userId})
+        BatchApi.pullBatch(recordType, {limit: AppConfig.REQUEST_BATCH_SIZE, offset, userId})
             .then((res) => {
                 if (res.status == httpCodes.OK) {
                    return res.json();
@@ -206,7 +227,7 @@ ActionCreators.batchPull = (recordType) => {
                 return Promise.reject(res);
             })
             .then((json) => {
-                dispatch(ActionCreators.batchPullSuccess(recordType, batchSize, json.records.length));
+                dispatch(ActionCreators.batchPullSuccess(recordType, AppConfig.REQUEST_BATCH_SIZE, json.records.length));
                 dispatch(ActionCreators.appendRecords(recordType, json.records));
             })
             .catch((res = {}) => {
@@ -232,7 +253,7 @@ ActionCreators.fetchCurrentUserIfNecessary = () => {
         const userId = subject.currentUserId(state);
         const {pending = false, lastRequestAt = 0} = subject.singletonRequest("fetchCurrentUser", state);
         const elapsedTimeSinceLastRequest = Date.now() - lastRequestAt;
-        if (!pending && !userId && elapsedTimeSinceLastRequest > requestRetryDelay) {
+        if (!pending && !userId && elapsedTimeSinceLastRequest > AppConfig.REQUEST_RETRY_DELAY) {
            return dispatch(ActionCreators.fetchCurrentUser());
         }
     };
