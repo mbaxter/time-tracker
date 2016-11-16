@@ -3,6 +3,9 @@ const random = require('lodash/random');
 const DateTimeFormatter = require('../../../../shared/datetime/format/date-time-formatter');
 const DateFactory = require('../../../../shared/datetime/factory/date-factory');
 const TimeFactory = require('../../../../shared/datetime/factory/time-factory');
+const sample = require('lodash/sample');
+
+const descriptions = ["", "Work", "Side project", "Brother's website", "Website", "Blog"];
 
 /**
  * @param {*} options
@@ -36,6 +39,7 @@ const timeBlockGenerator = function({
                 user_id: userId,
                 start: DateTimeFormatter.normalize(date, blockStart, timezone),
                 end: DateTimeFormatter.normalize(date, blockEnd, timezone),
+                description: sample(descriptions)
             });
             // Add some time between blocks
             time = TimeFactory.increment(time, random(10,30));

@@ -18,6 +18,10 @@ const TimeBlockDataTable = (props) => {
             }
         },
         {
+            header: "Description",
+            displayTransform: (row) => row.description
+        },
+        {
             header: "From",
             displayTransform: (row) => {
                 const dateTime = DateTimeFormatter.parseForDisplay(row.start, props.timezone);

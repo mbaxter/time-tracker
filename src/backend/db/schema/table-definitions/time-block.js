@@ -20,6 +20,11 @@ timeBlockDefinition.fields = {
         },
         onDelete: 'CASCADE'
     },
+    description: {
+        type: Sequelize.STRING,
+        field: 'description',
+        allowNull: true
+    },
     start: {
         type: Sequelize.DATE,
         field: 'start',
@@ -37,6 +42,7 @@ timeBlockDefinition.instanceMethods = {
         return {
             id: this.id,
             user_id: this.user_id,
+            description: this.description,
             start: DateTimeFormatter.normalizeDate(this.start),
             end: DateTimeFormatter.normalizeDate(this.end)
         };
