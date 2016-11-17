@@ -17,7 +17,7 @@ const fieldConfig = {
         required: true,
         constraints: [
             {
-                message: "Start time is invalid.",
+                message: "Start field is invalid.",
                 validators: [fieldValidators.Datetime.create()]
             }
         ]
@@ -26,7 +26,7 @@ const fieldConfig = {
         required: true,
         constraints: [
             {
-                message: "End time is invalid.",
+                message: "End field is invalid.",
                 validators: [fieldValidators.Datetime.create()]
             }
         ]

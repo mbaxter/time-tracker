@@ -25,12 +25,15 @@ const mapStateToProps = (state, ownProps) => {
     const timeBlocks = subjectSelector.timeBlocks(state);
     const recordFields = timeBlocks[ownProps.id] || {};
     const fields = defaults({}, formFields, recordFields);
+    const currentUser = subjectSelector.currentUser(state) || {};
+    const timezone = currentUser.timezone || 'UTC';
 
     const {error, fieldErrors, status} = subjectSelector.formSubmission(FormNames.TIME_BLOCK_EDIT, state);
 
     return {
         fields,
         fieldErrors,
+        timezone,
         error,
         disabled: status == RequestStatus.PENDING
     };
