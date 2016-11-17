@@ -1,8 +1,6 @@
 "use strict";
 
 const React = require('react');
-const Label = require('./field-label');
-const FieldError = require('./field-error');
 const noop = require('lodash/noop');
 const map = require('lodash/map');
 
@@ -10,14 +8,10 @@ class SelectField extends React.Component {
     render() {
         const props = this.props;
         return (
-            <div className={this._getClassNameWithError("form-group")}>
-                <Label htmlFor={props.name} className={this._getClassNameWithError()} required={props.required}>{props.label}</Label>
                 <select className="form-control" name={props.name} value={props.value}
                         onChange={this._getOnChangeHandler()} required={props.required}>
                     {this._renderOptions()}
                 </select>
-                <FieldError error={props.error}/>
-            </div>
         );
     }
 
@@ -42,16 +36,10 @@ class SelectField extends React.Component {
             this.props.onChange(fieldName, value);
         };
     }
-
-    _getClassNameWithError(className = "") {
-        return this.props.error ? `has-error ${className}` : className;
-    }
 }
 
 SelectField.propTypes = {
-    error: React.PropTypes.string,
     includeBlank: React.PropTypes.bool,
-    label: React.PropTypes.string.isRequired,
     name: React.PropTypes.string.isRequired,
     onChange: React.PropTypes.func,
     // Object mapping from displayName => value

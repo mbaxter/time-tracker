@@ -10,9 +10,7 @@ class FieldGroup extends React.Component {
         return (
             <div className={this._getClassNameWithError("form-group")}>
                 <Label className={this._getClassNameWithError()} required={props.required}>{props.label}</Label>
-                <div>
-                    {props.children}
-                </div>
+                {props.children}
                 <FieldError error={props.error}/>
             </div>
         );

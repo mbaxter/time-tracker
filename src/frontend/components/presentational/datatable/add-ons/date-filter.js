@@ -3,7 +3,7 @@ require('../../../css/date-filter.css');
 const React = require('react');
 const SubmitBtn = require('../../form-elements/submit-button');
 const ResetBtn = require('../../form-elements/reset-button');
-const InputField = require('../../form-elements/input-field');
+const InputField = require('../../form-elements/input-field-group');
 const $ = require('jquery');
 
 const DateFilter = (props) => {

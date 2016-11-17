@@ -2,8 +2,9 @@
 const $ = require('jquery');
 const React = require('react');
 const SubmitBtn = require('./form-elements/submit-button');
-const InputField = require('./form-elements/input-field');
+const InputFieldGroup = require('./form-elements/input-field-group');
 const FieldGroup = require('./form-elements/field-group');
+const InputField = require('./form-elements/input-field');
 const RequiredHelpBlock = require('./form-elements/required-help-block');
 const FormError = require('./form-elements/form-error');
 const noop = require('lodash/noop');
@@ -29,44 +30,44 @@ class TimeBlockForm extends React.Component {
                 <form action="" onSubmit={this._getOnSubmitHandler()} method="POST">
                     <FormError error={props.error}/>
                     <fieldset disabled={props.disabled}>
-                        <InputField name="description"
-                                    value={props.fields.description}
-                                    label="Description"
-                                    error={props.fieldErrors.description}
-                                    required={false}
-                                    type="text"
-                                    onChange={this._getOnChangeHandler('description')}/>
+                        <InputFieldGroup name="description"
+                                         value={props.fields.description}
+                                         label="Description"
+                                         error={props.fieldErrors.description}
+                                         required={false}
+                                         type="text"
+                                         onChange={props.onChange}/>
                         <FieldGroup label="Start" error={props.fieldErrors.start} required={true}>
-                            <input className="form-control"
+                            <InputField
                                    name="startDate"
                                    value={startDate}
                                    required={true}
                                    type="date"
                                    placeholder="YYYY-MM-DD"
-                                   onChange={this._getOnChangeHandler('start-date')}/>
-                            <input className="form-control"
+                                   onChange={props.onChange}/>
+                            <InputField
                                    name="startTime"
                                    value={startTime}
                                    required={true}
                                    type="text"
                                    placeholder="HH:mm"
-                                   onChange={this._getOnChangeHandler('start-time')}/>
+                                   onChange={props.onChange}/>
                         </FieldGroup>
                         <FieldGroup label="End" error={props.fieldErrors.end} required={true}>
-                            <input className="form-control"
+                            <InputField
                                    name="endDate"
                                    value={endDate}
                                    required={true}
                                    type="date"
                                    placeholder="YYYY-MM-DD"
-                                   onChange={this._getOnChangeHandler('end-date')}/>
-                            <input className="form-control"
+                                   onChange={props.onChange}/>
+                            <InputField
                                    name="endTime"
                                    value={endTime}
                                    required={true}
                                    type="text"
                                    placeholder="HH:mm"
-                                   onChange={this._getOnChangeHandler('end-time')}/>
+                                   onChange={props.onChange}/>
                         </FieldGroup>
                         <RequiredHelpBlock/>
                         <SubmitBtn>{props.submitText}</SubmitBtn>
@@ -85,18 +86,6 @@ class TimeBlockForm extends React.Component {
 
     _mergeDateTimeComponents(date, time) {
         return DateTimeFormatter.normalize(date, time, this.props.timezone);
-    }
-
-    _getOnChangeHandler(field) {
-        if (field == 'description') {
-            return this.props.onChange;
-        } else {
-            return (e) => {
-                const fieldValue = e.target.value;
-                const fieldName = e.target.name;
-                this.props.onChange(fieldName, fieldValue);
-            };
-        }
     }
 
     _getOnSubmitHandler() {
