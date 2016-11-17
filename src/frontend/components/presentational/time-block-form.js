@@ -48,7 +48,7 @@ class TimeBlockForm extends React.Component {
                                    name="startTime"
                                    value={startTime}
                                    required={true}
-                                   type="time"
+                                   type="text"
                                    placeholder="HH:mm"
                                    onChange={this._getOnChangeHandler('start-time')}/>
                         </FieldGroup>
@@ -64,7 +64,7 @@ class TimeBlockForm extends React.Component {
                                    name="endTime"
                                    value={endTime}
                                    required={true}
-                                   type="time"
+                                   type="text"
                                    placeholder="HH:mm"
                                    onChange={this._getOnChangeHandler('end-time')}/>
                         </FieldGroup>
@@ -79,7 +79,6 @@ class TimeBlockForm extends React.Component {
     _getDateTimeComponents(datetime) {
         const components = DateTimeFormatter.parseForDisplay(datetime, this.props.timezone);
         components.date = moment(components.date, DateTimeFormatter.Date.displayFormat).format('YYYY-MM-DD');
-        components.time = moment(components.time, DateTimeFormatter.Time.displayFormat).format('HH:mm');
 
         return components;
     }
