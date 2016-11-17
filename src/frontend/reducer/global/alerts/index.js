@@ -2,6 +2,7 @@
 const ActionTypes = require('../../../constants/action-types');
 const AlertTypes = require('../../../constants/alert-types');
 const omit = require('lodash/omit');
+const isUndefined = require('lodash/isUndefined');
 
 const alert = (state = {}, action) => {
     switch (action.type) {
@@ -25,8 +26,17 @@ const alert = (state = {}, action) => {
 
 const alerts = (state = {}, action) => {
     switch (action.type) {
-        case ActionTypes.SHOW_ALERT:
         case ActionTypes.FADE_ALERT:
+            if (isUndefined(state[action.id])) {
+                // Don't create a new element if this
+                // has already been dismissed
+                return state;
+            }
+            return {
+                ... state,
+                [action.id]: alert(state[action.id], action)
+            };
+        case ActionTypes.SHOW_ALERT:
             return {
                 ... state,
                 [action.id]: alert(state[action.id], action)
