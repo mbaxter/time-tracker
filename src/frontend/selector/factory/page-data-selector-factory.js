@@ -7,8 +7,9 @@ module.exports = (getDataSelector, tableName) => {
         getDataSelector,
         subjectSelectors.paging(tableName),
         (data, {pageSize, offset}) => {
-            if (offset > data.length) {
-                let adjustment = Math.ceil((offset - data.length) / pageSize) * pageSize;
+            const lastIndex = data.length - 1;
+            if (offset > lastIndex) {
+                let adjustment = Math.ceil((offset - lastIndex) / pageSize) * pageSize;
                 offset -= adjustment;
             }
             const currentPage = Math.floor(offset / pageSize) + 1;
