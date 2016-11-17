@@ -4,6 +4,7 @@
   "description": "A productivity app for tracking and managing time.",
   "main": "src/server/index.js",
   "scripts": {
+    "heroku-postbuild": "npm --production=false install",
     "dev-server": "node build/backend/server",
     "dev-server-watch": "nodemon build/backend/server --watch build",
     "prod-server-start": "$(npm bin)/forever start build/backend/server",

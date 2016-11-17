@@ -7,6 +7,19 @@ const autoprefixer = require('autoprefixer');
 // Setup environmental variables to be exported to frontend via EnvionrmentPlugin
 env();
 
+const plugins = [
+    new webpack.EnvironmentPlugin([
+        "NODE_ENV",
+        "API_URL"
+    ])
+];
+
+if(process.env.NODE_ENV == "production") {
+    plugins.push(new webpack.optimize.UglifyJsPlugin({
+        compress: { warnings: false }
+    }));
+}
+
 module.exports = {
     entry: "./src/frontend",
     output: {
@@ -30,12 +43,7 @@ module.exports = {
             }
         ]
     },
-    plugins: [
-        new webpack.EnvironmentPlugin([
-            "NODE_ENV",
-            "API_URL"
-        ])
-    ],
+    plugins: plugins,
     externals: {
         "jquery": "$",
         "moment": "moment",
