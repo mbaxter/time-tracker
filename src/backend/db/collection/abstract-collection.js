@@ -78,7 +78,7 @@ class AbstractCollection {
      * @param {QueryOptionsBuilder|Object} options
      * @returns {Promise.<*>} Promise resolves to the inserted record
      */
-    create(record, options) {
+    createRecord(record, options) {
         return Promise.try(() => {
             this._validateCreate([record]);
             return this._preprocessUpsert([record]);

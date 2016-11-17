@@ -85,7 +85,7 @@ class BaseModelRoutes extends BaseRoutes {
                 });
             }
 
-            collection.create(record)
+            collection.createRecord(record)
                 .then((record) => {
                     return ModelResponseFactory.insertSuccess(res, record);
                 })

@@ -253,7 +253,7 @@ describe('Api routes for handling time blocks', () => {
     describe('/time-blocks/<id>', () => {
         // Setup some fixtures
         let fixtures, adminUser, standardUser, adminToken, standardToken, adminTimeBlocks, standardTimeBlocks;
-        beforeEach(() => {
+        let loadFixtures = () => {
             return Fixtures.loadDefaults()
                 .then((data) => {
                     fixtures = data;
@@ -264,9 +264,11 @@ describe('Api routes for handling time blocks', () => {
                     adminTimeBlocks = Fixtures.getUserRecords(fixtures, adminUser.id, 'timeBlocks');
                     standardTimeBlocks = Fixtures.getUserRecords(fixtures, standardUser.id, 'timeBlocks');
                 });
-        });
+        };
 
         describe("PATCH request", () => {
+            beforeEach(loadFixtures);
+
             describe("with timeBlockId matching authToken user", () => {
                 it("should successfully update the record", () => {
                     let newDate = DateTimeFormatter.normalizeDate(new Date());
@@ -289,6 +291,7 @@ describe('Api routes for handling time blocks', () => {
                     let newDate = DateTimeFormatter.normalizeDate(new Date());
                     let timeBlockId = standardTimeBlocks[0].id;
                     timeBlocksApi.authToken = adminToken;
+
                     return timeBlocksApi.updateRecord(timeBlockId, {end: newDate})
                         .then((res) => {
                             assert.equal(res.url, `${apiUrl}/time-blocks/${timeBlockId}`);
@@ -354,6 +357,8 @@ describe('Api routes for handling time blocks', () => {
         });
 
         describe("DELETE request", () => {
+            beforeEach(loadFixtures);
+
             describe("with timeBlockId matching authToken user", () => {
                 it("should successfully delete the record", () => {
                     let timeBlockId = standardTimeBlocks[0].id;
