@@ -12,6 +12,7 @@ const createLoggerMiddleware = require('redux-logger');
 const App = require('./components/presentational/app');
 const LoginPage = require('./components/stateful/login-page');
 const SignupPage = require('./components/stateful/signup-page');
+const ProfilePage = require('./components/stateful/profile-page');
 const TimeTrackerApp = require('./components/stateful/time-tracker-app');
 const TimeBlockEditModal = require('./components/stateful/time-block-edit-modal');
 const TimeBlockCreateModal = require('./components/stateful/time-block-create-modal');
@@ -56,6 +57,7 @@ $.ready(ReactDom.render(
                 {/* Authenticated routes */}
                 <Route path="app" component={TimeTrackerApp} onEnter={requireAuthentication}>
                     <IndexRoute component={TimeBlocksPage}/>
+                    <Route path="profile" component={ProfilePage}/>
                     <Route path="time-blocks" component={TimeBlocksPage}>
                         <Route path="create" component={TimeBlockCreateModal}/>
                         <Route path="edit/:timeBlockId" component={TimeBlockEditModal}/>

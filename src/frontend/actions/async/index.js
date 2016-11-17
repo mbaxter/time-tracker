@@ -273,6 +273,32 @@ AsyncActionCreators.signup = (record) => {
     return AsyncActionCreators.handleFormSubmission(FormNames.SIGNUP, formAction, {formValidate, formSuccess});
 };
 
+AsyncActionCreators.updateProfile = (fields) => {
+    return (dispatch, getState) => {
+        const state = getState();
+        const userId = subject.currentUserId(state);
+
+        const formAction = () => {
+            return Api.Users.updateRecord(userId, fields);
+        };
+
+        const formValidate = () => {
+            return ModelValidator.User.validateUpdate(fields);
+        };
+
+        const formSuccess = (json, dispatch) => {
+            dispatch(SyncActionCreators.updateRecord(RecordTypes.USER, userId, fields));
+            dispatch(AsyncActionCreators.navigateToPage("/app"));
+            // Show success alert
+            dispatch(AsyncActionCreators.showTemporaryAlert(`Profile successfully updated.`, AlertTypes.SUCCESS));
+            // Clear out form
+            dispatch(SyncActionCreators.clearForm(FormNames.PROFILE));
+        };
+
+        return dispatch(AsyncActionCreators.handleFormSubmission(FormNames.PROFILE, formAction, {formValidate, formSuccess}));
+    };
+};
+
 AsyncActionCreators.editTimeBlock = (id, fields) => {
     const formAction = () => {
         return Api.TimeBlocks.updateRecord(id, fields);

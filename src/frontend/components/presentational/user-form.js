@@ -14,6 +14,7 @@ const includes = require('lodash/includes');
 const zipObject = require('lodash/zipObject');
 const isUndefined = require('lodash/isUndefined');
 const moment = require('moment-timezone');
+const omit = require('lodash/omit');
 
 const timezones = moment.tz.names();
 class UserForm extends React.Component {
@@ -56,8 +57,9 @@ class UserForm extends React.Component {
                                     value={props.fields.password}
                                     label="Password"
                                     error={props.fieldErrors.password}
-                                    required={true}
+                                    required={!this.props.isForUpdate}
                                     type="password"
+                                    placeholder={props.isForUpdate ? "*****" : undefined}
                                     onChange={props.onChange}/>
                         }
                         {this._includeField("timezone") &&
@@ -96,7 +98,10 @@ class UserForm extends React.Component {
     _getOnSubmitHandler() {
         return (e) => {
             e.preventDefault();
-            const fields = $(e.target).toJSON();
+            let fields = $(e.target).toJSON();
+            if (this.props.isForUpdate && !fields.password) {
+               fields = omit(fields, 'password');
+            }
             this.props.onSubmit(fields);
         };
     }
@@ -137,6 +142,7 @@ UserForm.propTypes = {
         timezone: React.PropTypes.string
     }),
     fieldErrors: createFieldShape(React.PropTypes.string),
+    isForUpdate: React.PropTypes.bool,
     excludeFields: React.PropTypes.arrayOf(React.PropTypes.oneOf(userFields)),
     includeFields: React.PropTypes.arrayOf(React.PropTypes.oneOf(userFields)),
     onChange: React.PropTypes.func,
@@ -149,6 +155,9 @@ UserForm.defaultProps = {
     error: "",
     excludeFields:[],
     includeFields:[],
+    // If the form is for an update, password is obscured and the value
+    // is only passed through to onSubmit if it is non-empty
+    isForUpdate: false,
     fields: {},
     fieldErrors: {},
     onChange: noop,

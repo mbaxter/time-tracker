@@ -3,7 +3,8 @@ const ReactRedux = require('react-redux');
 const NavBar = require('../presentational/nav-bar');
 const subject = require('../../selector/subject-selector');
 
-const timeTest = /^\/app(\/time-blocks.*)?$/;
+const timePathTest = /^\/app(\/time-blocks.*)?$/;
+const profilePathTest = /^\/app\/profile$/;
 const publicPathTest = /^\/(login|signup)?$/;
 
 const mapStateToProps = (state, ownProps) => {
@@ -17,7 +18,12 @@ const mapStateToProps = (state, ownProps) => {
         navItemsLeft.push({
             label: "Manage Time",
             url: "/app/time-blocks",
-            active: timeTest.test(currentPath)
+            active: timePathTest.test(currentPath)
+        });
+        navItemsLeft.push({
+            label: "Profile",
+            url: "/app/profile",
+            active: profilePathTest.test(currentPath)
         });
 
         navItemsRight.push({

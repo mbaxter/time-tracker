@@ -7,6 +7,7 @@ const TimeBlocksPage = (props) => {
     return (
         <div>
             <Modal show={React.Children.count(props.children) > 0}>{props.children}</Modal>
+            <h2>Manage Time</h2>
             <TimeBlockWidget />
         </div>
     );

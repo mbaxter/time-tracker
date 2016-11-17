@@ -60,7 +60,7 @@ class AbstractCollection {
      */
     updateRecord(record, data) {
         return Promise.try(() => {
-            const fullUpdate = defaults(data, omit(record.toJSON(), ['id','created_at', 'updated_at']));
+            const fullUpdate = defaults(data, omit(record.toJSON(), ['id','created_at', 'updated_at', 'password']));
             this._validateUpdate([fullUpdate]);
             return this._preprocessUpsert([data]);
         }).then(([data]) => {
