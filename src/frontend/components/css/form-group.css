@@ -1,0 +1,8 @@
+/* Make sure multiple inputs inside of a form-group have a margin between them */
+.form-group input {
+    margin-bottom: 8px;
+}
+/* Don't include margin for inline forms */
+.form-inline .form-group input {
+    margin-bottom: 0;
+}

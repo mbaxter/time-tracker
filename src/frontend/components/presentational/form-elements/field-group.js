@@ -1,5 +1,5 @@
 "use strict";
-
+require('../../css/form-group.css');
 const React = require('react');
 const Label = require('./field-label');
 const FieldError = require('./field-error');
