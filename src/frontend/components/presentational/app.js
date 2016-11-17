@@ -1,6 +1,6 @@
 "use strict";
 const React = require('react');
-const NavBar = require('./nav-bar');
+const NavBar = require('../stateful/app-nav-bar');
 const Loader = require('../stateful/app-loader');
 const AppAlerts = require('../stateful/app-alerts');
 
@@ -9,7 +9,7 @@ class App extends React.Component {
         return (
             <div>
                 <Loader/>
-                <NavBar/>
+                <NavBar location={this.props.location.pathname}/>
                 <div className="container">
                     <AppAlerts />
                     {this.props.children}

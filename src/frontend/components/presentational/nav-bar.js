@@ -1,8 +1,8 @@
 "use strict";
 const React = require('react');
-const ReactRouter = require('react-router');
+const NavBarLink = require('./nav-bar-link');
+const merge = require('lodash/merge');
 
-const Link = ReactRouter.Link;
 const PropTypes = React.PropTypes;
 
 class NavBar extends React.Component {
@@ -34,15 +34,16 @@ class NavBar extends React.Component {
 
     _renderNavItem(navItem, index) {
        return (
-           <li key={index}><Link to={navItem.url}>{navItem.label}</Link></li>
+           <NavBarLink key={index} url={navItem.url} onClick={navItem.onClick} active={navItem.active}>{navItem.label}</NavBarLink>
        );
     }
 }
 
-const navItemType = PropTypes.shape({
-    label: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired
-}).isRequired;
+const navItemType = PropTypes.shape(
+    merge({},
+        NavBarLink.propTypes,
+        {label: React.PropTypes.node.isRequired}
+    )).isRequired;
 
 NavBar.propTypes = {
     navItemsLeft: PropTypes.arrayOf(navItemType).isRequired,
