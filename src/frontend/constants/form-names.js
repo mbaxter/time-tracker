@@ -2,5 +2,6 @@
 
 module.exports = {
     LOGIN: 'LOGIN',
-    SIGNUP: 'SIGNUP'
+    SIGNUP: 'SIGNUP',
+    TIME_BLOCK_EDIT: 'TIME_BLOCK_EDIT'
 };

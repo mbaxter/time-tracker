@@ -13,7 +13,8 @@ const App = require('./components/presentational/app');
 const LoginPage = require('./components/stateful/login-page');
 const SignupPage = require('./components/stateful/signup-page');
 const TimeTrackerApp = require('./components/stateful/time-tracker-app');
-const HomePage = require('./components/presentational/home-page');
+const TimeBlockEditModal = require('./components/stateful/time-block-edit-modal');
+const TimeBlocksPage = require('./components/presentational/time-blocks-page');
 const reducer = require('./reducer');
 const subjectSelector = require('./selector/subject-selector');
 
@@ -53,7 +54,10 @@ $.ready(ReactDom.render(
                 <Route path="signup" component={SignupPage}/>
                 {/* Authenticated routes */}
                 <Route path="app" component={TimeTrackerApp} onEnter={requireAuthentication}>
-                    <IndexRoute component={HomePage}/>
+                    <IndexRoute component={TimeBlocksPage}/>
+                    <Route path="time-blocks" component={TimeBlocksPage}>
+                         <Route path="edit/:timeBlockId" component = {TimeBlockEditModal}/>
+                    </Route>
                 </Route>
             </Route>
             {/* Catch-all redirect */}

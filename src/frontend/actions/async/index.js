@@ -1,4 +1,6 @@
 "use strict";
+const ReactRouter = require('react-router');
+const routerHistory = ReactRouter.hashHistory;
 const ActionTypes = require('../../constants/action-types');
 const AlertTypes = require('../../constants/alert-types');
 const FormNames = require('../../constants/form-names');
@@ -238,7 +240,7 @@ AsyncActionCreators.login = (emailAddress, password) => {
         dispatch(SyncActionCreators.clearCredentials());
         dispatch(SyncActionCreators.authorize(json.token));
         Api.setAuthToken(json.token);
-        SyncActionCreators.navigateToPage("/app");
+        dispatch(AsyncActionCreators.navigateToPage("/app"));
         // Clear the login form except for email_address
         dispatch(SyncActionCreators.updateFormField(FormNames.LOGIN, 'email_address', emailAddress));
     };
@@ -260,7 +262,7 @@ AsyncActionCreators.signup = (record) => {
         dispatch(SyncActionCreators.clearForm(FormNames.LOGIN));
         dispatch(SyncActionCreators.updateFormField(FormNames.LOGIN, 'email_address', record.email_address));
         dispatch(SyncActionCreators.updateFormField(FormNames.LOGIN, 'password', record.password));
-        SyncActionCreators.navigateToPage("/login");
+        dispatch(AsyncActionCreators.navigateToPage("/login"));
         // Show success alert
         dispatch(AsyncActionCreators.showTemporaryAlert(`New user created: ${record.email_address}.`, AlertTypes.SUCCESS));
         // Clear out signup form
@@ -268,6 +270,25 @@ AsyncActionCreators.signup = (record) => {
     };
 
     return AsyncActionCreators.handleFormSubmission(FormNames.SIGNUP, formAction, {formValidate, formSuccess});
+};
+
+AsyncActionCreators.editTimeBlock = (id, fields) => {
+    const formAction = () => {
+        return Api.TimeBlocks.updateRecord(id, fields);
+    };
+
+    const formValidate = () => {
+        return ModelValidator.TimeBlock.validateUpdate(fields);
+    };
+
+    const formSuccess = (json, dispatch) => {
+        // Copy credentials to the login page and reroute there
+        dispatch(SyncActionCreators.updateRecord(RecordTypes.TIME_BLOCK, id, fields));
+        dispatch(SyncActionCreators.clearForm(FormNames.TIME_BLOCK_EDIT));
+        dispatch(AsyncActionCreators.navigateToPage("/app/time-blocks"));
+    };
+
+    return AsyncActionCreators.handleFormSubmission(FormNames.TIME_BLOCK_EDIT, formAction, {formValidate, formSuccess});
 };
 
 AsyncActionCreators.handleFormSubmission = (formName, formAction, {formValidate = noop, formSuccess = noop, formFail = noop} = {}) => {
@@ -323,6 +344,13 @@ AsyncActionCreators.handleFormSubmission = (formName, formAction, {formValidate 
             .catch(() => {
                 fail();
             });
+    };
+};
+
+// ROUTING
+AsyncActionCreators.navigateToPage = (url) => {
+    return () => {
+        routerHistory.push(url);
     };
 };
 

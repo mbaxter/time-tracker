@@ -32,6 +32,10 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
+    const onEdit = (row) => {
+        dispatch(actions.async.navigateToPage(`/app/time-blocks/edit/${row.id}`));
+    };
+
     const onGoToPage = (page) => {
         dispatch(actions.async.goToDatatablePage(RecordTypes.TIME_BLOCK, timeBlockDataSelector, page));
     };
@@ -46,6 +50,7 @@ const mapDispatchToProps = (dispatch) => {
     };
 
     return {
+        onEdit,
         dateFilter: {
             onChange: onDateFilterChange,
             onSubmit: onDateFilterSubmit,

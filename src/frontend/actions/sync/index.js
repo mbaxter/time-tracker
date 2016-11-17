@@ -1,8 +1,6 @@
 "use strict";
-const ReactRouter = require('react-router');
 const ActionTypes = require('../../constants/action-types');
 const uuid = require('node-uuid');
-const routerHistory = ReactRouter.hashHistory;
 const isArray = require('lodash/isArray');
 
 
@@ -125,6 +123,15 @@ SyncActionCreators.appendRecords = (recordType, records) => {
     };
 };
 
+SyncActionCreators.updateRecord = (recordType, id, fields) => {
+    return {
+        type: ActionTypes.UPDATE_RECORD,
+        recordType,
+        id,
+        fields
+    };
+};
+
 // GLOBAL UI STATE
 
 SyncActionCreators.fadeAlert = (id) => {
@@ -195,11 +202,6 @@ SyncActionCreators.setDateFilterField = (datatableName, fieldName, fieldValue) =
         fieldName,
         fieldValue
     };
-};
-
-// ROUTING
-SyncActionCreators.navigateToPage = (url) => {
-    routerHistory.push(url);
 };
 
 module.exports = SyncActionCreators;
