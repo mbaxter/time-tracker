@@ -1,7 +1,7 @@
 "use strict";
 const $ = require('jquery');
 const React = require('react');
-const SubmitBtn = require('./form-elements/submit-button');
+const SubmitBtn = require('./form-elements/button-submit');
 const InputFieldGroup = require('./form-elements/input-field-group');
 const FieldGroup = require('./form-elements/field-group');
 const InputField = require('./form-elements/input-field');

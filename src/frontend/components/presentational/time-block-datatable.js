@@ -1,4 +1,5 @@
 "use strict";
+require('../css/fx/flex.css');
 const React = require('react');
 const DateTimeFormatter = require('../../../shared/datetime/format/date-time-formatter');
 const TimeRangeFormatter = require('../../../shared/datetime/format/time-range-formatter');
@@ -7,6 +8,7 @@ const noop = require('lodash/noop');
 const DatatableActions = require('./datatable/datatable-actions');
 const Paging = require('./datatable/add-ons/paging');
 const DateFilter = require('./datatable/add-ons/date-filter');
+const CreateBtn = require('./button-create');
 
 const TimeBlockDataTable = (props) => {
     const columns = [
@@ -53,7 +55,14 @@ const TimeBlockDataTable = (props) => {
 
     return (
         <div>
-            <DateFilter {... props.dateFilter}/>
+            <div className="horizontal-spread">
+                <div className="push-left">
+                    <DateFilter {... props.dateFilter}/>
+                </div>
+                <div className="push-right push-down">
+                    <CreateBtn onCreate={props.onCreate}/>
+                </div>
+            </div>
             <Datatable data={props.data} columns={columns}/>
             <Paging {... props.paging} />
         </div>
@@ -62,6 +71,7 @@ const TimeBlockDataTable = (props) => {
 
 TimeBlockDataTable.propTypes = {
     data: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+    onCreate: React.PropTypes.func,
     onDelete: React.PropTypes.func.isRequired,
     onEdit: React.PropTypes.func.isRequired,
     timezone: React.PropTypes.string.isRequired,
@@ -72,6 +82,7 @@ TimeBlockDataTable.propTypes = {
 };
 
 TimeBlockDataTable.defaultProps = {
+    onCreate: noop,
     onEdit: noop,
     onDelete: noop,
     data: []

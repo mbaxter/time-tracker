@@ -5,3 +5,15 @@
     align-items: center;
     justify-content: center;
 }
+
+.horizontal-spread .push-left {
+    margin-right: auto;
+}
+
+.horizontal-spread .push-right {
+    margin-left: auto;
+}
+
+.horizontal-spread .push-down {
+    margin-top: auto;
+}

@@ -1,8 +1,8 @@
 "use strict";
 require('../../../css/date-filter.css');
 const React = require('react');
-const SubmitBtn = require('../../form-elements/submit-button');
-const ResetBtn = require('../../form-elements/reset-button');
+const SubmitBtn = require('../../form-elements/button-submit');
+const ResetBtn = require('../../form-elements/button-reset');
 const InputField = require('../../form-elements/input-field-group');
 const $ = require('jquery');
 
@@ -21,7 +21,7 @@ const DateFilter = (props) => {
             <InputField name="from" value={props.from} label="From: " placeholder="YYYY-MM-DD" type="date" onChange={props.onChange}/>
             <InputField name="to" value={props.to} label="To: " placeholder="YYYY-MM-DD" type="date" onChange={props.onChange}/>
             <div className="btn-group" role="group">
-                <SubmitBtn/>
+                <SubmitBtn className="btn-default"/>
                 <ResetBtn/>
             </div>
             <span className="text-danger">{props.error}</span>
