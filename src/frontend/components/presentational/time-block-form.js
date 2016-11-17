@@ -78,6 +78,13 @@ class TimeBlockForm extends React.Component {
     }
 
     _getDateTimeComponents(datetime) {
+        if (!datetime) {
+            return {
+                date: undefined,
+                time: undefined
+            };
+        }
+
         const components = DateTimeFormatter.parseForDisplay(datetime, this.props.timezone);
         components.date = moment(components.date, DateTimeFormatter.Date.displayFormat).format('YYYY-MM-DD');
 

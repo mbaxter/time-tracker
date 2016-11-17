@@ -21,6 +21,7 @@ const DateFormatter = require('../../../shared/datetime/format/date-formatter');
 const humanize = require('humanize-string');
 const SyncActionCreators = require('../sync');
 const haveCredentialsBeenClearedFactory = require('../../selector/factory/have-credentials-been-cleared');
+const clone = require('lodash/clone');
 
 const AsyncActionCreators = {};
 
@@ -282,13 +283,37 @@ AsyncActionCreators.editTimeBlock = (id, fields) => {
     };
 
     const formSuccess = (json, dispatch) => {
-        // Copy credentials to the login page and reroute there
         dispatch(SyncActionCreators.updateRecord(RecordTypes.TIME_BLOCK, id, fields));
         dispatch(SyncActionCreators.clearForm(FormNames.TIME_BLOCK_EDIT));
         dispatch(AsyncActionCreators.navigateToPage("/app/time-blocks"));
     };
 
     return AsyncActionCreators.handleFormSubmission(FormNames.TIME_BLOCK_EDIT, formAction, {formValidate, formSuccess});
+};
+
+AsyncActionCreators.createTimeBlock = (fields) => {
+    return (dispatch, getState) => {
+        const state = getState();
+        const userId = subject.currentUserId(state);
+        const record = clone(fields);
+        record.user_id = userId;
+
+        const formAction = () => {
+            return Api.TimeBlocks.insertRecord(record);
+        };
+
+        const formValidate = () => {
+            return ModelValidator.TimeBlock.validateUpdate(fields);
+        };
+
+        const formSuccess = (json, dispatch) => {
+            dispatch(SyncActionCreators.appendRecords(RecordTypes.TIME_BLOCK, [json.record]));
+            dispatch(SyncActionCreators.clearForm(FormNames.TIME_BLOCK_EDIT));
+            dispatch(AsyncActionCreators.navigateToPage("/app/time-blocks"));
+        };
+
+        return dispatch(AsyncActionCreators.handleFormSubmission(FormNames.TIME_BLOCK_EDIT, formAction, {formValidate, formSuccess}));
+    };
 };
 
 AsyncActionCreators.handleFormSubmission = (formName, formAction, {formValidate = noop, formSuccess = noop, formFail = noop} = {}) => {

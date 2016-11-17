@@ -32,6 +32,9 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
+    const onCreate = () => {
+        dispatch(actions.async.navigateToPage(`/app/time-blocks/create`));
+    };
     const onEdit = (row) => {
         dispatch(actions.async.navigateToPage(`/app/time-blocks/edit/${row.id}`));
     };
@@ -50,6 +53,7 @@ const mapDispatchToProps = (dispatch) => {
     };
 
     return {
+        onCreate,
         onEdit,
         dateFilter: {
             onChange: onDateFilterChange,

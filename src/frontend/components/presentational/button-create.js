@@ -2,9 +2,9 @@
 const React = require('react');
 const noop = require('lodash/noop');
 
-const ButtonCreate = () => {
+const ButtonCreate = (props) => {
     return (
-        <button className="btn btn-primary"><i className="fa fa-plus"/> Create</button>
+        <button className="btn btn-primary" onClick={props.onCreate}><i className="fa fa-plus"/> Create</button>
     );
 };
 

@@ -14,6 +14,7 @@ const LoginPage = require('./components/stateful/login-page');
 const SignupPage = require('./components/stateful/signup-page');
 const TimeTrackerApp = require('./components/stateful/time-tracker-app');
 const TimeBlockEditModal = require('./components/stateful/time-block-edit-modal');
+const TimeBlockCreateModal = require('./components/stateful/time-block-create-modal');
 const TimeBlocksPage = require('./components/presentational/time-blocks-page');
 const reducer = require('./reducer');
 const subjectSelector = require('./selector/subject-selector');
@@ -56,7 +57,8 @@ $.ready(ReactDom.render(
                 <Route path="app" component={TimeTrackerApp} onEnter={requireAuthentication}>
                     <IndexRoute component={TimeBlocksPage}/>
                     <Route path="time-blocks" component={TimeBlocksPage}>
-                         <Route path="edit/:timeBlockId" component = {TimeBlockEditModal}/>
+                        <Route path="create" component={TimeBlockCreateModal}/>
+                        <Route path="edit/:timeBlockId" component={TimeBlockEditModal}/>
                     </Route>
                 </Route>
             </Route>
