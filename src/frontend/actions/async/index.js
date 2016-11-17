@@ -316,6 +316,56 @@ AsyncActionCreators.createTimeBlock = (fields) => {
     };
 };
 
+AsyncActionCreators.deleteRecord = (recordType, id) => {
+    return (dispatch, getState) => {
+        const requestName = `deleteRecord-${recordType}-${id}`;
+
+        const state = getState();
+        const request = subject.apiRequest(requestName);
+        if (request.pending) {
+            // Already running this request, return
+            return;
+        }
+
+        const records = subject.records(recordType, state);
+        const record = records[id];
+
+        const deleteFailed = (message = "An error occurred while attempting to delete record.") => {
+            dispatch(AsyncActionCreators.showTemporaryAlert(message, AlertTypes.ERROR));
+            // Restore record on failure
+            dispatch(SyncActionCreators.appendRecords(recordType, [record]));
+            dispatch(SyncActionCreators.resolveRequest(requestName));
+        };
+
+        // Go ahead and optimistically delete
+        dispatch(SyncActionCreators.initiateRequest(requestName));
+        dispatch(SyncActionCreators.deleteRecord(recordType, id));
+        Api[recordType].deleteRecord(id)
+            .then((res) => {
+                let failMessage;
+                switch (res.status) {
+                    case httpCodes.OK:
+                    case httpCodes.NOT_FOUND:
+                        // Success - we're done
+                        dispatch(SyncActionCreators.resolveRequest(requestName));
+                        return;
+                    case httpCodes.UNAUTHORIZED:
+                        return dispatch(AsyncActionCreators.logout());
+                    case httpCodes.FORBIDDEN:
+                        failMessage = "Unable to delete record.";
+                        break;
+                    default:
+                        failMessage = `An error occurred while attempting to delete record: ${httpCodes.getStatusText(res.status)}`;
+                }
+
+                deleteFailed(failMessage);
+            })
+            .catch(() => {
+                deleteFailed();
+            });
+    };
+};
+
 AsyncActionCreators.handleFormSubmission = (formName, formAction, {formValidate = noop, formSuccess = noop, formFail = noop} = {}) => {
     return (dispatch, getState) => {
         const state = getState();

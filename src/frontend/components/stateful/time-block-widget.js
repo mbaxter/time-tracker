@@ -38,6 +38,9 @@ const mapDispatchToProps = (dispatch) => {
     const onEdit = (row) => {
         dispatch(actions.async.navigateToPage(`/app/time-blocks/edit/${row.id}`));
     };
+    const onDelete = (row) => {
+        dispatch(actions.async.deleteRecord(RecordTypes.TIME_BLOCK, row.id));
+    };
 
     const onGoToPage = (page) => {
         dispatch(actions.async.goToDatatablePage(RecordTypes.TIME_BLOCK, timeBlockDataSelector, page));
@@ -55,6 +58,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         onCreate,
         onEdit,
+        onDelete,
         dateFilter: {
             onChange: onDateFilterChange,
             onSubmit: onDateFilterSubmit,

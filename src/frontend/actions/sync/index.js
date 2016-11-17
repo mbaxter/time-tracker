@@ -132,6 +132,14 @@ SyncActionCreators.updateRecord = (recordType, id, fields) => {
     };
 };
 
+SyncActionCreators.deleteRecord = (recordType, id) => {
+    return {
+        type: ActionTypes.DELETE_RECORD,
+        recordType,
+        id
+    };
+};
+
 // GLOBAL UI STATE
 
 SyncActionCreators.fadeAlert = (id) => {

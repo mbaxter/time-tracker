@@ -1,11 +1,14 @@
 "use strict";
 const ActionTypes = require('../../constants/action-types');
 const keyBy = require('lodash/keyBy');
+const omit = require('lodash/omit');
 
 const recordType = (state = {}, action) => {
     let updated = {};
 
     switch(action.type) {
+        case ActionTypes.DELETE_RECORD:
+            return omit(state, action.id);
         case ActionTypes.APPEND_RECORDS:
             return {
                 ... state,
@@ -32,6 +35,7 @@ const record = (state = {}, action) => {
      switch(action.type) {
          case ActionTypes.CLEAR_CREDENTIALS:
              return {};
+         case ActionTypes.DELETE_RECORD:
          case ActionTypes.APPEND_RECORDS:
          case ActionTypes.UPDATE_RECORD:
              return {
