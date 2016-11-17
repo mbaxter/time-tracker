@@ -34,6 +34,7 @@ if (process.env.NODE_ENV == 'development') {
 
 let store = Redux.createStore(
     reducer,
+    preloadedState,
     Redux.applyMiddleware(
         ... storeMiddleware
     )

@@ -6,9 +6,7 @@ const UserForm = require('../presentational/user-form');
 const actions = require('../../actions');
 const FormNames = require('../../constants/form-names');
 const RequestStatus = require('../../constants/request-status');
-const pick = require('lodash/pick');
 const subjectSelector = require('../../selector/subject-selector');
-const isEmpty = require('lodash/isEmpty');
 
 const Link = ReactRouter.Link;
 
@@ -21,13 +19,8 @@ const LoginPage = (props) => {
     );
 };
 
-const mapStateToProps = (state, ownProps) => {
-    let fields = subjectSelector.formFields(FormNames.LOGIN, state);
-    if (isEmpty(fields)) {
-        // If no ui state exists, use the data from the url to populate fields
-        // Grab email and password from the url if available
-        fields = pick(ownProps.location.query || {}, ['email_address','password']);
-    }
+const mapStateToProps = (state) => {
+    const fields = subjectSelector.formFields(FormNames.LOGIN, state);
     const {error, fieldErrors, status} = subjectSelector.formSubmission(FormNames.LOGIN, state);
 
     return {
