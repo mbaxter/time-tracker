@@ -1,14 +1,11 @@
 "use strict";
 const React = require('react');
 const ReactRedux = require('react-redux');
-const ReactRouter = require('react-router');
 const UserForm = require('../presentational/user-form');
 const actions = require('../../actions');
 const FormNames = require('../../constants/form-names');
 const RequestStatus = require('../../constants/request-status');
-const pick = require('lodash/pick');
 const subjectSelector = require('../../selector/subject-selector');
-const isEmpty = require('lodash/isEmpty');
 const defaults = require('lodash/defaults');
 
 const ProfilePage = (props) => {

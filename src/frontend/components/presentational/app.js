@@ -20,7 +20,10 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-    children: React.PropTypes.node
+    children: React.PropTypes.node,
+    location: React.PropTypes.shape({
+        pathname: React.PropTypes.string.isRequired
+    }).isRequired
 };
 
 module.exports = App;
