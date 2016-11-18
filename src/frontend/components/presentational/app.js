@@ -1,4 +1,5 @@
 "use strict";
+require('../css/global.css');
 const React = require('react');
 const NavBar = require('../stateful/app-nav-bar');
 const Loader = require('../stateful/app-loader');

@@ -12,9 +12,11 @@ Technology
     * [React](https://facebook.github.io/react/)
     * [Redux](http://redux.js.org/)
     * [Reselect](https://github.com/reactjs/reselect)
+    * [Bootstrap](http://getbootstrap.com/)
 * Backend rest api built using:
     * [Node.js](https://nodejs.org/en/)
     * [Express](http://expressjs.com/)
+    * [Sequelize](http://docs.sequelizejs.com/)
 * MySQL for data storage
 * Build and development tools include:
     * [Babel](https://babeljs.io/)
@@ -25,6 +27,7 @@ Technology
 * Security
     * Passwords stored in hashed form using [bcrypt](https://en.wikipedia.org/wiki/Bcrypt).
     * Stateless authentication managed using [JSON Web Tokens](https://jwt.io/)
+    * Environment variables are used to keep sensitive data out of the source code.
         
 Local Development
 ===
