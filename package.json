@@ -2,6 +2,10 @@
   "name": "time-tracker",
   "version": "0.0.0",
   "description": "A productivity app for tracking and managing time.",
+  "repository" :
+  { "type" : "git"
+  , "url" : "https://github.com/mbaxter/time-tracker.git"
+  },
   "main": "src/server/index.js",
   "scripts": {
     "start": "node build/backend/server",
