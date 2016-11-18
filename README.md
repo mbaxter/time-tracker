@@ -1,4 +1,32 @@
-Development
+About
+===
+This is a simple web app built for demo and learning purposes.
+
+You can view a live demo of the app here: [https://time-tracker-demo.herokuapp.com](https://time-tracker-demo.herokuapp.com). 
+For convenience, the login page is pre-populated with credentials of a demo account.
+
+
+Technology
+===
+* Single-page web application frontend built with:
+    * [React](https://facebook.github.io/react/)
+    * [Redux](http://redux.js.org/)
+    * [Reselect](https://github.com/reactjs/reselect)
+* Backend rest api built using:
+    * [Node.js](https://nodejs.org/en/)
+    * [Express](http://expressjs.com/)
+* MySQL for data storage
+* Build and development tools include:
+    * [Babel](https://babeljs.io/)
+    * [Webpack](https://webpack.github.io/)
+    * [ESLint](http://eslint.org/)
+* Demo app deployed using:
+    * [Heroku](https://www.heroku.com/)
+* Security
+    * Passwords stored in hashed form using [bcrypt](https://en.wikipedia.org/wiki/Bcrypt).
+    * Stateless authentication managed using [JSON Web Tokens](https://jwt.io/)
+        
+Local Development
 ===
 Setup
 ---
