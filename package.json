@@ -2,9 +2,9 @@
   "name": "time-tracker",
   "version": "0.0.0",
   "description": "A productivity app for tracking and managing time.",
-  "repository" :
-  { "type" : "git"
-  , "url" : "https://github.com/mbaxter/time-tracker.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbaxter/time-tracker.git"
   },
   "main": "src/server/index.js",
   "scripts": {
@@ -52,6 +52,8 @@
     "body-parser": "1.15.2",
     "cls-bluebird": "2.0.1",
     "continuation-local-storage": "3.2.0",
+    "d3-scale": "1.0.3",
+    "d3-time": "1.0.4",
     "email-validator": "1.0.7",
     "express": "4.14.0",
     "express-handlebars": "3.0.0",

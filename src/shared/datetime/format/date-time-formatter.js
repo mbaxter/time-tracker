@@ -6,6 +6,7 @@
 
 const moment = require('moment');
 require('moment-timezone');
+const isUndefined = require('lodash/isUndefined');
 const TimeFormatter = require('./time-formatter');
 const DateFormatter = require('./date-formatter');
 
@@ -25,17 +26,36 @@ DateTimeFormatter.splitRegex = /(\d{4}-\d\d-\d\d)T(\d\d:\d\d:\d\d)([+-]\d\d:\d\d
  * @return {Object} Return an object with 'date' and 'time' keys containing formatted strings for display
  */
 DateTimeFormatter.parseForDisplay = function(value, timezone, includeYearForDate = false) {
-    // Reformat time in user's timezone
-    value = moment.tz(value, DateTimeFormatter.internalFormat, true, 'UTC').tz(timezone).format(DateTimeFormatter.internalFormat);
-    // Split ISO string into date, time and UTC offset components
-    const components = value.match(DateTimeFormatter.splitRegex);
-    if(!components || components.length < 3 || !moment.tz.zone(timezone)) {
+    let components = DateTimeFormatter.parse(value, timezone);
+    if (isUndefined(components.time) || isUndefined(components.date)) {
         return {};
     }
 
     return {
-        date: DateFormatter.formatForDisplay(components[1], includeYearForDate),
-        time: TimeFormatter.formatForDisplay(components[2])
+        date: DateFormatter.formatForDisplay(components.date, includeYearForDate),
+        time: TimeFormatter.formatForDisplay(components.time)
+    };
+};
+
+/**
+ * Splits a normalized ISO string into date & time components
+ * @param {string} value A normalized ISO datetime string
+ * @param {string} timezone The user's timezone - see moment.tz.names()
+ * @return {Object} Return an object with 'date' and 'time' keys containing separated date and time components in the
+ * given timezone
+ */
+DateTimeFormatter.parse = function(value, timezone) {
+    // Reformat time in user's timezone
+    value = moment.tz(value, DateTimeFormatter.internalFormat, true, 'UTC').tz(timezone).format(DateTimeFormatter.internalFormat);
+    // Split ISO string into date, time and UTC offset components
+    const components = value.match(DateTimeFormatter.splitRegex);
+    if (!components || components.length < 3 || !moment.tz.zone(timezone)) {
+        return {};
+    }
+
+    return {
+        date: components[1],
+        time: components[2]
     };
 };
 

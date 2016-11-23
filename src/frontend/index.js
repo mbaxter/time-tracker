@@ -29,7 +29,7 @@ const IndexRoute = ReactRouter.IndexRoute;
 const storeMiddleware = [];
 storeMiddleware.push(thunkMiddleware);
 if (process.env.NODE_ENV == 'development') {
-    storeMiddleware.push(createLoggerMiddleware());
+    // storeMiddleware.push(createLoggerMiddleware());
 }
 
 let store = Redux.createStore(

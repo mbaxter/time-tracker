@@ -1,10 +1,11 @@
 "use strict";
 const React = require('react');
 const ReactRedux = require('react-redux');
-const TimeBlockDatatable = require('../presentational/time-block-datatable');
+const TimeBlockChart = require('../presentational/time-block-chart');
 const subjectSelector = require('../../selector/subject-selector');
 const timeBlockDataSelector = require('../../selector/time-block-table-data');
 const timeBlockPageSelector = require('../../selector/time-block-table-page');
+const timeBlockChartDataSelector = require('../../selector/time-block-chart-data');
 const RecordTypes = require('../../constants/record-types');
 const actions = require('../../actions');
 const omit = require('lodash/omit');
@@ -12,7 +13,7 @@ const merge = require('lodash/merge');
 
 const TimeBlockWidget = (props) => {
     return (
-        <TimeBlockDatatable {... props}/>
+        <TimeBlockChart {... props}/>
     );
 };
 
@@ -20,12 +21,15 @@ const mapStateToProps = (state) => {
     const {timezone = "UTC"} = subjectSelector.currentUser(state) || {};
     const {error, fields} = subjectSelector.dateFilter(RecordTypes.TIME_BLOCK, state);
     const timeBlockPage =  timeBlockPageSelector(state);
+    let chartData = timeBlockChartDataSelector(state);
+
     return {
         dateFilter: {
             ... fields,
             error
         },
         paging: omit(timeBlockPage, 'data'),
+        barChart: chartData,
         data: timeBlockPage.data,
         timezone
     };

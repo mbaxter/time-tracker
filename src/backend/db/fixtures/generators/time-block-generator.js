@@ -23,16 +23,14 @@ const timeBlockGenerator = function({
 } = {}) {
     const fixtures = [];
 
-    // Block duration in minutes
-    const blockDuration = 50;
-    // Range of how much time to put between blocks
-
     let date = DateFactory.today();
     for (let i = 0; i < days; i++) {
         let numBlocks = getNumBlocks(... blocksPerDay);
         let time = TimeFactory.fromHourRange(9,11);
         for (let j = 0; j < numBlocks; j++) {
             let blockStart = time;
+            // Block duration in minutes
+            let blockDuration = random(6, 18) * 5;
             time = TimeFactory.increment(time, blockDuration);
             let blockEnd = time;
             fixtures.push({

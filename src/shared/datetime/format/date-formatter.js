@@ -8,6 +8,7 @@ const DateFormatter = {};
 DateFormatter.displayFormat = "ddd, MMM D";
 // e.g. Wed, Oct 26 2016
 DateFormatter.displayFormatFull = "ddd, MMM D YYYY";
+DateFormatter.smallDisplayFormat = "MMM D";
 
 DateFormatter.internalFormat = "YYYY-MM-DD";
 // Accept a wide variety of input
@@ -22,16 +23,33 @@ DateFormatter.inputFormats = [... stringPermutations(
 )];
 
 DateFormatter.normalize = function(input) {
-    return moment(input, DateFormatter.inputFormats, true).format(DateFormatter.internalFormat);
+    return DateFormatter._toMoment(input).format(DateFormatter.internalFormat);
+};
+
+DateFormatter.toNativeDate = function(input) {
+    let dateString = DateFormatter.normalize(input);
+    if (!DateFormatter.isValidNormalizedValue(dateString)) {
+        return null;
+    }
+    let dateComponents = dateString.split('-');
+    return new Date(dateComponents[0], dateComponents[1] - 1, dateComponents[2]);
 };
 
 DateFormatter.formatForDisplay = function(normalizedDate, includeYear = false) {
     const format = includeYear ? DateFormatter.displayFormatFull : DateFormatter.displayFormat;
-    return moment(normalizedDate, DateFormatter.internalFormat, true).format(format);
+    return DateFormatter._toMoment(normalizedDate).format(format);
+};
+
+DateFormatter.formatForSmallDisplay = function(normalizedDate) {
+    return DateFormatter._toMoment(normalizedDate).format(DateFormatter.smallDisplayFormat);
 };
 
 DateFormatter.isValidNormalizedValue = function(value) {
     return moment(value, DateFormatter.internalFormat, true).isValid();
+};
+
+DateFormatter._toMoment = function(value) {
+    return value instanceof Date ? moment(value) : moment(value, DateFormatter.internalFormat, true);
 };
 
 module.exports = DateFormatter;

@@ -37,6 +37,10 @@ SubjectSelectors.dateFilter = curry((datatableName, state) => {
     return get(state, `datatable.filter.date.${datatableName}`, {filter: {}, fields: {}, error: ""});
 });
 
+SubjectSelectors.dateFilterValue = curry((datatableName, state) => {
+    return get(state, `datatable.filter.date.${datatableName}.filter`, {});
+});
+
 SubjectSelectors.formFields = (formName, state) => {
     return get(state, `form.fields.${formName}`, {});
 };
@@ -64,6 +68,11 @@ SubjectSelectors.apiRequest = curry((requestName, state) => {
 });
 
 SubjectSelectors.timeBlocks = SubjectSelectors.records(RecordTypes.TIME_BLOCK);
+
+SubjectSelectors.timezone = () => {
+    let user = SubjectSelectors.currentUser();
+    return user ? user.timezone : 'UTC';
+};
 
 SubjectSelectors.token = (state) => {
     return get(state, 'credentials.token');
