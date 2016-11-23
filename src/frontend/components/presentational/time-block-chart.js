@@ -37,7 +37,7 @@ class TimeBlockDataTable extends React.Component {
                 </div>
                 <br />
                 <BarChart {... props.barChart} width={this.state.clientWidth} height={125}
-                          xAxisHeight={15} color="#2e6da4"/>
+                          xAxisHeight={20} color="#2e6da4"/>
                 <Datatable data={props.data} columns={this._getColumns()}/>
                 <Paging {... props.paging} />
             </div>

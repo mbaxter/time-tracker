@@ -6,9 +6,9 @@ const first = require('lodash/first');
 class XAxis extends React.Component {
     render() {
         let width = last(this.props.scale.range());
-        let fontSize = Math.floor(2/3 * this.props.height);
+        let fontSize = Math.floor(1/2 * this.props.height);
         let fontBaseline = this.props.height - fontSize/3;
-        let tickPadding = 2;
+        let tickPadding = fontSize / 2;
         let tickSizeLarge = this.props.height - fontSize - tickPadding;
         let tickSizeSmall = tickSizeLarge / 2;
 
