@@ -334,11 +334,11 @@ AsyncActionCreators.createTimeBlock = (fields) => {
 
         const formSuccess = (json, dispatch) => {
             dispatch(SyncActionCreators.appendRecords(RecordTypes.TIME_BLOCK, [json.record]));
-            dispatch(SyncActionCreators.clearForm(FormNames.TIME_BLOCK_EDIT));
+            dispatch(SyncActionCreators.clearForm(FormNames.TIME_BLOCK_CREATE));
             dispatch(AsyncActionCreators.navigateToPage("/app/time-blocks"));
         };
 
-        return dispatch(AsyncActionCreators.handleFormSubmission(FormNames.TIME_BLOCK_EDIT, formAction, {formValidate, formSuccess}));
+        return dispatch(AsyncActionCreators.handleFormSubmission(FormNames.TIME_BLOCK_CREATE, formAction, {formValidate, formSuccess}));
     };
 };
 
