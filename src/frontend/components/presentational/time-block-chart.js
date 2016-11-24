@@ -5,6 +5,7 @@ const DateTimeFormatter = require('../../../shared/datetime/format/date-time-for
 const TimeRangeFormatter = require('../../../shared/datetime/format/time-range-formatter');
 const Datatable = require('./datatable');
 const BarChart = require('./chart/bar-chart');
+const Popover = require('./popover');
 const noop = require('lodash/noop');
 const DatatableActions = require('./datatable/datatable-actions');
 const Paging = require('./datatable/add-ons/paging');
@@ -16,6 +17,7 @@ class TimeBlockDataTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            popover: null,
             clientWidth: 0
         };
         this._onResize = () => {
@@ -27,6 +29,8 @@ class TimeBlockDataTable extends React.Component {
         const props = this.props;
         return (
             <div ref={(node) => {this._divContainer = node;}}>
+                {this.state.popover &&
+                <Popover title={this.state.popover.title} content={this.state.popover.content} position={this.state.popover.position} />}
                 <div className="horizontal-spread">
                     <div className="push-left">
                         <DateFilter {... props.dateFilter}/>
@@ -37,7 +41,8 @@ class TimeBlockDataTable extends React.Component {
                 </div>
                 <br />
                 <BarChart {... props.barChart} width={this.state.clientWidth} height={125}
-                          xAxisHeight={20} color="#2e6da4"/>
+                          xAxisHeight={20} color="#2e6da4"
+                          onBarEnter={this._onBarEnterHandler()} onBarLeave={this._onBarLeaveHandler()}/>
                 <Datatable data={props.data} columns={this._getColumns()}/>
                 <Paging {... props.paging} />
             </div>
@@ -51,6 +56,26 @@ class TimeBlockDataTable extends React.Component {
 
     componentWillUnmount() {
         window.removeEventListener('resize', this._onResize);
+    }
+
+    _onBarEnterHandler() {
+        return (position, data) => {
+            this.setState({
+                popover: {
+                    position: position,
+                    title: DateTimeFormatter.Date.formatForDisplay(data.x),
+                    content: `Total work: ${TimeRangeFormatter.formatMinutesForDisplay(data.y)}`
+                }
+            });
+        };
+    }
+
+    _onBarLeaveHandler() {
+        return () => {
+            this.setState({
+                popover: null
+            });
+        };
     }
 
     _calculateWidth() {

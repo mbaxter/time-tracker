@@ -21,9 +21,7 @@ TimeRangeFormatter.getRangeInMinutes = function(startDateTime, endDateTime) {
  */
 TimeRangeFormatter.getRangeInHoursAndMinutes = function(startDateTime, endDateTime) {
     let minutes = TimeRangeFormatter.getRangeInMinutes(startDateTime, endDateTime);
-    let hours = Math.floor(minutes / 60);
-    minutes = minutes - (hours * 60);
-    return {minutes, hours};
+    return TimeRangeFormatter.minutesToHoursAndMinutes(minutes);
 };
 
 /**
@@ -32,21 +30,32 @@ TimeRangeFormatter.getRangeInHoursAndMinutes = function(startDateTime, endDateTi
  * @param {string} endDateTime An ISO datetime string
  */
 TimeRangeFormatter.getRangeForDisplay = function(startDateTime, endDateTime) {
-    let range = TimeRangeFormatter.getRangeInHoursAndMinutes(startDateTime, endDateTime);
-    const hourUnit = range.hours == 1 ? 'hr' : 'hr';
-    const minuteUnit = range.minutes == 1 ? 'min' : 'min';
-    const includeHours = range.hours > 0;
-    const includeMinutes = !includeHours || range.minutes > 0;
+    let minutes = TimeRangeFormatter.getRangeInMinutes(startDateTime, endDateTime);
+    return TimeRangeFormatter.formatMinutesForDisplay(minutes);
+};
+
+TimeRangeFormatter.minutesToHoursAndMinutes = function(minutes) {
+    let hours = Math.floor(minutes / 60);
+    minutes = minutes - (hours * 60);
+    return {minutes, hours};
+};
+
+TimeRangeFormatter.formatMinutesForDisplay = function(mins) {
+    let {hours, minutes} = TimeRangeFormatter.minutesToHoursAndMinutes(mins);
+    const hourUnit = hours == 1 ? 'hr' : 'hr';
+    const minuteUnit = minutes == 1 ? 'min' : 'min';
+    const includeHours = hours > 0;
+    const includeMinutes = !includeHours || minutes > 0;
 
     let displayRange = "";
     if (includeHours) {
-        displayRange += `${range.hours} ${hourUnit}`;
+        displayRange += `${hours} ${hourUnit}`;
     }
     if (includeMinutes) {
         if (displayRange) {
             displayRange += ", ";
         }
-        displayRange += `${range.minutes} ${minuteUnit}`;
+        displayRange += `${minutes} ${minuteUnit}`;
     }
 
     return displayRange;

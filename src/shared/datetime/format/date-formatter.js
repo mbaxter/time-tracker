@@ -23,7 +23,7 @@ DateFormatter.inputFormats = [... stringPermutations(
 )];
 
 DateFormatter.normalize = function(input) {
-    return DateFormatter._toMoment(input).format(DateFormatter.internalFormat);
+    return DateFormatter._toMoment(input, DateFormatter.inputFormats).format(DateFormatter.internalFormat);
 };
 
 DateFormatter.toNativeDate = function(input) {
@@ -37,19 +37,19 @@ DateFormatter.toNativeDate = function(input) {
 
 DateFormatter.formatForDisplay = function(normalizedDate, includeYear = false) {
     const format = includeYear ? DateFormatter.displayFormatFull : DateFormatter.displayFormat;
-    return DateFormatter._toMoment(normalizedDate).format(format);
+    return DateFormatter._toMoment(normalizedDate, DateFormatter.internalFormat).format(format);
 };
 
 DateFormatter.formatForSmallDisplay = function(normalizedDate) {
-    return DateFormatter._toMoment(normalizedDate).format(DateFormatter.smallDisplayFormat);
+    return DateFormatter._toMoment(normalizedDate, DateFormatter.internalFormat).format(DateFormatter.smallDisplayFormat);
 };
 
 DateFormatter.isValidNormalizedValue = function(value) {
     return moment(value, DateFormatter.internalFormat, true).isValid();
 };
 
-DateFormatter._toMoment = function(value) {
-    return value instanceof Date ? moment(value) : moment(value, DateFormatter.internalFormat, true);
+DateFormatter._toMoment = function(value, inputFormat) {
+    return (value instanceof Date) ? moment(value) : moment(value, inputFormat, true);
 };
 
 module.exports = DateFormatter;

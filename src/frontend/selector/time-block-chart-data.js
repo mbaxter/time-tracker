@@ -11,8 +11,6 @@ const d3Scale = require('d3-scale');
 const d3Time = require('d3-time');
 const map = require('lodash/map');
 const sortBy = require('lodash/sortBy');
-const orderBy = require('lodash/orderBy');
-const values = require('lodash/values');
 
 /**
  * Accumulates time block data into buckets by day
@@ -48,6 +46,7 @@ module.exports = reselect.createSelector(
 
             let nativeDate = DateTimeFormatter.Date.toNativeDate(date);
             return {
+                x: nativeDate,
                 y: totalTime,
                 // We're calculating bar data, so x is a range
                 xRange: [

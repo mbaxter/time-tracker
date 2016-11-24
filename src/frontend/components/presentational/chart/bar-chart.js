@@ -2,6 +2,7 @@
 
 const React = require('react');
 const XAxis = require('./components/x-axis');
+const noop = require('lodash/noop');
 
 class BarChart extends React.Component {
     render() {
@@ -23,8 +24,18 @@ class BarChart extends React.Component {
                         let x0 = Math.floor(xScale(datum.xRange[0]));
                         let x1 = Math.ceil(xScale(datum.xRange[1]));
                         let y = yScale(datum.y);
+                        let width = x1 - x0;
                         return (
-                            <rect key={key} x={x0} y={y} width={x1 - x0} height={dataRect.height - y} fill={this.props.color}/>
+                            <rect key={key} x={x0} y={y} width={width} height={dataRect.height - y}
+                                  onMouseEnter={(e) => {
+                                      let position = this._getBarPosition(e.target, width);
+                                      this.props.onBarEnter(position, datum);
+                                  }}
+                                  onMouseLeave={(e) => {
+                                      let position = this._getBarPosition(e.target, width);
+                                      this.props.onBarLeave(position, datum);
+                                  }}
+                                  fill={this.props.color}/>
                         );
                     })}
                 </g>
@@ -38,6 +49,15 @@ class BarChart extends React.Component {
 
             </svg>
         );
+    }
+
+    _getBarPosition(el, barWidth) {
+        let barPosition = el.getBoundingClientRect();
+        let xOffset = barWidth / 2;
+        return [
+            barPosition.left + window.pageXOffset + xOffset,
+            barPosition.top + window.pageYOffset
+        ];
     }
 
     _getDataBoundingRect() {
@@ -57,6 +77,8 @@ BarChart.propTypes = {
             xRange: React.PropTypes.array,
             y: React.PropTypes.any
         })),
+    onBarEnter: React.PropTypes.func,
+    onBarLeave: React.PropTypes.func,
     width: React.PropTypes.number.isRequired,
     height: React.PropTypes.number.isRequired,
     // d3 scale functions
@@ -67,7 +89,9 @@ BarChart.propTypes = {
 };
 
 BarChart.defaultProps = {
-    color: "#2e6da4"
+    color: "#2e6da4",
+    onBarEnter: noop,
+    onBarLeave: noop
 };
 
 module.exports = BarChart;
