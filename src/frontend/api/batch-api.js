@@ -10,6 +10,8 @@ BatchApi.pullBatch = (recordType, {userId = null, limit = 1000, offset = 0} = {}
    switch(recordType) {
        case RecordType.TIME_BLOCK:
            return Api.TimeBlocks.getUserRecords(userId, limit, offset);
+       case RecordType.USER:
+           return Api.Users.getRecords(limit, offset);
        default:
            return Promise.reject(`Batch api not implemented for record type '${recordType}'`);
    }

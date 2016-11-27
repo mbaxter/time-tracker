@@ -11,7 +11,7 @@ const actions = require('../../actions');
 const omit = require('lodash/omit');
 const merge = require('lodash/merge');
 
-const TimeBlockWidget = (props) => {
+const AppTimeBlockChart = (props) => {
     return (
         <TimeBlockChart {... props}/>
     );
@@ -76,4 +76,4 @@ module.exports = ReactRedux.connect(
     mapStateToProps,
     mapDispatchToProps,
     merge
-)(TimeBlockWidget);
+)(AppTimeBlockChart);

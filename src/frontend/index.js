@@ -17,6 +17,7 @@ const TimeTrackerApp = require('./components/stateful/time-tracker-app');
 const TimeBlockEditModal = require('./components/stateful/time-block-edit-modal');
 const TimeBlockCreateModal = require('./components/stateful/time-block-create-modal');
 const TimeBlocksPage = require('./components/presentational/time-blocks-page');
+const UsersPage = require('./components/presentational/users-page');
 const reducer = require('./reducer');
 const subjectSelector = require('./selector/subject-selector');
 
@@ -62,6 +63,9 @@ $.ready(ReactDom.render(
                     <Route path="time-blocks" component={TimeBlocksPage}>
                         <Route path="create" component={TimeBlockCreateModal}/>
                         <Route path="edit/:timeBlockId" component={TimeBlockEditModal}/>
+                    </Route>
+                    <Route path="users" component={UsersPage}>
+
                     </Route>
                 </Route>
             </Route>

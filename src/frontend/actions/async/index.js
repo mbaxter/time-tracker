@@ -3,6 +3,7 @@ const ReactRouter = require('react-router');
 const routerHistory = ReactRouter.hashHistory;
 const ActionTypes = require('../../constants/action-types');
 const AlertTypes = require('../../constants/alert-types');
+const UserRole = require('../../../shared/constants/user-role');
 const FormNames = require('../../constants/form-names');
 const RecordTypes = require('../../constants/record-types');
 const RequestStatus = require('../../constants/request-status');
@@ -108,9 +109,13 @@ AsyncActionCreators.submitDateFilter = (datatableName, formData) => {
 
 // Fetch
 AsyncActionCreators.fetchAppData = () => {
-    return (dispatch) => {
+    return (dispatch, getState) => {
+        let role = subject.role(getState());
         dispatch(AsyncActionCreators.fetchCurrentUserIfNecessary());
         dispatch(AsyncActionCreators.batchPullIfNecessary(RecordTypes.TIME_BLOCK));
+        if (role == UserRole.ADMIN) {
+            dispatch(AsyncActionCreators.batchPullIfNecessary(RecordTypes.USER));
+        }
     };
 };
 

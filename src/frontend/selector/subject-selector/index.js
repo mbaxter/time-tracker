@@ -2,6 +2,7 @@
 const get = require('lodash/get');
 const curry = require('lodash/curry');
 const RecordTypes = require('../../constants/record-types');
+const UserRole = require('../../../shared/constants/user-role');
 const RequestStatus = require('../../constants/request-status');
 const AppConfig = require('../../constants/app-configuration');
 
@@ -13,6 +14,11 @@ SubjectSelectors.alerts = (state) => {
 
 SubjectSelectors.authenticated = (state) => {
     return get(state, 'credentials.authenticated', false);
+};
+
+SubjectSelectors.role = (state) => {
+    let currentUser = SubjectSelectors.currentUser(state);
+    return currentUser ? currentUser.role : UserRole.STANDARD;
 };
 
 SubjectSelectors.batchPull = curry((recordType, state) => {
