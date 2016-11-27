@@ -23,7 +23,7 @@ module.exports = createSelector(
             label = DateFormatter.formatForSmallDisplay;
         } else if (breadth < 365) {
             // Weeks
-            interval = d3Time.timeWeek;
+            interval = d3Time.timeMonday;
             label = (date) => {
                 let minRange = interval.floor(date);
                 let maxRange = interval.offset(minRange,1);
@@ -43,7 +43,7 @@ module.exports = createSelector(
         let minDate = DateFormatter.toNativeDate(min);
         let maxDate = d3Time.timeDay.offset(DateFormatter.toNativeDate(max));
 
-        return interval.range(interval.floor(minDate), interval.ceil(maxDate)).map((date) => {
+        let buckets = interval.range(interval.floor(minDate), interval.ceil(maxDate)).map((date) => {
             let min = interval.floor(date);
             let max = interval.offset(min);
             // Roll upper bound back by one second so buckets are distinct
@@ -54,5 +54,10 @@ module.exports = createSelector(
                 label: label(date)
             };
         });
+
+        return {
+            buckets,
+            dateToBucket: label
+        };
     }
 );

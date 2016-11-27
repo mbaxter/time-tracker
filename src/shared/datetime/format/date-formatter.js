@@ -26,12 +26,11 @@ DateFormatter.normalize = function(input) {
     return DateFormatter._toMoment(input, DateFormatter.inputFormats).format(DateFormatter.internalFormat);
 };
 
-DateFormatter.toNativeDate = function(input) {
-    let dateString = DateFormatter.normalize(input);
-    if (!DateFormatter.isValidNormalizedValue(dateString)) {
+DateFormatter.toNativeDate = function(normalizedDate) {
+    let dateComponents = normalizedDate.split('-');
+    if (dateComponents.length != 3) {
         return null;
     }
-    let dateComponents = dateString.split('-');
     return new Date(dateComponents[0], dateComponents[1] - 1, dateComponents[2]);
 };
 
