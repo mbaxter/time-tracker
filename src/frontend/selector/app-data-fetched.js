@@ -1,9 +1,9 @@
 "use strict";
-const reselect = require('reselect');
+const createSelector = require('../util/createSelector');
 const subjectSelectors = require('./subject-selector');
 const RecordTypes = require('../constants/record-types');
 
-module.exports = reselect.createSelector(
+module.exports = createSelector(
     subjectSelectors.currentUser,
     subjectSelectors.batchPull(RecordTypes.TIME_BLOCK),
     (currentUser, batchPull) => {

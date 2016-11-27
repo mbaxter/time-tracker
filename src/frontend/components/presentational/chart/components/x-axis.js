@@ -29,7 +29,7 @@ class XAxis extends React.Component {
                         <g key={key}>
                             <line x1={tick.x} x2={tick.x} y1={0} y2={tickSizeLarge} stroke={this.props.color} strokeWidth={1}/>
                             <text textAnchor="middle" fontSize={fontSize} x={tick.x} y={fontBaseline}>
-                                {tick.display}
+                                {tick.label}
                             </text>
                         </g>
                     );
@@ -41,7 +41,7 @@ class XAxis extends React.Component {
     _getTicksWithPosition() {
         return this.props.ticks.map((tick) => {
             return {
-                display: tick.display,
+                label: tick.label,
                 value: tick.value,
                 x: this.props.scale(tick.value)
             };
@@ -71,7 +71,7 @@ XAxis.propTypes = {
     scale: React.PropTypes.func.isRequired,
     ticks: React.PropTypes.arrayOf(React.PropTypes.shape({
         value: React.PropTypes.any.isRequired,
-        display: React.PropTypes.string.isRequired
+        label: React.PropTypes.string.isRequired
     }).isRequired).isRequired
 };
 

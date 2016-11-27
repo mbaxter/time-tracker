@@ -3,9 +3,9 @@ const React = require('react');
 const ReactRedux = require('react-redux');
 const TimeBlockChart = require('../presentational/time-block-chart');
 const subjectSelector = require('../../selector/subject-selector');
-const timeBlockDataSelector = require('../../selector/time-block-table-data');
-const timeBlockPageSelector = require('../../selector/time-block-table-page');
-const timeBlockChartDataSelector = require('../../selector/time-block-chart-data');
+const datasetSelector = require('../../selector/time-block-chart/dataset');
+const tablePageSelector = require('../../selector/time-block-chart/table-page');
+const barChartDataSelector = require('../../selector/time-block-chart/bar-chart-data');
 const RecordTypes = require('../../constants/record-types');
 const actions = require('../../actions');
 const omit = require('lodash/omit');
@@ -20,8 +20,8 @@ const TimeBlockWidget = (props) => {
 const mapStateToProps = (state) => {
     const {timezone = "UTC"} = subjectSelector.currentUser(state) || {};
     const {error, fields} = subjectSelector.dateFilter(RecordTypes.TIME_BLOCK, state);
-    const timeBlockPage =  timeBlockPageSelector(state);
-    let chartData = timeBlockChartDataSelector(state);
+    const timeBlockPage =  tablePageSelector(state);
+    let chartData = barChartDataSelector(state);
 
     return {
         dateFilter: {
@@ -47,7 +47,7 @@ const mapDispatchToProps = (dispatch) => {
     };
 
     const onGoToPage = (page) => {
-        dispatch(actions.async.goToDatatablePage(RecordTypes.TIME_BLOCK, timeBlockDataSelector, page));
+        dispatch(actions.async.goToDatatablePage(RecordTypes.TIME_BLOCK, datasetSelector, page));
     };
     const onDateFilterChange = (fieldName, fieldValue) => {
         dispatch(actions.sync.setDateFilterField(RecordTypes.TIME_BLOCK, fieldName, fieldValue));

@@ -20,4 +20,9 @@ NativeDateFactory.clone = function(date) {
     return new Date(date.toString());
 };
 
+NativeDateFactory.average = function(a, b) {
+    let diff = b.getTime() - a.getTime();
+    return moment(a).add(Math.round(diff/2000), 'seconds').toDate();
+};
+
 module.exports = NativeDateFactory;

@@ -29,6 +29,17 @@ TimeRangeFormatter.getRangeInHoursAndMinutes = function(startDateTime, endDateTi
  * @param {string} startDateTime An iso string
  * @param {string} endDateTime An ISO datetime string
  */
+TimeRangeFormatter.getRangeInDays = function(startDateTime, endDateTime) {
+    const start = moment(startDateTime);
+    const end = moment(endDateTime);
+    return Math.abs(end.diff(start, 'days'));
+};
+
+/**
+ * Get the hours and minutes between 2 iso datetime strings
+ * @param {string} startDateTime An iso string
+ * @param {string} endDateTime An ISO datetime string
+ */
 TimeRangeFormatter.getRangeForDisplay = function(startDateTime, endDateTime) {
     let minutes = TimeRangeFormatter.getRangeInMinutes(startDateTime, endDateTime);
     return TimeRangeFormatter.formatMinutesForDisplay(minutes);

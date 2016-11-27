@@ -63,7 +63,7 @@ class TimeBlockDataTable extends React.Component {
             this.setState({
                 popover: {
                     position: position,
-                    title: DateTimeFormatter.Date.formatForDisplay(data.x),
+                    title: data.label,
                     content: `Total work: ${TimeRangeFormatter.formatMinutesForDisplay(data.y)}`
                 }
             });

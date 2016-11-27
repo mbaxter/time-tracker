@@ -1,15 +1,15 @@
 "use strict";
-const reselect = require('reselect');
-const RecordTypes = require('../constants/record-types');
-const orderedTimeBlocks = require("./ordered-time-blocks");
-const subjectSelectors = require('./subject-selector');
+const createSelector = require('../../util/createSelector');
+const RecordTypes = require('../../constants/record-types');
+const orderedTimeBlocks = require("./../ordered-time-blocks");
+const subjectSelectors = require('./../subject-selector/index');
 
-module.exports = reselect.createSelector(
+module.exports = createSelector(
     orderedTimeBlocks,
-    subjectSelectors.dateFilter(RecordTypes.TIME_BLOCK),
+    subjectSelectors.dateFilterValue(RecordTypes.TIME_BLOCK),
     (orderedTimeBlocks, dateFilter) => {
         // If there's no filter, just return the ordered array
-        if (!dateFilter.filter.from || !dateFilter.filter.to) {
+        if (!dateFilter.from || !dateFilter.to) {
             return orderedTimeBlocks;
         }
 
@@ -17,7 +17,7 @@ module.exports = reselect.createSelector(
         return orderedTimeBlocks.filter((timeBlock) => {
             const inRange = (val) => {
                 let date = val.substring(0, val.indexOf('T'));
-                return date >= dateFilter.filter.from && date <= dateFilter.filter.to;
+                return date >= dateFilter.from && date <= dateFilter.to;
             };
 
             return inRange(timeBlock.start) || inRange(timeBlock.end);

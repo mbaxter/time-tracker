@@ -1,9 +1,9 @@
 "use strict";
-const reselect = require('reselect');
+const createSelector = require('../../util/createSelector');
 const subjectSelectors = require('../subject-selector/index');
 
 module.exports = (getDataSelector, tableName) => {
-    return reselect.createSelector(
+    return createSelector(
         getDataSelector,
         subjectSelectors.paging(tableName),
         (data, {pageSize, offset}) => {
