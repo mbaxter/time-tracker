@@ -32,6 +32,45 @@ describe("Api endpoints for handling users", () => {
                 });
         });
 
+        describe("get request", () => {
+            describe("with valid admin auth token", () => {
+                it("should return all of the users", () => {
+                    usersApi.authToken = Fixtures.getToken(fixtures, fixtures.users[0].id);
+                    return usersApi.getRecords()
+                        .then((res) => {
+                            assert.equal(res.status, httpCodes.OK);
+                            assert.equal(res.url.indexOf(`${apiUrl}/users?`), 0);
+                            return res.json();
+                        }).then((json) => {
+                            assert.ok(json.records);
+                            assert.equal(json.records.length, fixtures.users.length);
+                        });
+                });
+            });
+
+            describe("with valid standard auth token", () => {
+                it("should return a forbidden error", () => {
+                    usersApi.authToken = Fixtures.getToken(fixtures, fixtures.users[1].id);
+                    return usersApi.getRecords()
+                        .then((res) => {
+                            assert.equal(res.status, httpCodes.FORBIDDEN);
+                            assert.equal(res.url.indexOf(`${apiUrl}/users?`), 0);
+                        });
+                });
+            });
+
+            describe("with no auth token", () => {
+                it("should return an authentication error", () => {
+                    usersApi.authToken = null;
+                    return usersApi.getRecords()
+                        .then((res) => {
+                            assert.equal(res.status, httpCodes.UNAUTHORIZED);
+                            assert.equal(res.url.indexOf(`${apiUrl}/users?`), 0);
+                        });
+                });
+            });
+        });
+
         describe("post request", () => {
             describe("with new, valid user", () => {
                 it("should succeed and create a new user", () => {

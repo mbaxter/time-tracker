@@ -47,7 +47,25 @@ class BaseModelRoutes extends BaseRoutes {
         const collection = this.collection;
 
         return (req, res) => {
-            if(req.jwt.userId != userId && !Permissions.canReadOtherUsersRecords(req.jwt.role, collection.table)) {
+            if(req.jwt.userId != userId && !Permissions.canReadOtherUsersRecords(req.jwt.role, collection.name)) {
+                return ModelResponseFactory.forbidden(res, {
+                    error: "Attempt to query for records that are not owned by current user."
+                });
+            }
+
+            collection.retrieveAll(queryOptions, limit, offset)
+                .then((records) => {
+                    ModelResponseFactory.returnRecordSet(res, records);
+                })
+                .catch(this.getModelCRUDErrorHandler(res));
+        };
+    }
+
+    static getRetrieveCollectionHandler(limit, offset, queryOptions) {
+        const collection = this.collection;
+
+        return (req, res) => {
+            if(!Permissions.canReadOtherUsersRecords(req.jwt.role, collection.name)) {
                 return ModelResponseFactory.forbidden(res, {
                     error: "Attempt to query for records that are not owned by current user."
                 });

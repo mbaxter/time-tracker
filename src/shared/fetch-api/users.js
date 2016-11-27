@@ -16,6 +16,10 @@ class UsersApi extends FetchApi {
         return this.patch(`/users/${id}`, fields);
     }
 
+    getRecords(limit = 1000, offset = 0) {
+        return this.get(`/users?limit=${limit}&offset=${offset}`);
+    }
+
     deleteRecord(id) {
         return this.del(`/users/${id}`);
     }

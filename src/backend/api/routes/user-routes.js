@@ -27,6 +27,18 @@ class UserRoutes extends BaseModelRoutes {
      * @returns {express.Router}
      */
     static setProtectedRoutes(router) {
+        // Get all users
+        router.get("/users", (req, res) => {
+            const queryOptions = QueryOptionsBuilder.create()
+                .orderBy('id', 'ASC')
+                .excludeFields('password');
+            const limit = req.query.limit;
+            const offset = req.query.offset;
+
+            const handler = this.getRetrieveCollectionHandler(limit, offset, queryOptions);
+            handler(req, res);
+        });
+
         // Get current user
         router.get("/users/me", (req, res) => {
             const id = req.jwt.userId;
