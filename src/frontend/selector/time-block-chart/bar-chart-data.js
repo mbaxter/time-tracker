@@ -40,7 +40,7 @@ module.exports = createSelector(
                     bucket.min,
                     bucket.max
                 ],
-                y: bucketTotals[bucket.label] || 0
+                y: bucketTotals[bucket.id] || 0
             };
         });
 

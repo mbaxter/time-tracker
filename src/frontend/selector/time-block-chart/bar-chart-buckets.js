@@ -43,12 +43,14 @@ module.exports = createSelector(
         let minDate = DateFormatter.toNativeDate(min);
         let maxDate = d3Time.timeDay.offset(DateFormatter.toNativeDate(max));
 
+        let dateToId = (date) => moment(interval.floor(date)).format('YYYY-MM-DD');
         let buckets = interval.range(interval.floor(minDate), interval.ceil(maxDate)).map((date) => {
             let min = interval.floor(date);
             let max = interval.offset(min);
             // Roll upper bound back by one second so buckets are distinct
             max.setSeconds(max.getSeconds() - 1);
             return {
+                id: dateToId(date),
                 min,
                 max,
                 label: label(date)
@@ -57,7 +59,7 @@ module.exports = createSelector(
 
         return {
             buckets,
-            dateToBucket: label
+            dateToBucket: dateToId
         };
     }
 );
