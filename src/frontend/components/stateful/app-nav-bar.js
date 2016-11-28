@@ -36,7 +36,7 @@ const mapStateToProps = (state, ownProps) => {
         });
     }
 
-    if (role == UserRole.ADMIN) {
+    if (role == UserRole.ADMIN && !publicPathTest.test(currentPath)) {
        navItemsLeft.splice(1,0, {
            label: "Manage Users",
            url: "/app/users",
