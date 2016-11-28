@@ -27,6 +27,12 @@ class TimeBlockDataTable extends React.Component {
 
     render() {
         const props = this.props;
+        if (props.data.length == 0) {
+            return (
+               <h3><a onClick={props.onCreate}>Click here</a> to start logging your time!</h3>
+            );
+        }
+
         return (
             <div ref={(node) => {this._divContainer = node;}}>
                 {this.state.popover &&
@@ -52,6 +58,12 @@ class TimeBlockDataTable extends React.Component {
     componentDidMount() {
         window.addEventListener('resize', this._onResize);
         this._calculateWidth();
+    }
+
+    componentDidUpdate() {
+        if (!this.state.clientWidth) {
+            this._calculateWidth();
+        }
     }
 
     componentWillUnmount() {

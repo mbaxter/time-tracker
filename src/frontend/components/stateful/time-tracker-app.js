@@ -61,7 +61,7 @@ class TimeTrackerApp extends React.Component {
     }
 
     render() {
-        if (!this.props.isAuthenticated) {
+        if (!this.props.isAuthenticated || this.props.shouldFetch) {
             return false;
         }
 
