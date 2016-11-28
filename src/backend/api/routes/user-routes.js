@@ -3,6 +3,7 @@
 const BaseModelRoutes = require('./base-model-routes');
 const collection = require('../../db/collection');
 const QueryOptionsBuilder = require('../../db/query/query-options-builder');
+const omit = require('lodash/omit');
 
 class UserRoutes extends BaseModelRoutes {
     static get collection() {
@@ -16,7 +17,7 @@ class UserRoutes extends BaseModelRoutes {
      */
     static setPublicRoutes(router) {
         // Post a single user
-        router.post("/users", this.getInsertRecordHandler(false));
+        router.post("/users", this.getInsertRecordHandler(false, (record) => omit(record.toJSON(), 'password')));
 
         return router;
     }
@@ -53,7 +54,7 @@ class UserRoutes extends BaseModelRoutes {
         router.patch("/users/:userId", (req, res) => {
             const id = req.params.userId;
 
-            let standardHandler = this.getUpdateByIdHandler(id);
+            let standardHandler = this.getUpdateByIdHandler(id, (record) => omit(record.toJSON(), 'password'));
             standardHandler(req, res);
         });
 

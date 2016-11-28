@@ -8,6 +8,7 @@ const Permissions = require('../../../shared/permissions');
 const Tables = require('../../../shared/constants/tables');
 const isPlainObject = require('lodash/isPlainObject');
 const isEmpty = require('lodash/isEmpty');
+const identity = require('lodash/identity');
 
 class BaseModelRoutes extends BaseRoutes {
     static get collection() {
@@ -84,7 +85,7 @@ class BaseModelRoutes extends BaseRoutes {
      * single new record to be inserted.
      * @returns {function}
      */
-    static getInsertRecordHandler(checkOwnership = true) {
+    static getInsertRecordHandler(checkOwnership = true, modifyReturnValue = identity) {
         const collection = this.collection;
         return (req, res) => {
             const record = req.body;
@@ -105,13 +106,13 @@ class BaseModelRoutes extends BaseRoutes {
 
             collection.createRecord(record)
                 .then((record) => {
-                    return ModelResponseFactory.insertSuccess(res, record);
+                    return ModelResponseFactory.insertSuccess(res, modifyReturnValue(record));
                 })
                 .catch(this.getModelCRUDErrorHandler(res));
         };
     }
 
-    static getUpdateByIdHandler(id) {
+    static getUpdateByIdHandler(id, modifyReturnValue = identity) {
         const collection = this.collection;
 
         return (req, res) => {
@@ -141,7 +142,7 @@ class BaseModelRoutes extends BaseRoutes {
 
                     return collection.updateRecord(record, fields)
                         .then((record) => {
-                            ModelResponseFactory.returnRecord(res, record);
+                            ModelResponseFactory.returnRecord(res, modifyReturnValue(record));
                         });
                 })
                 .catch(this.getModelCRUDErrorHandler(res));
