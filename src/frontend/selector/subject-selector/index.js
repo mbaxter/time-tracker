@@ -75,8 +75,8 @@ SubjectSelectors.apiRequest = curry((requestName, state) => {
 
 SubjectSelectors.timeBlocks = SubjectSelectors.records(RecordTypes.TIME_BLOCK);
 
-SubjectSelectors.timezone = () => {
-    let user = SubjectSelectors.currentUser();
+SubjectSelectors.timezone = (state) => {
+    let user = SubjectSelectors.currentUser(state);
     return user ? user.timezone : 'UTC';
 };
 
