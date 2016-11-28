@@ -1,6 +1,5 @@
 "use strict";
 const createSelector = require('../../util/createSelector');
-const subjectSelectors = require('./../subject-selector/index');
 const dataset = require('./dataset');
 const buckets = require('./bar-chart-buckets');
 const DateTimeFormatter = require('../../../shared/datetime/format/date-time-formatter');

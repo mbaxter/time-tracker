@@ -4,7 +4,6 @@ const timeBlockDataset = require('./dataset');
 const first = require('lodash/first');
 const last = require('lodash/last');
 const RecordTypes = require('../../constants/record-types');
-const DateTimeFormatter = require('../../../shared/datetime/format/date-time-formatter');
 const TimeRangeFormatter = require('../../../shared/datetime/format/time-range-formatter');
 const DateFactory = require('../../../shared/datetime/factory/date-factory');
 const subjectSelectors = require('./../subject-selector/index');
@@ -21,19 +20,19 @@ module.exports = createSelector(
             };
         }
 
-        let maxTimeBlock = get(first(timeBlocks), 'startDateTime', {});
-        let minTimeBlock = get(last(timeBlocks), 'startDateTime',{});
+        let {date: maxDate} = get(first(timeBlocks), 'startDateTime', {});
+        let {date: minDate} = get(last(timeBlocks), 'startDateTime',{});
 
         // If we only have a small amount of data, extend the range
         let minBreadth = 6;
-        let breadth = TimeRangeFormatter.getRangeInDays(minTimeBlock.date, maxTimeBlock.date);
+        let breadth = TimeRangeFormatter.getRangeInDays(minDate, maxDate);
         if (breadth < minBreadth) {
-            minTimeBlock.date = DateFactory.increment(maxTimeBlock.date, -minBreadth);
+            minDate = DateFactory.increment(maxDate, -minBreadth);
         }
 
         return {
-            min: minTimeBlock.date,
-            max: maxTimeBlock.date
+            min: minDate,
+            max: maxDate
         };
     }
 );
