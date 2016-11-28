@@ -20,47 +20,46 @@ class UsersTable extends React.Component {
     }
 
     _getColumns() {
-       return [
-           {
-               header: "First Name",
-               displayTransform: (row) => {
-                   return row.first_name;
-               }
-           },
-           {
-               header: "Last Name",
-               displayTransform: (row) => {
-                   return row.last_name;
-               }
-           },
-           {
-               header: "Email",
-               displayTransform: (row) => {
-                   return row.email;
-               }
-           },
-           {
-               header: "Role",
-               displayTransform: (row) => {
-                   switch (row.role) {
-                       case UserRole.ADMIN:
-                           return "Admin";
-                       case UserRole.STANDARD:
-                           return "Standard";
-                       default:
-                           return "";
-                   }
-               }
-           },
-           {
-               header: "Actions",
-               displayTransform: (row) => {
-                   return (
-                       <DatatableActions row={row} onEdit={this.props.onEdit} onDelete={this.props.onDelete}/>
-                   );
-               }
-           }
-       ];
+        return [
+            {
+                header: "First Name",
+                displayTransform: (row) => {
+                    return row.first_name;
+                }
+            },
+            {
+                header: "Last Name",
+                displayTransform: (row) => {
+                    return row.last_name;
+                }
+            },
+            {
+                header: "Email",
+                displayTransform: (row) => {
+                    return row.email_address;
+                }
+            },
+            {
+                header: "Role",
+                displayTransform: (row) => {
+                    if (row.role == UserRole.ADMIN) {
+                        return "Admin";
+                    } else if (row.role == UserRole.STANDARD) {
+                        return "Standard";
+                    } else {
+                        return "";
+                    }
+                }
+            },
+            {
+                header: "Actions",
+                displayTransform: (row) => {
+                    return (
+                        <DatatableActions row={row} onEdit={this.props.onEdit} onDelete={this.props.onDelete}/>
+                    );
+                }
+            }
+        ];
     }
 }
 

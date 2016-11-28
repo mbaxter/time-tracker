@@ -16,6 +16,8 @@ const ProfilePage = require('./components/stateful/profile-page');
 const TimeTrackerApp = require('./components/stateful/time-tracker-app');
 const TimeBlockEditModal = require('./components/stateful/time-block-edit-modal');
 const TimeBlockCreateModal = require('./components/stateful/time-block-create-modal');
+const UserEditModal = require('./components/stateful/user-edit-modal');
+const UserCreateModal = require('./components/stateful/user-create-modal');
 const TimeBlocksPage = require('./components/presentational/time-blocks-page');
 const UsersPage = require('./components/presentational/users-page');
 const reducer = require('./reducer');
@@ -30,7 +32,7 @@ const IndexRoute = ReactRouter.IndexRoute;
 const storeMiddleware = [];
 storeMiddleware.push(thunkMiddleware);
 if (process.env.NODE_ENV == 'development') {
-    // storeMiddleware.push(createLoggerMiddleware());
+    storeMiddleware.push(createLoggerMiddleware());
 }
 
 let store = Redux.createStore(
@@ -65,7 +67,8 @@ $.ready(ReactDom.render(
                         <Route path="edit/:timeBlockId" component={TimeBlockEditModal}/>
                     </Route>
                     <Route path="users" component={UsersPage}>
-
+                        <Route path="create" component={UserCreateModal}/>
+                        <Route path="edit/:userId" component={UserEditModal}/>
                     </Route>
                 </Route>
             </Route>

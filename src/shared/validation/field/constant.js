@@ -1,8 +1,9 @@
 "use strict";
 const values = require('lodash/values');
+const findIndex = require('lodash/findIndex');
 
 module.exports.create = function(constantObj) {
     return (val) => {
-       return values(constantObj).indexOf(val) >= 0;
+       return findIndex(values(constantObj), (constVal) => constVal == val) >= 0;
     };
 };

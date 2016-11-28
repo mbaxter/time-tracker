@@ -327,14 +327,14 @@ AsyncActionCreators.createTimeBlock = (fields) => {
         const state = getState();
         const userId = subject.currentUserId(state);
         const record = clone(fields);
-        record.user_id = userId;
+        record.user_id = parseInt(userId,10);
 
         const formAction = () => {
             return Api.TimeBlocks.insertRecord(record);
         };
 
         const formValidate = () => {
-            return ModelValidator.TimeBlock.validateUpdate(fields);
+            return ModelValidator.TimeBlock.validateCreate(record);
         };
 
         const formSuccess = (json, dispatch) => {
@@ -344,6 +344,44 @@ AsyncActionCreators.createTimeBlock = (fields) => {
         };
 
         return dispatch(AsyncActionCreators.handleFormSubmission(FormNames.TIME_BLOCK_CREATE, formAction, {formValidate, formSuccess}));
+    };
+};
+
+AsyncActionCreators.editUser = (id, fields) => {
+    const formAction = () => {
+        return Api.Users.updateRecord(id, fields);
+    };
+
+    const formValidate = () => {
+        return ModelValidator.User.validateUpdate(fields);
+    };
+
+    const formSuccess = (json, dispatch) => {
+        dispatch(SyncActionCreators.updateRecord(RecordTypes.USER, id, json.record));
+        dispatch(SyncActionCreators.clearForm(FormNames.USER_EDIT));
+        dispatch(AsyncActionCreators.navigateToPage("/app/users"));
+    };
+
+    return AsyncActionCreators.handleFormSubmission(FormNames.USER_EDIT, formAction, {formValidate, formSuccess});
+};
+
+AsyncActionCreators.createUser = (fields) => {
+    return (dispatch) => {
+        const formAction = () => {
+            return Api.Users.insertRecord(fields);
+        };
+
+        const formValidate = () => {
+            return ModelValidator.User.validateCreate(fields);
+        };
+
+        const formSuccess = (json, dispatch) => {
+            dispatch(SyncActionCreators.appendRecords(RecordTypes.USER, [json.record]));
+            dispatch(SyncActionCreators.clearForm(FormNames.USER_CREATE));
+            dispatch(AsyncActionCreators.navigateToPage("/app/users"));
+        };
+
+        return dispatch(AsyncActionCreators.handleFormSubmission(FormNames.USER_CREATE, formAction, {formValidate, formSuccess}));
     };
 };
 
