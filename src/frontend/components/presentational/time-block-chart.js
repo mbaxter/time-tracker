@@ -27,9 +27,9 @@ class TimeBlockDataTable extends React.Component {
 
     render() {
         const props = this.props;
-        if (props.data.length == 0) {
+        if (!props.hasData) {
             return (
-               <h3><a onClick={props.onCreate}>Click here</a> to start logging your time!</h3>
+                <h3><a onClick={props.onCreate}>Click here</a> to start logging your time!</h3>
             );
         }
 
@@ -46,11 +46,20 @@ class TimeBlockDataTable extends React.Component {
                     </div>
                 </div>
                 <br />
-                <BarChart {... props.barChart} width={this.state.clientWidth} height={125}
-                          xAxisHeight={20} color="#2e6da4"
-                          onBarEnter={this._onBarEnterHandler()} onBarLeave={this._onBarLeaveHandler()}/>
-                <Datatable data={props.data} columns={this._getColumns()}/>
-                <Paging {... props.paging} />
+                {/* Handle case where there is no data to display */}
+                {props.data.length == 0 &&
+                    <p className="text-center"><em>No data for this time range</em></p>
+                }
+                {/* Handle the case where we have data to display */}
+                { props.data.length > 0 &&
+                <div>
+                    <BarChart {... props.barChart} width={this.state.clientWidth} height={125}
+                              xAxisHeight={20} color="#2e6da4"
+                              onBarEnter={this._onBarEnterHandler()} onBarLeave={this._onBarLeaveHandler()}/>
+                    <Datatable data={props.data} columns={this._getColumns()}/>
+                    <Paging {... props.paging} />
+                </div>
+                }
             </div>
         );
     }
@@ -148,6 +157,7 @@ class TimeBlockDataTable extends React.Component {
 
 TimeBlockDataTable.propTypes = {
     data: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+    hasDate: React.PropTypes.bool.isRequired,
     onCreate: React.PropTypes.func,
     onDelete: React.PropTypes.func.isRequired,
     onEdit: React.PropTypes.func.isRequired,

@@ -6,6 +6,7 @@ const subjectSelector = require('../../selector/subject-selector');
 const datasetSelector = require('../../selector/time-block-chart/dataset');
 const tablePageSelector = require('../../selector/time-block-chart/table-page');
 const barChartDataSelector = require('../../selector/time-block-chart/bar-chart-data');
+const orderedTimeBlocks = require('../../selector/ordered-time-blocks');
 const RecordTypes = require('../../constants/record-types');
 const actions = require('../../actions');
 const omit = require('lodash/omit');
@@ -19,6 +20,8 @@ const AppTimeBlockChart = (props) => {
 
 const mapStateToProps = (state) => {
     const {timezone = "UTC"} = subjectSelector.currentUser(state) || {};
+    const allRecords = orderedTimeBlocks(state);
+    const hasData = allRecords.length > 0;
     const {error, fields} = subjectSelector.dateFilter(RecordTypes.TIME_BLOCK, state);
     const timeBlockPage =  tablePageSelector(state);
     let chartData = barChartDataSelector(state);
@@ -28,6 +31,7 @@ const mapStateToProps = (state) => {
             ... fields,
             error
         },
+        hasData,
         paging: omit(timeBlockPage, 'data'),
         barChart: chartData,
         data: timeBlockPage.data,
