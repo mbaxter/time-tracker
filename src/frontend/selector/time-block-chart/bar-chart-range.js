@@ -13,8 +13,7 @@ const get = require('lodash/get');
 module.exports = createSelector(
     timeBlockDataset,
     subjectSelectors.dateFilterValue(RecordTypes.TIME_BLOCK),
-    subjectSelectors.timezone,
-    (timeBlocks, filter = {}, timezone) => {
+    (timeBlocks, filter = {}) => {
         if (filter.to && filter.from) {
             return {
                 min: filter.from,
@@ -22,8 +21,8 @@ module.exports = createSelector(
             };
         }
 
-        let maxTimeBlock = DateTimeFormatter.parse(get(first(timeBlocks), 'start', ''), timezone);
-        let minTimeBlock = DateTimeFormatter.parse(get(last(timeBlocks), 'start',''), timezone);
+        let maxTimeBlock = get(first(timeBlocks), 'startDateTime', {});
+        let minTimeBlock = get(last(timeBlocks), 'startDateTime',{});
 
         // If we only have a small amount of data, extend the range
         let minBreadth = 6;

@@ -17,14 +17,12 @@ let last = require('lodash/last');
 module.exports = createSelector(
     dataset,
     buckets,
-    subjectSelectors.timezone,
-    (dataset, {buckets = [], dateToBucket}, timezone) => {
+    (dataset, {buckets = [], dateToBucket}) => {
         // Collect totals for each bucket
         let maxTotal = 0;
         let bucketTotals = {};
         dataset.forEach((timeBlock) => {
-            const startDateTime = DateTimeFormatter.parse(timeBlock.start, timezone);
-            const date = DateTimeFormatter.Date.toNativeDate(startDateTime.date);
+            const date = DateTimeFormatter.Date.toNativeDate(timeBlock.startDateTime.date);
             let bucket = dateToBucket(date);
             if (isUndefined(bucketTotals[bucket])) {
                bucketTotals[bucket] = 0;

@@ -14,13 +14,9 @@ module.exports = createSelector(
         }
 
         // Otherwise, filter by date
+        const inRange = (date) => date >= dateFilter.from && date <= dateFilter.to;
         return orderedTimeBlocks.filter((timeBlock) => {
-            const inRange = (val) => {
-                let date = val.substring(0, val.indexOf('T'));
-                return date >= dateFilter.from && date <= dateFilter.to;
-            };
-
-            return inRange(timeBlock.start) || inRange(timeBlock.end);
+            return inRange(timeBlock.startDateTime.date);
         });
     }
 );
