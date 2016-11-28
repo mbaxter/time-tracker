@@ -1,5 +1,6 @@
 "use strict";
 
+require('../../css/modal.css');
 const React = require('react');
 
 const ModalBody = (props) => {
@@ -13,7 +14,7 @@ const ModalBody = (props) => {
                 <h2 className="modal-title">{props.title}</h2>
             </div>
 
-            <div className="modal-body">
+            <div className="modal-body app-modal-content">
                 {props.children}
             </div>
         </div>

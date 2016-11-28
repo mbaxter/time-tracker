@@ -1,0 +1,4 @@
+.modal .app-modal-content {
+    max-height: 60vh;
+    overflow-y: auto;
+}
