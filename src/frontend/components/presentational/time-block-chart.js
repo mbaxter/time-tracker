@@ -157,7 +157,6 @@ class TimeBlockDataTable extends React.Component {
 
 TimeBlockDataTable.propTypes = {
     data: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
-    hasDate: React.PropTypes.bool.isRequired,
     onCreate: React.PropTypes.func,
     onDelete: React.PropTypes.func.isRequired,
     onEdit: React.PropTypes.func.isRequired,

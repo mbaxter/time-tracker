@@ -3,7 +3,7 @@ const React = require('react');
 const UsersTable = require('../stateful/app-users-table');
 const Modal = require('./modal/modal-wrapper');
 
-const TimeBlocksPage = (props) => {
+const UsersPage = (props) => {
     return (
         <div>
             <Modal show={React.Children.count(props.children) > 0}>{props.children}</Modal>
@@ -13,8 +13,8 @@ const TimeBlocksPage = (props) => {
     );
 };
 
-TimeBlocksPage.propTypes = {
+UsersPage.propTypes = {
     children: React.PropTypes.node
 };
 
-module.exports = TimeBlocksPage;
+module.exports = UsersPage;

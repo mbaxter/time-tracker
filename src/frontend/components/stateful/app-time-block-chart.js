@@ -1,5 +1,4 @@
 "use strict";
-const React = require('react');
 const ReactRedux = require('react-redux');
 const TimeBlockChart = require('../presentational/time-block-chart');
 const subjectSelector = require('../../selector/subject-selector');
@@ -11,12 +10,6 @@ const RecordTypes = require('../../constants/record-types');
 const actions = require('../../actions');
 const omit = require('lodash/omit');
 const merge = require('lodash/merge');
-
-const AppTimeBlockChart = (props) => {
-    return (
-        <TimeBlockChart {... props}/>
-    );
-};
 
 const mapStateToProps = (state) => {
     const {timezone = "UTC"} = subjectSelector.currentUser(state) || {};
@@ -80,4 +73,4 @@ module.exports = ReactRedux.connect(
     mapStateToProps,
     mapDispatchToProps,
     merge
-)(AppTimeBlockChart);
+)(TimeBlockChart);

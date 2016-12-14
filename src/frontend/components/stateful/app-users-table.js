@@ -1,5 +1,4 @@
 "use strict";
-const React = require('react');
 const ReactRedux = require('react-redux');
 const UsersTable = require('../presentational/users-table');
 const datasetSelector = require('../../selector/users-table/dataset');
@@ -8,12 +7,6 @@ const RecordTypes = require('../../constants/record-types');
 const actions = require('../../actions');
 const omit = require('lodash/omit');
 const merge = require('lodash/merge');
-
-const AppUsersTable = (props) => {
-    return (
-        <UsersTable {... props}/>
-    );
-};
 
 const mapStateToProps = (state) => {
     const tablePage =  tablePageSelector(state);
@@ -51,4 +44,4 @@ module.exports = ReactRedux.connect(
     mapStateToProps,
     mapDispatchToProps,
     merge
-)(AppUsersTable);
+)(UsersTable);

@@ -8,6 +8,8 @@ const Redux = require('redux');
 const ReactRedux = require('react-redux');
 const thunkMiddleware = require('redux-thunk').default;
 const createLoggerMiddleware = require('redux-logger');
+// Constants
+const UserRole = require('../shared/constants/user-role');
 // App components
 const App = require('./components/presentational/app');
 const LoginPage = require('./components/stateful/login-page');
@@ -49,6 +51,13 @@ const requireAuthentication = (nextState, replace) => {
         replace('/login');
     }
 };
+const requireAdmin = (nextState, replace) => {
+    const state = store.getState();
+    const userRole = subjectSelector.role(state);
+    if (userRole != UserRole.ADMIN) {
+        replace('/app');
+    }
+};
 
 $.ready(ReactDom.render(
     <Provider store={store}>
@@ -66,7 +75,7 @@ $.ready(ReactDom.render(
                         <Route path="create" component={TimeBlockCreateModal}/>
                         <Route path="edit/:timeBlockId" component={TimeBlockEditModal}/>
                     </Route>
-                    <Route path="users" component={UsersPage}>
+                    <Route path="users" component={UsersPage} onEnter={requireAdmin}>
                         <Route path="create" component={UserCreateModal}/>
                         <Route path="edit/:userId" component={UserEditModal}/>
                     </Route>
