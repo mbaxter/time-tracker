@@ -12,7 +12,7 @@ const requestByName = (state = {pending: false, lastRequestAt: 0}, action) => {
             return {
                 ... state,
                 pending: false,
-                lastRequestAt: Date.now(),
+                lastRequestAt: action.timestamp,
             };
         default:
             return state;

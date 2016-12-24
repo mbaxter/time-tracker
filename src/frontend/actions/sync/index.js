@@ -81,7 +81,8 @@ SyncActionCreators.initiateRequest = (requestName) => {
 SyncActionCreators.resolveRequest = (requestName) => {
     return {
         type: ActionTypes.API_REQUEST_END,
-        name: requestName
+        name: requestName,
+        timestamp: Date.now()
     };
 };
 
@@ -98,7 +99,8 @@ SyncActionCreators.batchPullSuccess = (recordType, batchSize, chunkSize) => {
         type: ActionTypes.BATCH_PULL_SUCCESS,
         name: recordType,
         finished: chunkSize != batchSize,
-        chunkSize
+        chunkSize,
+        timestamp: Date.now()
     };
 };
 
@@ -154,7 +156,8 @@ SyncActionCreators.showAlert = (message, type = ActionTypes.INFO) => {
         type: ActionTypes.SHOW_ALERT,
         alertType: type,
         message,
-        id: uuid.v4()
+        id: uuid.v4(),
+        timestamp: Date.now()
     };
 };
 

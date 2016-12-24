@@ -12,7 +12,7 @@ const alert = (state = {}, action) => {
                 type: action.alertType || AlertTypes.INFO,
                 message: action.message,
                 fade: false,
-                created: Date.now()
+                created: action.timestamp
             };
         case ActionTypes.FADE_ALERT:
             return {

@@ -19,7 +19,7 @@ const batchPullByName = (state = {pending: false, offset: 0, finished: false, la
                 pending: false,
                 finished: action.finished,
                 offset: state.offset + action.chunkSize,
-                lastPulled: Date.now()
+                lastPulled: action.timestamp
             };
         default:
             return state;
